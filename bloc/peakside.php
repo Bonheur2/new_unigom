@@ -94,7 +94,7 @@ $(document).ready(function(){
                 reader:$("#rder").val()
             }
             $.ajax({
-                url: "/files/announcements/controller.php",
+                url: "../files/announcements/controller.php",
                 type: "POST",
                 data: formData,
                 dataType:'JSON',
@@ -111,7 +111,7 @@ $(document).ready(function(){
                 reader:$("#rder").val()
             }
             $.ajax({
-                url: "/files/announcements/controller.php",
+                url: "../files/announcements/controller.php",
                 type: "POST",
                 data: formData,
                 dataType:'JSON',

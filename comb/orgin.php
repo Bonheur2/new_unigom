@@ -3,6 +3,10 @@
 </div>
 
 <?php
+// Project root as a URL path ("" on the live server, "/academic" under XAMPP's
+// htdocs), so the asset paths below resolve in both places.
+$document_root = str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'));
+$app_base_url = str_replace($document_root, '', str_replace('\\', '/', dirname(__DIR__)));
 $is_dashboard_footer = ($footer_style ?? 'full') === 'dashboard';
 // Public pages set $univData via bar.php; dashboard pages (comb/fore.php) don't,
 // and some dashboard content files (e.g. applicant/base.php) set a partial $univData
@@ -54,7 +58,7 @@ if (!isset($univData['email']) && isset($conn)) {
     <?php if (!$is_dashboard_footer): ?>
     <div class="footer-main wrap">
         <div class="footer-brand">
-            <a href="/index" class="brand">
+            <a href="<?php echo $app_base_url; ?>/index" class="brand">
                 <span class="brand-mark"><img src="<?php echo $univ_logo ?? '/img/grad.png'; ?>" alt="<?php echo htmlspecialchars($univ_short_name ?? 'STUMIS'); ?> crest"></span>
                 <span class="brand-text">
                     <span class="full"><?php echo htmlspecialchars($univ_full_name ?? 'STUMIS'); ?></span>
@@ -66,15 +70,15 @@ if (!isset($univData['email']) && isset($conn)) {
 
         <nav class="footer-col">
             <h4>Explore</h4>
-            <a href="/applicant_guidance">New Applicant</a>
-            <a href="/continuing_student">Continuing Student</a>
-            <a href="/new_files/Create_account/index" class="footer-link-accent">Create Account</a>
-            <a href="/auth">Login</a>
+            <a href="<?php echo $app_base_url; ?>/applicant_guidance">New Applicant</a>
+            <a href="<?php echo $app_base_url; ?>/continuing_student">Continuing Student</a>
+            <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index" class="footer-link-accent">Create Account</a>
+            <a href="<?php echo $app_base_url; ?>/auth">Login</a>
         </nav>
 
         <nav class="footer-col">
             <h4>Support</h4>
-            <a href="/sbox">Suggestion Box</a>
+            <a href="<?php echo $app_base_url; ?>/sbox">Suggestion Box</a>
             <a href="mailto:<?php echo htmlspecialchars($univData['email'] ?? 'info@unigom.org'); ?>">Request Support</a>
         </nav>
 
@@ -109,27 +113,27 @@ if (!isset($univData['email']) && isset($conn)) {
 </footer>
 
 <!-- General JS Scripts -->
-<script src="/assets/bundles/lib.vendor.bundle.js"></script>
-<script src="/js/CodiePie.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/bundles/lib.vendor.bundle.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/CodiePie.js"></script>
 
 <!-- JS Libraies -->
-<script src="/assets/modules/apexcharts/apexcharts.min.js"></script>
-<script src="/assets/modules/simple-weather/jquery.simpleWeather.min.js"></script>
-<script src="/assets/modules/jqvmap/dist/jquery.vmap.min.js"></script>
-<script src="/assets/modules/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-<script src="/assets/modules/summernote/summernote-bs4.js"></script>
-<script src="/assets/modules/chocolat/dist/js/jquery.chocolat.min.js"></script>
-<script src="/assets/modules/select2/dist/js/select2.full.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/apexcharts/apexcharts.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/simple-weather/jquery.simpleWeather.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/jqvmap/dist/jquery.vmap.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/summernote/summernote-bs4.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/chocolat/dist/js/jquery.chocolat.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/select2/dist/js/select2.full.min.js"></script>
 
-<script src="/assets/modules/cleave-js/dist/cleave.min.js"></script>
-<script src="/assets/modules/cleave-js/dist/addons/cleave-phone.us.js"></script>
-<script src="/assets/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
-<script src="/assets/modules/bootstrap-daterangepicker/daterangepicker.js"></script>
-<script src="/assets/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
-<script src="/assets/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
-<script src="/assets/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/cleave-js/dist/cleave.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/cleave-js/dist/addons/cleave-phone.us.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 
-<script src="/assets/modules/jquery-selectric/jquery.selectric.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/jquery-selectric/jquery.selectric.min.js"></script>
 
 <!-- Page Specific JS File -->
 
@@ -139,39 +143,39 @@ if (!isset($univData['email']) && isset($conn)) {
 <script src="https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap5.min.js"></script> 
 
 <!-- Page Specific JS File -->
-<script src="/js/page/index-0.js"></script>
-<script src="/js/page/forms-advanced-forms.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/index-0.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/forms-advanced-forms.js"></script>
 
 <!-- Template JS File -->
-<script src="/js/scripts.js"></script>
-<script src="/js/custom.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/scripts.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/custom.js"></script>
 
-<script src="/assets/modules/sweetalert/sweetalert.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/sweetalert/sweetalert.min.js"></script>
 
 <!-- Page Specific JS File -->
-<script src="/js/page/modules-sweetalert.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/modules-sweetalert.js"></script>
 
 <!-- JS Libraies -->
-<script src="/assets/modules/izitoast/js/iziToast.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/izitoast/js/iziToast.min.js"></script>
 
 <!-- Page Specific JS File -->
-<script src="/js/page/modules-toastr.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/modules-toastr.js"></script>
 
-<script src="/assets/modules/jquery-ui/jquery-ui.min.js"></script>
-<script src="/assets/modules/apexcharts/apexcharts.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/jquery-ui/jquery-ui.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/apexcharts/apexcharts.min.js"></script>
 
-<script src="/assets/modules/charts-c3/c3.min.js"></script>
-<script src="/assets/modules/charts-c3/d3.v3.min.js"></script>
-
-<!-- Page Specific JS File -->
-<script src="/js/page/modules-c3.js"></script>
-
-<script src="/assets/modules/echart/echarts.min.js"></script>
-<script src="/js/page/modules-echart.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/charts-c3/c3.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/assets/modules/charts-c3/d3.v3.min.js"></script>
 
 <!-- Page Specific JS File -->
-<script src="/js/functions.js"></script>
-<script src="/js/page/modules-apex.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/modules-c3.js"></script>
+
+<script src="<?php echo $app_base_url; ?>/assets/modules/echart/echarts.min.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/modules-echart.js"></script>
+
+<!-- Page Specific JS File -->
+<script src="<?php echo $app_base_url; ?>/js/functions.js"></script>
+<script src="<?php echo $app_base_url; ?>/js/page/modules-apex.js"></script>
 
 <script>
     function pop_wrong(feedback) {
