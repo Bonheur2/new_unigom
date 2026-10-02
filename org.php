@@ -6,27 +6,27 @@
     <div class="footer-main wrap">
         <div class="footer-brand">
             <a href="<?php echo $app_base_url; ?>/index" class="brand">
-                <span class="brand-mark"><img src="<?php echo $univ_logo ?? '/img/grad.png'; ?>" alt="<?php echo htmlspecialchars($univ_short_name ?? 'STUMIS'); ?> crest"></span>
+                <span class="brand-mark"><img src="<?php echo $univ_logo ?? '/img/grad.png'; ?>" alt="Logo <?php echo htmlspecialchars($univ_short_name ?? 'STUMIS'); ?>"></span>
                 <span class="brand-text">
                     <span class="full"><?php echo htmlspecialchars($univ_full_name ?? 'STUMIS'); ?></span>
-                    <span class="sub">Student Portal &middot; <?php echo htmlspecialchars($univ_short_name ?? 'STUMIS'); ?></span>
+                    <span class="sub">Portail étudiant &middot; <?php echo htmlspecialchars($univ_short_name ?? 'STUMIS'); ?></span>
                 </span>
             </a>
-            <p class="footer-tagline">One account to apply, register each semester, track your file and follow your results.</p>
+            <p class="footer-tagline">Un seul compte pour postuler, vous inscrire chaque semestre, suivre votre dossier et consulter vos résultats.</p>
         </div>
 
         <nav class="footer-col">
-            <h4>Explore</h4>
-            <a href="<?php echo $app_base_url; ?>/applicant_guidance">New Applicant</a>
-            <a href="<?php echo $app_base_url; ?>/continuing_student">Continuing Student</a>
-            <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index" class="footer-link-accent">Create Account</a>
-            <a href="<?php echo $app_base_url; ?>/auth">Login</a>
+            <h4>Navigation</h4>
+            <a href="<?php echo $app_base_url; ?>/applicant_guidance">Nouvelle candidature</a>
+            <a href="<?php echo $app_base_url; ?>/continuing_student">Anciens étudiants</a>
+            <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index" class="footer-link-accent">Créer un compte</a>
+            <a href="<?php echo $app_base_url; ?>/auth">Se connecter</a>
         </nav>
 
         <nav class="footer-col">
-            <h4>Support</h4>
-            <a href="<?php echo $app_base_url; ?>/sbox">Suggestion Box</a>
-            <a href="mailto:<?php echo htmlspecialchars($univData['email'] ?? 'info@unigom.org'); ?>">Request Support</a>
+            <h4>Assistance</h4>
+            <a href="<?php echo $app_base_url; ?>/sbox">Boîte à suggestions</a>
+            <a href="mailto:<?php echo htmlspecialchars($univData['email'] ?? 'info@unigom.org'); ?>">Contacter le support</a>
         </nav>
 
         <div class="footer-col footer-contact">
@@ -53,8 +53,8 @@
     </div>
 
     <div class="footer-bottom wrap">
-        <span class="copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($univ_full_name ?? 'STUMIS'); ?>. All rights reserved.</span>
-        <span class="powered-by">Powered by <a href="https://itec.rw/" target="_blank" rel="noopener">ITEC</a></span>
+        <span class="copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($univ_full_name ?? 'STUMIS'); ?>. Tous droits réservés.</span>
+        <span class="powered-by">Réalisé par <a href="https://itec.rw/" target="_blank" rel="noopener">ITEC</a></span>
     </div>
 </footer>
 
@@ -122,21 +122,3 @@
 <!-- Page Specific JS File -->
 <script src="<?php echo $app_base_url; ?>/js/page/modules-apex.js"></script>
 
-<script>
-    jQuery(window).load(function () {
-        var cookie = document.cookie;
-        var position = cookie.indexOf("googtrans");
-        var language = cookie.substring(position+10, position + 16);
-        var act_lang = language.split('/');
-        var flag = act_lang[act_lang.length - 1].length != 2 ? 'us' :  act_lang[act_lang.length - 1] == 'en' ? 'us' : act_lang[act_lang.length - 1] == 'sw' ? 'tz' : act_lang[act_lang.length - 1];
-        $("#dropdownMenu1 span").replaceWith("<span class='flag-icon flag-icon-"+flag+"'></span>");
-        $(this).prepend($("#dropdownMenu1").html());
-    });
-    
-    $(".dropdown-menu li a").click(function(){
-        $('#loader-cont').show();
-        $("#dropdownMenu1 span").replaceWith($(this).find('.flag-icon'));
-        $(this).prepend($("#dropdownMenu1").html());
-        $('#loader-cont').hide();
-    });
-</script>
