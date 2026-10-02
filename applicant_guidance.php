@@ -14,26 +14,26 @@
 
                             <div class="card">
                                 <div class="card-header row" style=" justify-content:center">
-                                    <a href="/create_account">
-                                        <button type="button" id="section-1-indicator" class="btn btn-primary col-12" style="margin-bottom:10px;"><span class="badge badge-transparent">1</span> &nbsp;New Applicant</button>
+                                    <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index">
+                                        <button type="button" id="section-1-indicator" class="btn btn-primary col-12" style="margin-bottom:10px;"><span class="badge badge-transparent">1</span> &nbsp;Nouvelle candidature</button>
                                     </a>
                                 </div>
 
 
                                 <!--personal details start-->
                                 <div class="card-body row" id="section-1">
-                                    <h5>For New Applicants:</h5>
+                                    <h5>Pour les nouveaux candidats :</h5>
 
                                     <ul>
-                                        <li>Click on the "Create Account" button.</li>
-                                        <li>Fill in the required details to set up your new account.</li>
-                                        <li>Once your account is created, you can start your application process.</li>
+                                        <li>Cliquez sur le bouton « Créer un compte ».</li>
+                                        <li>Remplissez les informations demandées pour créer votre compte.</li>
+                                        <li>Une fois votre compte créé, vous pourrez commencer votre candidature.</li>
                                     </ul>
 
-                                    
+
 
                                     <div class="text-center" style=" justify-content:center">
-                                        <a href="/create_account" class="btn btn-primary col-12"><i class="fas fa-user-graduate mr-2"></i> Create Account</a>
+                                        <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index" class="btn btn-primary col-12"><i class="fas fa-user-graduate mr-2"></i> Créer un compte</a>
                                     </div>
                                 </div>
                                 <!-- /apply end-->
@@ -57,7 +57,7 @@
         </div>
     </section>
 </div>
-<?php include 'comb/orgin.php'; ?>
+<?php include 'org.php'; ?>
 <?php include 'comb/coda.php'; ?>
 
 <!--javascript-->
@@ -70,11 +70,11 @@
             e.preventDefault();
 
             var formData = new FormData(this);
-            $('#spinner').html("<img src='/img/ajax_loader.gif' width='15'>").fadeIn('fast');
-            $('#indicator').html("Processing...");
+            $('#spinner').html("<img src='<?php echo $app_base_url; ?>/img/ajax_loader.gif' width='15'>").fadeIn('fast');
+            $('#indicator').html("Traitement en cours...");
             $("#sBtn").attr('disabled', true);
             $.ajax({
-                url: "/files/application/application_controller.php",
+                url: "<?php echo $app_base_url; ?>/files/application/application_controller.php",
                 type: "POST",
                 data: formData,
                 dataType: "JSON",
@@ -82,7 +82,7 @@
                 contentType: false,
                 success: function(data) {
                     $('#spinner').fadeOut('fast');
-                    $('#indicator').html("Submit");
+                    $('#indicator').html("Soumettre");
                     if (data.status == 200) {
                         var mail = $("#email").val().trim();
                         $("#apply")[0].reset();
@@ -104,8 +104,8 @@
                 error: function() {
                     $('#spinner').fadeOut('fast');
                     $("#sBtn").attr('disabled', false);
-                    $('#indicator').html("Submit");
-                    pop_wrong("Something went wrong!");
+                    $('#indicator').html("Soumettre");
+                    pop_wrong("Une erreur est survenue. Veuillez réessayer.");
                 }
             });
         });
@@ -144,11 +144,11 @@
             $("#gender_star").html("");
             $("#phone_star").html("");
             $("#email_star").html("");
-            $('#spinner2').html("<img src='/img/ajax_loader.gif' width='15'>").fadeIn('fast');
-            $('#indicator2').html("loading...");
+            $('#spinner2').html("<img src='<?php echo $app_base_url; ?>/img/ajax_loader.gif' width='15'>").fadeIn('fast');
+            $('#indicator2').html("Chargement...");
             setTimeout(function() {
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Next");
+                $('#indicator2').html("Suivant");
                 $("#section-1-indicator").removeClass('btn-primary');
                 $("#section-1-indicator").addClass('btn-light');
                 $("#section-2-indicator").removeClass('btn-light');
@@ -160,11 +160,11 @@
     }
 
     function goBackToSection1() {
-        $('#spinner3').html("<img src='/img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator3').html("loading...");
+        $('#spinner3').html("<img src='<?php echo $app_base_url; ?>/img/ajax_loader.gif' width='15'>").fadeIn('fast');
+        $('#indicator3').html("Chargement...");
         setTimeout(function() {
             $('#spinner3').fadeOut('fast');
-            $('#indicator3').html("back");
+            $('#indicator3').html("Retour");
             $("#section-2-indicator").removeClass('btn-primary');
             $("#section-2-indicator").addClass('btn-light');
             $("#section-1-indicator").removeClass('btn-light');
@@ -184,7 +184,7 @@
         var email = document.getElementById('email').value.trim();
 
         if (fname === '' || lname === '' || nid === '' || gender === '' || phone === '' || email === '') {
-            pop_wrong_verify("Fill all missing fields");
+            pop_wrong_verify("Veuillez remplir tous les champs obligatoires.");
             fname === '' ? $("#fname_star").html("*") : $("#fname_star").html("");
             lname === '' ? $("#lname_star").html("*") : $("#lname_star").html("");
             nid === '' ? $("#nid_star").html("*") : $("#nid_star").html("");

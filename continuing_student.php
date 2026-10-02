@@ -99,7 +99,7 @@
                                     <label>&Eacute;tat civil</label>
                                     <div class="input-group">
                                         <select name="marital_status" class="form-control select2" style="width:100%;"
-                                            placeholder="choose one" required>
+                                            placeholder="Choisir" required>
                                             <option value="" disabled selected hidden>Choisir...</option>
                                             <option value="Single">C&eacute;libataire</option>
                                             <option value="Married">Mari&eacute;(e)</option>
@@ -450,7 +450,7 @@
                                 <div class="form-group col-md-12" style="background:#f4f6fb;padding:15px;border-radius:6px;">
                                     <h6>Photo d'identit&eacute; <code><b><span style="color:red">*</span></b></code></h6>
                                     <small class="text-muted d-block mb-2">
-                                        T&eacute;l&eacute;chargez une photo nette (JPG/PNG, max 3 Mo). Utilisez l'outil de recadrage pour cadrer votre visage — la photo sera enregistr&eacute;e au format standard passeport (35&times;45 mm).
+                                        T&eacute;l&eacute;chargez une photo nette (JPG/PNG, max 3 Mo). Utilisez l'outil de recadrage pour cadrer votre visage. La photo sera enregistr&eacute;e au format standard passeport (35&times;45 mm).
                                     </small>
                                     <div class="row">
                                         <div class="col-12 col-md-7">
@@ -502,7 +502,7 @@
                     }
                     </style>
 
-                    <?php  include'comb/orgin.php'; ?>
+                    <?php  include'org.php'; ?>
                     <?php  include'comb/coda.php'; ?>
 
                     <!--javascript-->
@@ -639,7 +639,7 @@
                         var country = $(this).val();
                         $('#spinner_cntr').html('<i class="fas fa-spinner fa-spin"></i>');
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getProvinces',
@@ -677,7 +677,7 @@
                         var province_id = $(this).val();
                         $('#spinner_prov').html('<i class="fas fa-spinner fa-spin"></i>');
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getDistricts',
@@ -713,7 +713,7 @@
                         // Reset dependent dropdowns
                         $('#fct, #dept, #spec, #level, #mode').hide();
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getProgramTypes',
@@ -748,7 +748,7 @@
 
                         // Load Faculties
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getFaculties',
@@ -775,7 +775,7 @@
 
                         // Load Levels
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getLevels',
@@ -804,7 +804,7 @@
                         $('#spinner000').html('<i class="fas fa-spinner fa-spin"></i>');
                         $('#spec').hide();
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getDepartments',
@@ -837,7 +837,7 @@
                         var prg_type = $('#prg_type').val();
                         $('#spinner0000').html('<i class="fas fa-spinner fa-spin"></i>');
                         $.ajax({
-                            url: '/files/continuing/apply_continuing_controller.php',
+                            url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                             type: 'POST',
                             data: {
                                 action: 'getSpecializations',
@@ -959,7 +959,7 @@
                             $('#indicator').html('Soumission...');
 
                             $.ajax({
-                                url: '/files/continuing/apply_continuing_controller.php',
+                                url: '<?php echo $app_base_url; ?>/files/continuing/apply_continuing_controller.php',
                                 type: 'POST',
                                 data: formData,
                                 dataType: 'json',

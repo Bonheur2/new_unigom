@@ -10,40 +10,40 @@
                 <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h4>Login</h4>
+                            <h4>Connexion</h4>
                         </div>
                         <div class="card-body">
                             <form method="POST" action="log_data" id="log_data" class="needs-validation" novalidate="">
                                 <div class="form-group">
-                                    <label for="email">Email</label>
+                                    <label for="email">Adresse e-mail</label>
                                     <input id="email" type="email" class="form-control" name="login-username" tabindex="1" required autofocus>
                                     <div class="invalid-feedback">
-                                        Please fill in your email
+                                        Veuillez saisir votre adresse e-mail
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="d-block">
-                                        <label for="password" class="control-label">Password</label>
+                                        <label for="password" class="control-label">Mot de passe</label>
                                     </div>
                                     <input id="password" type="password" class="form-control" name="login-password" tabindex="2" required>
                                     <div class="invalid-feedback">
-                                        please fill in your password
+                                        Veuillez saisir votre mot de passe
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" name="remember" id="rememberbut" class="custom-control-input" tabindex="3" id="remember-me">
-                                        <label class="custom-control-label" for="remember-me">Remember Me</label>
+                                        <label class="custom-control-label" for="remember-me">Se souvenir de moi</label>
                                         <div class="float-right">
-                                            <a href="/forgot_password" class="text-small">
-                                            Forgot Password?
+                                            <a href="<?php echo $app_base_url; ?>/forgot_password" class="text-small">
+                                            Mot de passe oublié ?
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" id="loginbutton" class="btn btn-primary btn-lg btn-block" tabindex="4">
-                                        <span id="spinner"></span>&nbsp;<span id="indicator">Login</span>
+                                        <span id="spinner"></span>&nbsp;<span id="indicator">Se connecter</span>
                                     </button>
                                 </div>
                             </form>
@@ -68,7 +68,7 @@
             document.getElementById("password").disabled = true;
             document.getElementById("email").disabled = true;
             $("#spinner").html("<img src='./img/ajax_loader.gif' width='15'>").fadeIn('fast');
-            $("#indicator").html("Authenticating...");
+            $("#indicator").html("Connexion en cours...");
             
             $.ajax({
                 url: "log_data.php",
@@ -80,10 +80,10 @@
                 processData: false,
                 success: function(formData){
                     $('#spinner').fadeOut('fast');
-                    $('#indicator').html("Login");
+                    $('#indicator').html("Se connecter");
                     $("#loginbutton").removeAttr('disabled');
                     if(formData==0){
-                        pop_wrong("Incorrect credentials");  
+                        pop_wrong("Adresse e-mail ou mot de passe incorrect.");  
                     } else{
                         pop_up_success(formData);
                         setTimeout(function(){
@@ -149,8 +149,8 @@
                 },error: function(){
                     $("#loginbutton").removeAttr('disabled');
                     $('#spinner').fadeOut('fast');
-                    $('#indicator').html("Login");
-                    pop_wrong("Something went wrong!");
+                    $('#indicator').html("Se connecter");
+                    pop_wrong("Une erreur est survenue. Veuillez réessayer.");
                 }
             });
         });
@@ -158,7 +158,7 @@
 
    function pop_wrong(feedback) {
         iziToast.warning({
-            title: 'Ooops',
+            title: 'Oups',
             message: feedback,
             position: 'topCenter'
         });
@@ -166,8 +166,8 @@
     
     function pop_up_success(feedback) {
         iziToast.success({
-            title: 'Welcome to NUMIS',
-            message: 'Logged in successfully ',
+            title: 'Bienvenue',
+            message: 'Connexion réussie.',
             position: 'topCenter'
         });
     }
