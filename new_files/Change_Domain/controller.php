@@ -5,7 +5,7 @@
 // tbl_domain_change_requests and reviewed separately by staff - it does not
 // touch the applicant's existing tbl_admittedPRG row, if any.
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 

@@ -4,7 +4,7 @@
 // Updates their identity on tbl_applicants and records the re-integration
 // details in tbl_integration_requests for staff review.
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");

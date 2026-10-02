@@ -6,7 +6,7 @@
 // (who always start at first-year level), a transfer student picks their own
 // target Class/Level, since they may be transferring in above first year.
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");

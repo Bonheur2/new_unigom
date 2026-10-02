@@ -7,7 +7,7 @@
 // application shows its two options and secondary school, a Master request
 // shows prior studies, a change of domain shows the requested new domain, and
 // a re-integration shows its interruption details.
-require_once($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
+require_once(dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
 
 // Router entries - keep in step with Approval_Review/index.php.
 $ROUTE_LIST   = 'edu?mis=approvals';

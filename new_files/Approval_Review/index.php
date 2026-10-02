@@ -3,7 +3,7 @@
 // Rows come from approval_queue(): 'pending' shows requests waiting on the
 // signed-in role at their current step; 'approved' / 'rejected' show finished
 // requests. All of it limited to the user's own scope.
-require_once($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
+require_once(dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
 
 // Router entries - change here if your edu.php uses different names.
 $ROUTE_LIST   = 'edu?mis=apprvw';

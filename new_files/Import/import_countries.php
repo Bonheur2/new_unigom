@@ -10,7 +10,7 @@
 // are still collapsed to one row each.
 
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 header('Content-Type: text/plain; charset=utf-8');

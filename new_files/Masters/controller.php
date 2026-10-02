@@ -3,7 +3,7 @@
 // Split out from the shared Application_form/controller.php so each form can
 // stamp tbl_applicants.form_id with its own tbl_form_types row.
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");

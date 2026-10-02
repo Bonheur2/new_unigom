@@ -1,7 +1,7 @@
 <?php
 // Approval setup: define what each ROLE may do, and the approval ROUTE each
 // form follows. Both are pure configuration - no role is named in any code.
-require_once($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
+require_once(dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'meet'.DIRECTORY_SEPARATOR.'approval.php');
 
 $formsStmt = $conn->prepare("SELECT form_id, form_name FROM tbl_form_types WHERE status = 1 ORDER BY rank ASC, form_name ASC");
 $formsStmt->execute();

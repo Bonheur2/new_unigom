@@ -1,188 +1,198 @@
-   <div class="main-sidebar sidebar-style-2">
-       <aside id="sidebar-wrapper">
-           <div class="sidebar-brand">
-               <?php   if($prvg==2){  ?>
-               <select class="select2" style="width:70%" id="changeRole">
-                   <option><?php echo $u_role ?></option>
-                   <?php 
-                            $sthChange = $db->query("SELECT * FROM tbl_user_roles WHERE role_id !='".$role_id."' and role_id NOT IN(4,5,19) ORDER BY role ASC");
-                            while($resChange = $sthChange->fetch()) {
+<div class="main-sidebar sidebar-style-2">
+    <aside id="sidebar-wrapper">
+        <div class="sidebar-brand">
+            <?php if ($prvg == 2) { ?>
+            <select class="select2" style="width:70%" id="changeRole">
+                <option><?php echo $u_role ?></option>
+                <?php
+                    $sthChange = $db->query("SELECT * FROM tbl_user_roles WHERE role_id !='" . $role_id . "' and role_id NOT IN(4,5,19) ORDER BY role ASC");
+                    while ($resChange = $sthChange->fetch()) {
                         ?>
-                   <option value="<?php  echo $resChange['role_id'];?>"><?php echo $resChange['role'] ?></option>
-                   <?php } ?>
-               </select>
-               <?php } else{ ?>
-               <a href="edu?mis=1"><?php echo $u_role ?></a>
-               <?php } ?>
-           </div>
-           <ul class="sidebar-menu">
-               <?php if($role_id==2){ ?>
-               <li class="dropdown active">
-                   <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>General
-                           Settings</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=uni">University</a></li>
-                       <li><a class="nav-link" href="edu?mis=ups">Campus</a></li>
-                   </ul>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>Academic
-                           Settings</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=acdmc">Academic Year</a></li>
-                       <li><a class="nav-link" href="edu?mis=fac">Faculties</a></li>
-                       <li><a class="nav-link" href="edu?mis=prgty">Program Type</a></li>
-                       <li><a class="nav-link" href="edu?mis=Dprtm">Department</a></li>
-                       <li><a class="nav-link" href="edu?mis=opts">Options</a></li>
-                       <li><a class="nav-link" href="edu?mis=lvls">Level</a></li>
-                       <!-- <li><a class="nav-link" href="edu?mis=feecat">Fee Category</a></li> -->
+                <option value="<?php echo $resChange['role_id']; ?>"><?php echo $resChange['role'] ?></option>
+                <?php } ?>
+            </select>
+            <?php } else { ?>
+            <a href="edu?mis=1"><?php echo $u_role ?></a>
+            <?php } ?>
+        </div>
+        <ul class="sidebar-menu">
+            <?php if ($role_id == 2) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>General
+                        Settings</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=uni">University</a></li>
+                    <li><a class="nav-link" href="edu?mis=ups">Campus</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>Academic
+                        Settings</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=acdmc">Academic Year</a></li>
+                    <li><a class="nav-link" href="edu?mis=fac">Faculties</a></li>
+                    <li><a class="nav-link" href="edu?mis=prgty">Program Type</a></li>
+                    <li><a class="nav-link" href="edu?mis=Dprtm">Department</a></li>
+                    <li><a class="nav-link" href="edu?mis=opts">Options</a></li>
+                    <li><a class="nav-link" href="edu?mis=lvls">Level</a></li>
+                    <!-- <li><a class="nav-link" href="edu?mis=feecat">Fee Category</a></li> -->
 
-                   </ul>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Applicants
-                           Settings</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=appty">Application Types</a></li>
-                       <li><a class="nav-link" href="edu?mis=appdc">Application Document</a></li>
-                       <li><a class="nav-link" href="edu?mis=appd">Application Period</a></li>
-                       <li><a class="nav-link" href="edu?mis=apstp">Application Steps</a></li>
-                       <li><a class="nav-link" href="edu?mis=fcdt">Faculity Document</a></li>
-                       <li><a class="nav-link" href="edu?mis=chstr">Choice Document</a></li>
-                   </ul>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
-                           Applicants</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
-                       <li><a class="nav-link" href="edu?mis=sbtdap">Submitted Application</a></li>
-                   </ul>
-               </li>
-               <li class="dropdown">
-                        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Teaching Units</span></a>
-                        <ul class="dropdown-menu">
-                            <li><a class="nav-link" href="edu?mis=tchunt">Teaching Units</a></li>
-                            <li><a class="nav-link" href="edu?mis=mod_assign">Module to Year</a></li>
-                            <li><a class="nav-link" href="edu?mis=mod_lead_assign">Module leaders</a></li>
-                            <li><a class="nav-link" href="edu?mis=mod_stu">Student - Modules</a></li>
-                            <li><a class="nav-link" href="edu?mis=assess_mod">Assessments</a></li>
-                        </ul>
-                    </li>
-               <?php } ?>
-               <?php if($role_id==1){ ?>
-               <li class="dropdown active">
-                   <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>System Users</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=urat">User Account</a></li>
-                   </ul>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
-                           Applicants</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
-                   </ul>
-               </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Applicants
+                        Settings</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=appty">Application Types</a></li>
+                    <li><a class="nav-link" href="edu?mis=appdc">Application Document</a></li>
+                    <li><a class="nav-link" href="edu?mis=appd">Application Period</a></li>
+                    <li><a class="nav-link" href="edu?mis=apstp">Application Steps</a></li>
+                    <li><a class="nav-link" href="edu?mis=fcdt">Faculity Document</a></li>
+                    <li><a class="nav-link" href="edu?mis=chstr">Choice Document</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
+                        Applicants</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
+                    <li><a class="nav-link" href="edu?mis=sbtdap">Submitted Application</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i>
+                    <span>Teaching Units</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=tchunt">Teaching Units</a></li>
+                    <li><a class="nav-link" href="edu?mis=mod_assign">Module to Year</a></li>
+                    <li><a class="nav-link" href="edu?mis=mod_lead_assign">Module leaders</a></li>
+                    <li><a class="nav-link" href="edu?mis=mod_stu">Student - Modules</a></li>
+                    <li><a class="nav-link" href="edu?mis=assess_mod">Assessments</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="far fa-address-book"></i> <span>Student
+                        Management</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=stuInfo">Student info</a></li>
+                </ul>
+            </li>
 
-               <?php } ?>
-               <?php if($role_id==18){ ?>
-               <li class="dropdown active">
-                   <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
-               </li>
-               <!--<li class="dropdown">-->
-               <!--    <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>System Users</span></a>-->
-               <!--    <ul class="dropdown-menu">-->
-               <!--        <li><a class="nav-link" href="edu?mis=urat">User Account</a></li>-->
-               <!--    </ul>-->
-               <!--</li>-->
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
-                           Applicants</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
-                   </ul>
-               </li>
+            <?php } ?>
+            <?php if ($role_id == 1) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>System Users</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=urat">User Account</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
+                        Applicants</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
+                </ul>
+            </li>
 
-               <?php } ?>
-               <?php if($role_id==3){ ?>
-               <li class="dropdown active">
-                   <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>Fee management</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=urat">Fee category</a></li>
-                   </ul>
-               </li>
-               <li class="dropdown">
-                   <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
-                           Applicants</span></a>
-                   <ul class="dropdown-menu">
-                       <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
-                   </ul>
-               </li>
+            <?php } ?>
+            <?php if ($role_id == 18) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            </li>
+            <!--<li class="dropdown">-->
+            <!--    <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>System Users</span></a>-->
+            <!--    <ul class="dropdown-menu">-->
+            <!--        <li><a class="nav-link" href="edu?mis=urat">User Account</a></li>-->
+            <!--    </ul>-->
+            <!--</li>-->
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
+                        Applicants</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
+                </ul>
+            </li>
 
-               <?php } ?>
-               <?php if($_SESSION['role_id'] ==5){ ?>
-                    <li class="dropdown active">
-                        <a href="edu?mis=1" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
-                       
-                    </li>
-                    <?php
-                        $stmt00 = $conn->prepare("SELECT * FROM tbl_applicants WHERE code='".$code."' AND submitted=2");
-                        $stmt00->execute();
-                        if($stmt00->rowCount()==0){
+            <?php } ?>
+            <?php if ($role_id == 3) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>Fee management</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=urat">Fee category</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fab fa-adn"></i> <span>Manage
+                        Applicants</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=apprvw">Application Review</a></li>
+                </ul>
+            </li>
+
+            <?php } ?>
+            <?php if ($_SESSION['role_id'] == 5) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=1" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+
+            </li>
+            <?php
+                $stmt00 = $conn->prepare("SELECT * FROM tbl_applicants WHERE code='" . $code . "' AND submitted=2");
+                $stmt00->execute();
+                if ($stmt00->rowCount() == 0) {
                     ?>
-                    <li class="dropdown">
-                        <a href="#" class="nav-link has-dropdown"><i class="fas fa-clipboard"></i> <span>Application</span></a>
-                        <ul class="dropdown-menu">
-                            <li><a class="nav-link" href="edu?mis=review">Review Information</a></li>
-                            <!--<li><a class="nav-link" href="edu?mis=prevEdu">Previous Educaction</a></li>-->
-                            <!--<li><a class="nav-link" href="edu?mis=lanPro">Language Proficiency</a></li>-->
-                            <!--<li><a class="nav-link" href="edu?mis=fasp">Family & Sponor</a></li>-->
-                            <!--<li><a class="nav-link" href="edu?mis=apcrs">Programme Sought</a></li>-->
-                            <!--<li><a class="nav-link" href="edu?mis=apDocs">Application documents</a></li>-->
-                            <?php
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-clipboard"></i>
+                    <span>Application</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=review">Review Information</a></li>
+                    <!--<li><a class="nav-link" href="edu?mis=prevEdu">Previous Educaction</a></li>-->
+                    <!--<li><a class="nav-link" href="edu?mis=lanPro">Language Proficiency</a></li>-->
+                    <!--<li><a class="nav-link" href="edu?mis=fasp">Family & Sponor</a></li>-->
+                    <!--<li><a class="nav-link" href="edu?mis=apcrs">Programme Sought</a></li>-->
+                    <!--<li><a class="nav-link" href="edu?mis=apDocs">Application documents</a></li>-->
+                    <?php
                             // $prTypeQ=$conn->prepare("SELECT prg_type FROM  tbl_admittedPRG WHERE Stu_code='".$code."'");
                             // $prTypeQ->execute();
                             // $dataTpyeQ=$prTypeQ->fetch();
                             // $pryT=$dataTpyeQ['prg_type'];
-                            if($prg_ty==2 || $prg_ty==4 || $prg_ty==6 || $prg_ty==8){
+                            if ($prg_ty == 2 || $prg_ty == 4 || $prg_ty == 6 || $prg_ty == 8) {
                                 ?>
-                              <li><a class="nav-link" href="edu?mis=essay">Research proposal</a></li>
-                            <?php
-                            
-                        }
+                    <li><a class="nav-link" href="edu?mis=essay">Research proposal</a></li>
+                    <?php
+
+                            }
                             ?>
-                            
-                            <!--<li><a class="nav-link" href="edu?mis=payinfo">Payment Info</a></li> -->
-                            <li><a class="nav-link" href="edu?mis=sbt">Submit</a></li>
-                        </ul>
-                    </li>
 
-                    <?php } ?>
-                   
-                    <?php } ?>
-           </ul>
+                    <!--<li><a class="nav-link" href="edu?mis=payinfo">Payment Info</a></li> -->
+                    <li><a class="nav-link" href="edu?mis=sbt">Submit</a></li>
+                </ul>
+            </li>
 
-       </aside>
-   </div>
+            <?php } ?>
 
-   <script>
+            <?php } ?>
+        </ul>
+
+    </aside>
+</div>
+
+<script>
 $(document).ready(function() {
     $("#changeRole").change(function() {
         var dual_date = $('#dual_date').val();
-        var acc_id = <?php  echo $acc_id; ?>;
+        var acc_id = <?php echo $acc_id; ?>;
         $(this).after(
             '<div id="loader"><img src="../img/ajax_loader.gif" alt="loading...." width="30" height="30" /></div>'
-            );
+        );
         $.get('../changeRole?role_id=' + $(this).val() + '&acc_id=' + acc_id, function(data) {
             changed_success(data);
             $('#loader').slideUp(910, function() {
@@ -203,11 +213,11 @@ function changed_success(feedback) {
         position: 'topCenter'
     });
 }
-   </script>
+</script>
 
 
 
-   <script>
+<script>
 function makeActive(submenu) {
     const dropdownParent = submenu.closest('.dropdown');
     document.querySelectorAll('.dropdown').forEach(item => {
@@ -247,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-   </script>
+</script>
 
 
-   <style>
+<style>
 /* Element selector for all <ul> elements */
 
 a:hover {
@@ -297,4 +307,4 @@ a {
     /* Remove underline from links */
     /* Set text color */
 }
-   </style>
+</style>

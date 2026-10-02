@@ -6,7 +6,7 @@
 // Exactly one row is active at a time: activating one deactivates the rest,
 // so the applicant-facing button never has to choose between candidates.
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");

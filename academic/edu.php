@@ -85,6 +85,10 @@ if ($_SESSION['role_id'] == 2) {
 			$title = "Approval Setup";
 			$thing = '../new_files/Teaching_Units/index.php';
 			break;
+		case 'stuInfo':
+			$title = "Informations de l'étudiant";
+			$thing = '../new_files/Student_Info/index.php';
+			break;
 
 	}
 }

@@ -74,7 +74,8 @@
         $sql_tabs = $conn->prepare("SELECT DISTINCT tbl_campus.camp_id, tbl_campus.camp_full_name
                                     FROM tbl_campus
                                     INNER JOIN tbl_faculty ON tbl_faculty.campus_id = tbl_campus.camp_id
-                                    INNER JOIN tbl_level ON tbl_level.fac_id = tbl_faculty.fac_id
+                                    INNER JOIN tbl_program_type ON tbl_program_type.fac_id = tbl_faculty.fac_id
+                                    INNER JOIN tbl_level ON tbl_level.prg_type_id = tbl_program_type.prg_type_id
                                     WHERE tbl_campus.camp_active=1 AND tbl_faculty.status=1
                                     ORDER BY tbl_campus.camp_full_name ASC");
         $sql_tabs->execute();
@@ -99,7 +100,8 @@
         <?php foreach($campuses as $index => $campus):
             $sql_facs = $conn->prepare("SELECT DISTINCT tbl_faculty.fac_id, tbl_faculty.fac_full_name
                                         FROM tbl_faculty
-                                        INNER JOIN tbl_level ON tbl_level.fac_id = tbl_faculty.fac_id
+                                        INNER JOIN tbl_program_type ON tbl_program_type.fac_id = tbl_faculty.fac_id
+                                    INNER JOIN tbl_level ON tbl_level.prg_type_id = tbl_program_type.prg_type_id
                                         WHERE tbl_faculty.campus_id = :camp_id
                                         AND tbl_faculty.status=1
                                         ORDER BY tbl_faculty.fac_full_name ASC");
@@ -144,7 +146,9 @@
                             </thead>
                             <tbody>
                             <?php
-                                $sql = $conn->prepare("SELECT * FROM tbl_level WHERE fac_id = :fac_id ORDER BY level_rank ASC");
+                                $sql = $conn->prepare("SELECT tbl_level.* FROM tbl_level
+                                                        INNER JOIN tbl_program_type ON tbl_program_type.prg_type_id = tbl_level.prg_type_id
+                                                        WHERE tbl_program_type.fac_id = :fac_id ORDER BY tbl_level.level_rank ASC");
                                 $sql->execute([':fac_id' => $fac['fac_id']]);
                                 $i = 1;
                                 while($lvl = $sql->fetch()):

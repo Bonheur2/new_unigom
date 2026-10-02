@@ -11,12 +11,12 @@ session_destroy();
         <!-- Start top menu -->
        
 <?php
-$currentTime = date('H'); // Get the current hour in 24-hour format
+$currentTime = date('H'); // Heure actuelle (format 24 h)
 
 if ($currentTime >= 6 && $currentTime < 18) {
-    $message = "Have a nice day!";
+    $message = "Bonne journée !";
 } else {
-    $message = "Have a good night!";
+    $message = "Bonne soirée !";
 }
 ?>
         <!-- Start app main Content -->
@@ -31,9 +31,9 @@ if ($currentTime >= 6 && $currentTime < 18) {
                            <div class="col-12 mb-4">
                             <div class="hero align-items-center bg-light text-black">
                                 <div class="hero-inner text-center">
-                                    <h3>All done! <?php  echo $message ?></h3>
+                                    <h3>Déconnexion réussie. <?php  echo $message ?></h3>
                                     <div class="mt-4">
-                                        <span style="font-size: 16px;">A bit more to do?&nbsp;</span><a href="auth" class="btn btn-info btn-outline-success btn-sm btn-icon icon-left" id="log_click"><i class="fas fa-sign-out-alt"></i>Login</a>
+                                        <span style="font-size: 16px;">Encore quelque chose à faire ?&nbsp;</span><a href="auth" class="btn btn-info btn-outline-success btn-sm btn-icon icon-left" id="log_click"><i class="fas fa-sign-out-alt"></i>Se connecter</a>
                                     </div>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@ if ($currentTime >= 6 && $currentTime < 18) {
                 </div>
             </section>
         </div>
-  <?php  include'comb/orgin.php'; ?>       
+  <?php  include'org.php'; ?>       
    <?php  include'comb/coda.php'; ?>     
      
   <script>
@@ -51,7 +51,7 @@ if ($currentTime >= 6 && $currentTime < 18) {
 $(document).ready(function(){
    
   $("#container1").addClass("disable-div");
-          setTimeout(function(){// wait for 5 secs(2)
+          setTimeout(function(){// redirection vers la connexion après 5 secondes
     
   
   var linkUrl = document.getElementById('log_click').href;
