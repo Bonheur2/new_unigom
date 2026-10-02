@@ -1,0 +1,22 @@
+<IfModule mod_mime.c>
+    AddType application/pdf .pdf
+    AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+    AddType application/msword .doc
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Content-Disposition inline
+</IfModule>
+
+
+# Block all script execution in uploads
+<FilesMatch "\.(php|php[34578]?|phtml|phps|pl|py|jsp|asp|aspx|cgi|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable PHP completely
+php_flag engine off
+
+# Disable directory browsing
+Options -Indexes

@@ -1,0 +1,8 @@
+<?php exit(); ?>
+<form action="mail.php" method="post" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Name"> <br>
+    <input type="text" name="email" placeholder="email"> <br>
+    <input type="text" name="message" placeholder="Message"> <br>
+    <input type="file" name="file"> <br>
+    <input type="submit" value="Submit">
+</form>

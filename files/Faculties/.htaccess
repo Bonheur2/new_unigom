@@ -1,0 +1,16 @@
+<IfModule mod_mime.c>
+    AddType application/pdf .pdf
+    AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+    AddType application/msword .doc
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set Content-Disposition inline
+</IfModule>
+
+
+php_value upload_max_filesize 50M
+php_value post_max_size 50M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 256M

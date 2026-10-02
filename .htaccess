@@ -1,0 +1,42 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# ----------------------------------------
+# Remove .html Extension
+# ----------------------------------------
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([^/]+)$ $1.html [L]
+
+# ----------------------------------------
+# Remove .php Extension
+# ----------------------------------------
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php
+
+# ----------------------------------------
+# Block direct access to non-existent files or directories
+# ----------------------------------------
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ - [F,L]
+
+# ----------------------------------------
+# Protect against script execution in wrong file types
+# Prevent files like phtml,phpd,pl,py,jsp,asp,aspx,cgi,sh
+<FilesMatch "\.(phtml|phps|pl|py|jsp|asp|aspx|cgi|sh)$">
+    <IfModule mod_headers.c>
+        Header set Content-Disposition "attachment"
+    </IfModule>
+</FilesMatch>
+
+# ----------------------------------------
+# Block access to certain dangerous file types
+# ----------------------------------------
+<FilesMatch "\.(htaccess|htpasswd|ini|env|log|conf)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+# ----------------------------------------
+# Disable directory listing
+# ----------------------------------------
+Options -Indexes

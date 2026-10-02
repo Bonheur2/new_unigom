@@ -1,0 +1,66 @@
+# ----------------------------------------
+# Secrets / credentials (never commit)
+# ----------------------------------------
+Config/mail_config.php
+Config/google_config.php
+# DB connection: per-environment credentials, and "con" is a reserved
+# filename on Windows so Git for Windows cannot index it anyway.
+# Copy meet/db_connection.example.php to meet/con.php on each server.
+meet/con.php
+.env
+.env.*
+*.pem
+*.key
+config.zip
+
+# ----------------------------------------
+# Logs
+# ----------------------------------------
+error_log
+*.log
+
+# ----------------------------------------
+# User uploads & generated files
+# ----------------------------------------
+/uploads/*
+!/uploads/dcover.png
+!/uploads/statusCover.png
+files/assets/QR/
+files/employee/images/
+**/phpqrcode/cache/
+
+# ----------------------------------------
+# Archives, backups, database dumps
+# ----------------------------------------
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.sql
+*.bak
+*.old
+*~
+
+# ----------------------------------------
+# Dependencies
+# ----------------------------------------
+/vendor/
+node_modules/
+
+# ----------------------------------------
+# Editors & OS
+# ----------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------
+# More secrets (Resend key, bank API token keys).
+# Templates: config/resend.example.php, StudentService/middleware.example.php
+# ----------------------------------------
+**/config/resend.php
+bank-api/StudentService/middleware.php
+apiTEST/StudentService/middleware.php

@@ -1,0 +1,94 @@
+<!-- Start app main Content -->
+        <div class="main-content">
+            <section class="section">
+                <div class="section-header">
+                    <h3></h3>
+                    <div class="section-header-breadcrumb">
+                        <div class="breadcrumb-item active"><a href="edu?mis=1">Dashboard</a></div>
+                        <div class="breadcrumb-item"><a href="#">Statistics</a></div>
+                        <div class="breadcrumb-item"><a href="#">By Semester</a></div>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-lg-12">
+                            <div class="card" id="sample-login">
+                                    <div class="card-header">
+                                        <h4>Student statistics By Semester</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="">
+                                            <table class="table table-hover table-sm" id="stat_table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Academic Year</th>
+                                                    <th scopr="col">Semester</th>
+                                                    <th scope="col">Numbers</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php
+                                                    $sql = $conn->prepare("
+    SELECT 
+    COUNT(tbl_student_semester.reg_no) AS count,
+    tbl_acad_cycle.acad_year,
+    semester.name AS semester_name
+FROM 
+    tbl_student_semester
+INNER JOIN 
+    tbl_semester ON tbl_student_semester.sem_id = tbl_semester.sem_id
+INNER JOIN 
+    semester ON tbl_semester.semester = semester.id
+INNER JOIN 
+    tbl_register_program_ug ON tbl_student_semester.reg_no = tbl_register_program_ug.reg_no
+INNER JOIN 
+    tbl_acad_cycle ON tbl_semester.acad_year = tbl_acad_cycle.acad_cycle_id
+WHERE 
+    tbl_register_program_ug.reg_active IN (1, 6)
+GROUP BY 
+    tbl_acad_cycle.acad_year, semester.name;
+
+    
+    
+");
+$sql->execute();
+$i = 1;
+while ($stat = $sql->fetch(PDO::FETCH_ASSOC)) {
+?>
+    <tr>
+        <th scope="row"><?php echo $i++; ?></th>
+        <td><?php echo $stat['acad_year']; ?></td>
+        <td><?php echo $stat['semester_name']; ?></td>
+        <td><?php echo $stat['count']; ?></td>
+    </tr>
+<?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <?php if($sql->rowCount()>0){ ?>
+                                    <div class="card-footer" style="display:flex; flex-direction:row-reverse; margin-top:30px;">
+                                        <button type="button" class="btn btn-success" onclick="exportTableToExcel('stat_table','statistics_by_academic_year')"><i class="fas fa-download"></i>&nbsp;Export Excel&nbsp;</button>
+                                    </div>
+                                    <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        
+<!--javascript-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $('#stat_table').DataTable({     
+        "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
+            "iDisplayLength": 5
+        });
+    });
+</script>

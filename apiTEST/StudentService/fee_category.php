@@ -1,0 +1,23 @@
+<?php
+
+// -------------------------load the middleware for token Auth -----------------------------------
+    require_once('middleware.php');
+//--------------------------------End TOKEN aUTH -------------------------------------------------
+    require_once('../../meet/con.php');
+    require_once('./Service.php');
+    
+    
+    $service = new Service($conn);
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        
+           echo $service->general_feeCategory(); 
+        
+      
+    }
+    else {
+        echo $service->sendFeedback(405, 'Invalid request method. Use POST.');
+    }
+?>

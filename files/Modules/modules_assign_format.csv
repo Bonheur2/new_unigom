@@ -1,0 +1,3 @@
+"Node: Do not remove any header or change the provided format. remove the example row only"
+"Module Code","Credited module (1=yes, 0=no)","Module credits","Credit price","CAT marks","Exam marks","Has Project (yes/no)"
+EX001,1,10,5000,50,50,yes
