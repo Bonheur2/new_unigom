@@ -18,31 +18,31 @@ $is_landing_page = true;
     <div class="wrap">
         <div>
             <span
-                class="eyebrow rise rise-1"><?php echo $activePeriod ? htmlspecialchars($activePeriod['period_name']).' &middot; open now' : 'Student Information System'; ?></span>
-            <h1 class="rise rise-2">Your path through <?php echo htmlspecialchars($univ_short_name); ?>,<br><em>from
-                    application to graduation.</em></h1>
-            <p class="lede rise rise-3">One account to apply, register each semester, track your file, and follow your
-                results &mdash; <?php echo htmlspecialchars($univ_full_name); ?>'s official student information system.
+                class="eyebrow rise rise-1"><?php echo $activePeriod ? htmlspecialchars($activePeriod['period_name']).' &middot; inscriptions ouvertes' : 'Système d\'information des étudiants'; ?></span>
+            <h1 class="rise rise-2">Votre parcours à <?php echo htmlspecialchars($univ_short_name); ?>,<br><em>de
+                    la candidature à la remise des diplômes.</em></h1>
+            <p class="lede rise rise-3">Un seul compte pour postuler, vous inscrire chaque semestre, suivre votre dossier et
+                consulter vos résultats. C'est le système officiel d'information des étudiants de l'<?php echo htmlspecialchars($univ_full_name); ?>.
             </p>
             <div class="hero-actions rise rise-3">
-                <a href="<?php echo $app_base_url; ?>/applicant_guidance" class="portal-btn btn-accent">Apply as new applicant &nbsp;&rarr;</a>
-                <a href="<?php echo $app_base_url; ?>/continuing_student" class="portal-btn btn-ghost">Continuing student registration</a>
+                <a href="<?php echo $app_base_url; ?>/applicant_guidance" class="portal-btn btn-accent">Nouvelle candidature &nbsp;&rarr;</a>
+                <a href="<?php echo $app_base_url; ?>/continuing_student" class="portal-btn btn-ghost">Réinscription des anciens étudiants</a>
             </div>
             <div class="hero-meta rise rise-3">
                 <?php if(!empty($univData['location'])): ?>
-                <div><b><?php echo htmlspecialchars($univData['location']); ?></b>Campus location</div>
+                <div><b><?php echo htmlspecialchars($univData['location']); ?></b>Campus</div>
                 <?php endif; ?>
                 <?php if(!empty($univData['phone'])): ?>
-                <div><b><?php echo htmlspecialchars($univData['phone']); ?></b>Mon&ndash;Fri, 8h&ndash;16h</div>
+                <div><b><?php echo htmlspecialchars($univData['phone']); ?></b>Du lundi au vendredi, de 8h à 16h</div>
                 <?php endif; ?>
                 <?php if(!empty($univData['email'])): ?>
-                <div><b><?php echo htmlspecialchars($univData['email']); ?></b>Admissions &amp; support</div>
+                <div><b><?php echo htmlspecialchars($univData['email']); ?></b>Admissions &amp; assistance</div>
                 <?php endif; ?>
             </div>
         </div>
 
         <div class="quickpanel rise rise-2">
-            <h3>Quick access</h3>
+            <h3>Accès rapide</h3>
             <a href="auth" class="qp-item">
                 <span class="qp-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
@@ -52,8 +52,8 @@ $is_landing_page = true;
                         <path d="M9 13.2l2 2 3.8-4.2" />
                     </svg>
                 </span>
-                <span class="qp-text"><b>Track my application</b><span>Check status with your tracking
-                        number</span></span>
+                <span class="qp-text"><b>Suivre ma candidature</b><span>Vérifiez l'état avec votre numéro
+                        de suivi</span></span>
                 <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 5l7 7-7 7" />
@@ -68,7 +68,7 @@ $is_landing_page = true;
                         <path d="M12 14.2v2.6" />
                     </svg>
                 </span>
-                <span class="qp-text"><b>Login to my account</b><span>Registered students &amp; applicants</span></span>
+                <span class="qp-text"><b>Accéder à mon compte</b><span>Étudiants inscrits &amp; candidats</span></span>
                 <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 5l7 7-7 7" />
@@ -83,7 +83,7 @@ $is_landing_page = true;
                         <path d="M9 13h6M9 16.3h6M9 9.7h2.5" />
                     </svg>
                 </span>
-                <span class="qp-text"><b>Document requirements</b><span>What to prepare before you apply</span></span>
+                <span class="qp-text"><b>Documents requis</b><span>Ce qu'il faut préparer avant de postuler</span></span>
                 <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 5l7 7-7 7" />
@@ -91,11 +91,11 @@ $is_landing_page = true;
             </a>
 
             <div class="qp-help">
-                <span>Need help?</span>
-                <a href="sbox">Suggestion Box</a>
+                <span>Besoin d'aide ?</span>
+                <a href="sbox">Boîte à suggestions</a>
                 <span class="dot">&middot;</span>
-                <a href="mailto:<?php echo htmlspecialchars($univData['email'] ?? 'info@unigom.org'); ?>">Request
-                    Support</a>
+                <a href="mailto:<?php echo htmlspecialchars($univData['email'] ?? 'info@unigom.org'); ?>">Contacter
+                    le support</a>
             </div>
         </div>
     </div>
@@ -104,24 +104,24 @@ $is_landing_page = true;
 <section class="info-strip">
     <div class="info-grid">
         <div class="info-cell">
-            <div class="k">Step 01</div>
-            <div class="v mono">Create account</div>
-            <div class="d">Sign up with your basic details to start a new application.</div>
+            <div class="k">Étape 01</div>
+            <div class="v mono">Créer un compte</div>
+            <div class="d">Inscrivez-vous avec vos informations de base pour commencer une nouvelle candidature.</div>
         </div>
         <div class="info-cell">
-            <div class="k">Step 02</div>
-            <div class="v mono">Verify email</div>
-            <div class="d">Confirm the verification link sent to your email address.</div>
+            <div class="k">Étape 02</div>
+            <div class="v mono">Vérifier l'e-mail</div>
+            <div class="d">Confirmez le lien de vérification envoyé à votre adresse e-mail.</div>
         </div>
         <div class="info-cell">
-            <div class="k">Step 03</div>
-            <div class="v mono">Login to your account</div>
-            <div class="d">Sign back in anytime with your registered email and password.</div>
+            <div class="k">Étape 03</div>
+            <div class="v mono">Se connecter</div>
+            <div class="d">Reconnectez-vous à tout moment avec votre e-mail et votre mot de passe.</div>
         </div>
         <div class="info-cell">
-            <div class="k">Step 04</div>
-            <div class="v mono">Submit Application</div>
-            <div class="d">Complete the application form and upload your documents to apply.</div>
+            <div class="k">Étape 04</div>
+            <div class="v mono">Soumettre la candidature</div>
+            <div class="d">Remplissez le formulaire de candidature et téléversez vos documents pour postuler.</div>
         </div>
     </div>
 </section>
@@ -134,21 +134,19 @@ $is_landing_page = true;
 <?php if(count($formTypes) > 0): ?>
 <section class="portal-section">
     <div class="section-head">
-        <span class="k">Getting started</span>
-        <h2>Forms and registration documents.</h2>
-        <p>The bulletins and forms you'll need at different stages of registration with
-            <?php echo htmlspecialchars($univ_short_name); ?>.</p>
+        <span class="k">Pour commencer</span>
+        <h2>Formulaires et documents d'inscription.</h2>
+        <p>Les bulletins et formulaires dont vous aurez besoin aux différentes étapes de votre inscription à
+            l'<?php echo htmlspecialchars($univ_short_name); ?>.</p>
     </div>
 
     <div class="paths">
-        // <?php
-        //     $formLinks = [
-        //         0 => '/new_files/OtherSchool/index',
-        //         1 => '/new_files/Postgraduate/index',
-        //         2 => '/new_files/Masters/index',
-        //         3 => '/new_files/ChangeFaculty/index',
-        //     ];
-        // ?>
+        <?php
+            // Form cards are not linked yet. To link them, map card index => path, e.g.
+            // 0 => '/new_files/OtherSchool/index', 1 => '/new_files/Postgraduate/index',
+            // 2 => '/new_files/Masters/index', 3 => '/new_files/ChangeFaculty/index'.
+            $formLinks = [];
+        ?>
         <?php foreach($formTypes as $i => $form): ?>
         <?php $formHref = $formLinks[$i] ?? null; ?>
         <?php if($formHref): ?>
@@ -177,38 +175,38 @@ $is_landing_page = true;
     <div class="announce">
         <div>
             <div class="section-head" style="margin-bottom:22px;">
-                <span class="k">Announcements</span>
-                <h2>What's new at <?php echo htmlspecialchars($univ_short_name); ?></h2>
+                <span class="k">Annonces</span>
+                <h2>Quoi de neuf à l'<?php echo htmlspecialchars($univ_short_name); ?></h2>
             </div>
             <?php if(count($announcements) > 0): ?>
             <?php foreach($announcements as $ann): ?>
             <div class="announce-card">
                 <span class="date mono"><?php
                         $d = new DateTime($ann['date_published']);
-                        echo $d->format('Y-m-d');
+                        echo $d->format('d/m/Y');
                     ?></span>
                 <h4><?php echo htmlspecialchars($ann['title']); ?></h4>
                 <?php if(!empty($ann['file'])): ?>
-                <p><a href="announcement?an=<?php echo 'rub_'.$ann['id'].'_78'.$ann['id']; ?>" target="_blank">View
-                        attachment &rarr;</a></p>
+                <p><a href="announcement?an=<?php echo 'rub_'.$ann['id'].'_78'.$ann['id']; ?>" target="_blank">Voir la
+                        pièce jointe &rarr;</a></p>
                 <?php endif; ?>
             </div>
             <?php endforeach; ?>
             <?php else: ?>
-            <div class="announce-empty">No announcements at the moment &mdash; check back soon.</div>
+            <div class="announce-empty">Aucune annonce pour le moment. Revenez bientôt.</div>
             <?php endif; ?>
         </div>
 
         <div class="contact-card">
-            <h3>Need help applying?</h3>
-            <p>Admissions support is available by phone, email or in person on campus.</p>
+            <h3>Besoin d'aide pour postuler ?</h3>
+            <p>Le service des admissions vous assiste par téléphone, par e-mail ou en personne sur le campus.</p>
             <ul class="contact-list">
                 <?php if(!empty($univData['phone'])): ?>
                 <li><span class="c-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path
                                 d="M4 5c0-.6.4-1 1-1h2.5c.5 0 .9.3 1 .8l.8 3a1 1 0 0 1-.3 1L7.5 10a11 11 0 0 0 5.5 5.5l1.2-1.5a1 1 0 0 1 1-.3l3 .8c.5.1.8.5.8 1V18c0 .6-.4 1-1 1h-1C9.9 19 4 13.1 4 6V5z" />
-                        </svg></span><span><b><?php echo htmlspecialchars($univData['phone']); ?></b><span>Phone
+                        </svg></span><span><b><?php echo htmlspecialchars($univData['phone']); ?></b><span>Téléphone
                             &amp;
                             WhatsApp</span></span></li>
                 <?php endif; ?>
@@ -217,8 +215,8 @@ $is_landing_page = true;
                             stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3.5" y="5.5" width="17" height="13" rx="1.5" />
                             <path d="M4.5 6.5l7.5 6 7.5-6" />
-                        </svg></span><span><b><?php echo htmlspecialchars($univData['email']); ?></b><span>Admissions
-                            office</span></span></li>
+                        </svg></span><span><b><?php echo htmlspecialchars($univData['email']); ?></b><span>Service des
+                            admissions</span></span></li>
                 <?php endif; ?>
                 <?php if(!empty($univData['location'])): ?>
                 <li><span class="c-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
