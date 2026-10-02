@@ -18,10 +18,10 @@
     <div class="wrap">
         <a href="<?php echo $app_base_url; ?>/index" class="brand">
             <span class="brand-mark"><img src="<?php echo $univ_logo; ?>"
-                    alt="<?php echo $univ_short_name; ?> crest"></span>
+                    alt="Logo <?php echo $univ_short_name; ?>"></span>
             <span class="brand-text">
                 <span class="full"><?php echo $univ_full_name; ?></span>
-                <span class="sub">Student Portal &middot; <?php echo $univ_short_name; ?></span>
+                <span class="sub">Portail étudiant &middot; <?php echo $univ_short_name; ?></span>
             </span>
         </a>
 
@@ -41,8 +41,8 @@
                     <span class="dot"></span>
                 </a>
                 <div class="dropdown-menu dropdown-list dropdown-menu-right">
-                    <div class="dropdown-header">Announcements
-                        <div class="float-right"><a id="all" href="#">Mark All As Read</a></div>
+                    <div class="dropdown-header">Annonces
+                        <div class="float-right"><a id="all" href="#">Tout marquer comme lu</a></div>
                     </div>
                     <div class="dropdown-list-content dropdown-list-icons">
                         <?php while($ann = $sql->fetch()){ ?>
@@ -52,7 +52,7 @@
                             <div class="dropdown-item-desc"><?php echo $ann['title']; ?>
                                 <div class="time text-primary"><?php
                                         $dateTime = new DateTime($ann['date_published']);
-                                        echo $dateTime->format('Y-m-d');
+                                        echo $dateTime->format('d/m/Y');
                                     ?></div>
                             </div>
                         </a>
@@ -63,34 +63,13 @@
             <span class="nav-divider"></span>
             <?php } ?>
 
-            <div class="lang-dropdown">
-                <button class="lang-trigger" aria-haspopup="true" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="8.5" />
-                        <path d="M3.5 12h17" />
-                        <path d="M12 3.5c2.6 2.3 4 5.2 4 8.5s-1.4 6.2-4 8.5c-2.6-2.3-4-5.2-4-8.5s1.4-6.2 4-8.5z" />
-                    </svg>
-                    EN
-                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 9l6 6 6-6" />
-                    </svg>
-                </button>
-                <div class="lang-menu">
-                    <a href="#" data-value="separated link" class="lang-select" data-lang="en">English</a>
-                    <a href="#" data-value="another action" class="lang-select" data-lang="fr">Fran&ccedil;ais</a>
-                    <a href="#" data-value="another action" class="lang-select" data-lang="sw">Kiswahili</a>
-                </div>
-            </div>
-
             <a href="<?php echo $app_base_url; ?>/auth" class="cta cta-outline">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
                     stroke-linejoin="round">
                     <circle cx="12" cy="8.2" r="3.2" />
                     <path d="M5.5 19c1.3-3.3 4-5 6.5-5s5.2 1.7 6.5 5" />
                 </svg>
-                Login
+                Se connecter
             </a>
             <a href="<?php echo $app_base_url; ?>/new_files/Create_account/index" class="cta cta-primary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
@@ -100,11 +79,11 @@
                     <path d="M19 8v6" />
                     <path d="M22 11h-6" />
                 </svg>
-                Create Account
+                Créer un compte
             </a>
         </div>
 
-        <button class="nav-toggle" id="navToggle" aria-label="Menu" type="button">
+        <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
                 <path d="M4 7h16" />
                 <path d="M4 12h16" />
@@ -112,7 +91,6 @@
             </svg>
         </button>
 
-        <div id="google_translate_element" style="display:none;"></div>
     </div>
 </nav>
 <script>

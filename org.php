@@ -122,25 +122,6 @@
 <!-- Page Specific JS File -->
 <script src="<?php echo $app_base_url; ?>/js/page/modules-apex.js"></script>
 
-<script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
-    }
-
-	var flags = document.getElementsByClassName('lang-select'); 
-
-    Array.prototype.forEach.call(flags, function(e){ 
-      e.addEventListener('click', function(){
-        var lang = e.getAttribute('data-lang'); 
-        var languageSelect = document.querySelector("select.goog-te-combo");
-        languageSelect.value = lang;
-        languageSelect.dispatchEvent(new Event("change"));
-      }); 
-    });
-</script>
-
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 <script>
     jQuery(window).load(function () {
         var cookie = document.cookie;

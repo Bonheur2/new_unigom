@@ -3,7 +3,7 @@ $document_root = str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'))
 $app_base_url = str_replace($document_root, '', str_replace('\\', '/', __DIR__));
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <!-- layout-top-navigation.html  Tue, 07 Jan 2020 03:35:42 GMT -->
 <head>
