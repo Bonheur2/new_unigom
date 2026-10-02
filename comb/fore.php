@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" translate="no">
 
 <!-- index-0.html  Tue, 07 Jan 2020 03:35:33 GMT -->
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<script>
+    // Google Translate was removed; clear its old cookie so pages are not auto-translated.
+    (function(){
+        var past = "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        document.cookie = "googtrans" + past;
+        document.cookie = "googtrans" + past + "; domain=" + location.hostname;
+        document.cookie = "googtrans" + past + "; domain=." + location.hostname;
+    })();
+</script>
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
 <title>STUMIS</title>
 <link rel="icon" href="../img/grad.png" type="image/icon type">

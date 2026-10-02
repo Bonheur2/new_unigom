@@ -4,7 +4,7 @@
 // The verified profile is held in the session; only these two fields are asked.
 
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");
@@ -19,7 +19,7 @@ if($pending && (time() - ($pending['created_at'] ?? 0)) > 1800){
 }
 
 if(!$pending){
-    header('Location: /new_files/Create_account/index.php?google_error='.urlencode('Your Google sign-in expired. Please try again.'));
+    header('Location: /new_files/Create_account/index.php?google_error='.urlencode('Votre connexion Google a expiré. Veuillez réessayer.'));
     exit;
 }
 ?>
@@ -36,7 +36,7 @@ if(!$pending){
                         <input type="hidden" name="action" value="google_complete">
                         <div class="card">
                             <div class="card-header row" style="justify-content:center">
-                                <h4 class="col-12" style="text-align:center;margin:0;">Almost done</h4>
+                                <h4 class="col-12" style="text-align:center;margin:0;">Presque terminé</h4>
                             </div>
                             <div class="card-body row">
 
@@ -48,41 +48,41 @@ if(!$pending){
                                     </div>
                                 </div>
 
-                                <p class="col-12" style="color:#6c757d;">We just need two more details to finish creating your account.</p>
+                                <p class="col-12" style="color:#6c757d;">Il nous manque deux informations pour terminer la création de votre compte.</p>
 
                                 <div class="form-group col-12 col-sm-6">
-                                    <label>Gender <code><b><span id="gender_star"></span></b></code></label>
+                                    <label>Sexe <code><b><span id="gender_star"></span></b></code></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-users"></i></div></div>
                                         <select name="gender" id="gender" class="form-control" required>
-                                            <option value="" disabled selected hidden>Choose One...</option>
-                                            <option value="M">Male</option>
-                                            <option value="F">Female</option>
+                                            <option value="" disabled selected hidden>Choisir...</option>
+                                            <option value="M">Masculin</option>
+                                            <option value="F">Féminin</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group col-12 col-sm-6">
-                                    <label>Phone number <code><b><span id="phone_star"></span></b></code></label>
+                                    <label>Numéro de téléphone <code><b><span id="phone_star"></span></b></code></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-phone"></i></div></div>
-                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="e.g. +243..." required>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="ex. +243..." required>
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12">
-                                    <label>Surname (Family name) <code><b><span id="lname_star"></span></b></code></label>
+                                    <label>Nom (nom de famille) <code><b><span id="lname_star"></span></b></code></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-user"></i></div></div>
-                                        <input type="text" class="form-control" name="lname" id="lname" value="<?php echo htmlspecialchars($pending['lname']); ?>" placeholder="e.g. KAMARA" required>
+                                        <input type="text" class="form-control" name="lname" id="lname" value="<?php echo htmlspecialchars($pending['lname']); ?>" placeholder="ex. KAMBALE" required>
                                     </div>
-                                    <small class="text-muted">Taken from your Google account &mdash; correct it if needed.</small>
+                                    <small class="text-muted">Repris de votre compte Google. Corrigez-le si nécessaire.</small>
                                 </div>
 
                                 <div class="col-md-12" style="display:flex; justify-content:center; margin-top:10px;">
-                                    <button type="submit" class="btn btn-primary btn-sm" id="sBtn"><span id="spinner"></span>&nbsp; <span id="indicator">Finish &amp; Create Account</span>&nbsp;</button>
+                                    <button type="submit" class="btn btn-primary btn-sm" id="sBtn"><span id="spinner"></span>&nbsp; <span id="indicator">Terminer et créer le compte</span>&nbsp;</button>
                                 </div>
                                 <div class="col-md-12" style="text-align:center; margin-top:12px; font-size:13px; color:#6c757d;">
-                                    <a href="/new_files/Create_account/index.php">Cancel and use the normal form</a>
+                                    <a href="/new_files/Create_account/index.php">Annuler et utiliser le formulaire classique</a>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@ if(!$pending){
         </div>
     </section>
 </div>
-<?php include'../../comb/orgin.php'; ?>
+<?php include'../../org.php'; ?>
 <?php include'../../comb/coda.php'; ?>
 
 <!--javascript-->
@@ -109,17 +109,17 @@ $(document).ready(function(){
         if(!$("#phone").val().trim()){ $("#phone_star").html("*"); valid = false; }
         if(!$("#lname").val().trim()){ $("#lname_star").html("*"); valid = false; }
         if(!valid){
-            pop_wrong("Please fill all required fields");
+            pop_wrong("Veuillez remplir tous les champs obligatoires.");
             return;
         }
 
         var formData = new FormData(this);
-        $('#spinner').html("<img src='/img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator').html("Creating...");
+        $('#spinner').html("<img src='<?php echo $app_base_url; ?>/img/ajax_loader.gif' width='15'>").fadeIn('fast');
+        $('#indicator').html("Création en cours...");
         $("#sBtn").attr('disabled', true);
 
         $.ajax({
-            url: "/new_files/Create_account/controller.php",
+            url: "<?php echo $app_base_url; ?>/new_files/Create_account/controller.php",
             type: "POST",
             data: formData,
             dataType: "JSON",
@@ -128,22 +128,22 @@ $(document).ready(function(){
             success: function(data){
                 $('#spinner').fadeOut('fast');
                 if(data.status == 200){
-                    $('#indicator').html("Redirecting...");
+                    $('#indicator').html("Redirection...");
                     pop_up_success(data.message);
                     setTimeout(function(){
                         window.location.href = data.redirect || "/applicant/edu?mis=1";
                     }, 1200);
                 } else {
                     $("#sBtn").attr('disabled', false);
-                    $('#indicator').html("Finish & Create Account");
+                    $('#indicator').html("Terminer et créer le compte");
                     pop_wrong(data.message);
                 }
             },
             error: function(){
                 $('#spinner').fadeOut('fast');
                 $("#sBtn").attr('disabled', false);
-                $('#indicator').html("Finish & Create Account");
-                pop_wrong("Something went wrong!");
+                $('#indicator').html("Terminer et créer le compte");
+                pop_wrong("Une erreur est survenue. Veuillez réessayer.");
             }
         });
     });

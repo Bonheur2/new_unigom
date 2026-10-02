@@ -122,3 +122,16 @@
 <!-- Page Specific JS File -->
 <script src="<?php echo $app_base_url; ?>/js/page/modules-apex.js"></script>
 
+
+<script>
+    // Shared toast helpers. Pages may redefine these after this footer.
+    function pop_wrong(feedback) {
+        iziToast.warning({ title: 'Attention', message: feedback, position: 'topCenter' });
+    }
+    function pop_info(feedback) {
+        iziToast.info({ title: 'Info', message: feedback, position: 'topCenter' });
+    }
+    function pop_up_success(feedback) {
+        iziToast.success({ title: 'Succès', message: feedback, position: 'topCenter' });
+    }
+</script>

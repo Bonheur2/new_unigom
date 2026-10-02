@@ -1,6 +1,6 @@
 <?php
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");
@@ -52,7 +52,7 @@ class CreateAccount{
     }
 
     private function send_verification_email($to, $fname, $lname, $token){
-        $subject = 'Verify your email - '.$token;
+        $subject = 'Vérifiez votre adresse e-mail - '.$token;
 
         $html = '
 <div style="background:#f2f4f7;padding:32px 16px;font-family:Segoe UI,Helvetica,Arial,sans-serif;">
@@ -61,24 +61,24 @@ class CreateAccount{
       <div style="color:#ffffff;font-size:18px;font-weight:600;">'.APP_NAME.'</div>
     </div>
     <div style="padding:28px 24px;">
-      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Dear '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
+      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Bonjour '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
       <p style="margin:0 0 20px;color:#475467;font-size:14px;line-height:1.6;">
-        Thank you for creating an account. Use the verification code below to confirm your email address.
+        Merci d&#39;avoir créé un compte. Utilisez le code de vérification ci-dessous pour confirmer votre adresse e-mail.
       </p>
 
       <div style="background:#f2f6ff;border:1px solid #d6e4ff;border-radius:8px;padding:16px 20px;text-align:center;margin:0 0 20px;">
-        <div style="color:#667085;font-size:12px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;">Verification Code</div>
+        <div style="color:#667085;font-size:12px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;">Code de vérification</div>
         <div style="color:#12294d;font-size:22px;font-weight:700;letter-spacing:.04em;">'.htmlspecialchars($token).'</div>
       </div>
 
       <p style="margin:0 0 20px;color:#475467;font-size:13px;line-height:1.6;">
-        This code expires in <strong>30 minutes</strong>. If you did not request this, you can safely ignore this email.
+        Ce code expire dans <strong>30 minutes</strong>. Si vous n&#39;êtes pas à l&#39;origine de cette demande, vous pouvez ignorer cet e-mail.
       </p>
 
-      <p style="margin:0;color:#1d2939;font-size:14px;">Regards,<br><strong>'.APP_NAME.'</strong></p>
+      <p style="margin:0;color:#1d2939;font-size:14px;">Cordialement,<br><strong>'.APP_NAME.'</strong></p>
     </div>
     <div style="background:#f9fafb;padding:14px 24px;text-align:center;border-top:1px solid #eaecf0;">
-      <div style="color:#98a2b3;font-size:11px;">Powered by <strong style="color:#667085;">ITEC</strong></div>
+      <div style="color:#98a2b3;font-size:11px;">Réalisé par <strong style="color:#667085;">ITEC</strong></div>
     </div>
   </div>
 </div>';
@@ -87,7 +87,7 @@ class CreateAccount{
     }
 
     private function send_credentials_email($to, $fname, $lname, $identification, $plain_password){
-        $subject = 'Your account is ready';
+        $subject = 'Votre compte est prêt';
 
         $html = '
 <div style="background:#f2f4f7;padding:32px 16px;font-family:Segoe UI,Helvetica,Arial,sans-serif;">
@@ -96,26 +96,26 @@ class CreateAccount{
       <div style="color:#ffffff;font-size:18px;font-weight:600;">'.APP_NAME.'</div>
     </div>
     <div style="padding:28px 24px;">
-      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Dear '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
+      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Bonjour '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
       <p style="margin:0 0 20px;color:#475467;font-size:14px;line-height:1.6;">
-        Your email has been verified and your account is ready. Here are your login credentials:
+        Votre adresse e-mail a été vérifiée et votre compte est prêt. Voici vos identifiants de connexion :
       </p>
 
       <div style="background:#f2f6ff;border:1px solid #d6e4ff;border-radius:8px;padding:16px 20px;margin:0 0 20px;">
-        <div style="color:#667085;font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;">Username (Email)</div>
+        <div style="color:#667085;font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;">Identifiant (e-mail)</div>
         <div style="color:#12294d;font-size:18px;font-weight:700;margin-bottom:14px;">'.htmlspecialchars($to).'</div>
-        <div style="color:#667085;font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;">Password</div>
+        <div style="color:#667085;font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;">Mot de passe</div>
         <div style="color:#12294d;font-size:18px;font-weight:700;">'.htmlspecialchars($plain_password).'</div>
       </div>
 
       <p style="margin:0 0 20px;color:#475467;font-size:13px;line-height:1.6;">
-        For your security, please log in and change your password as soon as possible.
+        Pour votre sécurité, connectez-vous et changez votre mot de passe dès que possible.
       </p>
 
-      <p style="margin:0;color:#1d2939;font-size:14px;">Regards,<br><strong>'.APP_NAME.'</strong></p>
+      <p style="margin:0;color:#1d2939;font-size:14px;">Cordialement,<br><strong>'.APP_NAME.'</strong></p>
     </div>
     <div style="background:#f9fafb;padding:14px 24px;text-align:center;border-top:1px solid #eaecf0;">
-      <div style="color:#98a2b3;font-size:11px;">Powered by <strong style="color:#667085;">ITEC</strong></div>
+      <div style="color:#98a2b3;font-size:11px;">Réalisé par <strong style="color:#667085;">ITEC</strong></div>
     </div>
   </div>
 </div>';
@@ -132,12 +132,12 @@ class CreateAccount{
         $email = trim($_POST['email']);
 
         if($lname == '' || $fname == '' || $gender == '' || $phone == '' || $email == ''){
-            echo json_encode(['status' => 401, 'message' => 'Please fill all required fields']);
+            echo json_encode(['status' => 401, 'message' => 'Veuillez remplir tous les champs obligatoires.']);
             return;
         }
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-            echo json_encode(['status' => 401, 'message' => 'Please provide a valid email address']);
+            echo json_encode(['status' => 401, 'message' => 'Veuillez saisir une adresse e-mail valide.']);
             return;
         }
 
@@ -145,14 +145,14 @@ class CreateAccount{
             $chk = $this->connect->prepare("SELECT applicant_id FROM tbl_applicants WHERE email = :email");
             $chk->execute([':email' => $email]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'An account with this email already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Un compte existe déjà avec cette adresse e-mail.']);
                 return;
             }
 
             $chkLogin = $this->connect->prepare("SELECT id FROM tbl_student_login WHERE email = :email");
             $chkLogin->execute([':email' => $email]);
             if($chkLogin->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'An account with this email already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Un compte existe déjà avec cette adresse e-mail.']);
                 return;
             }
 
@@ -191,11 +191,11 @@ class CreateAccount{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Account created. Please check your email for the verification code.',
+                'message' => 'Compte créé. Consultez votre boîte e-mail pour obtenir le code de vérification.',
                 'email' => $email
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error creating account: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la création du compte : '.$e->getMessage()]);
         }
     }
 
@@ -203,7 +203,7 @@ class CreateAccount{
         $email = trim($_POST['email']);
 
         if($email == ''){
-            echo json_encode(['status' => 401, 'message' => 'Email is required']);
+            echo json_encode(['status' => 401, 'message' => 'L\'adresse e-mail est obligatoire.']);
             return;
         }
 
@@ -213,16 +213,16 @@ class CreateAccount{
             $applicant = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$applicant){
-                echo json_encode(['status' => 401, 'message' => 'No account found with this email']);
+                echo json_encode(['status' => 401, 'message' => 'Aucun compte trouvé avec cette adresse e-mail.']);
                 return;
             }
 
             $this->store_verification_token($email, $applicant['application_code']);
             $this->send_verification_email($email, $applicant['fname'], $applicant['lname'], $applicant['application_code']);
 
-            echo json_encode(['status' => 200, 'message' => 'A new verification code has been sent to your email']);
+            echo json_encode(['status' => 200, 'message' => 'Un nouveau code de vérification a été envoyé à votre adresse e-mail.']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error sending code: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de l\'envoi du code : '.$e->getMessage()]);
         }
     }
 
@@ -231,7 +231,7 @@ class CreateAccount{
         $token = trim($_POST['token']);
 
         if($email == '' || $token == ''){
-            echo json_encode(['status' => 401, 'message' => 'Email and code are required']);
+            echo json_encode(['status' => 401, 'message' => 'L\'adresse e-mail et le code sont obligatoires.']);
             return;
         }
 
@@ -241,7 +241,7 @@ class CreateAccount{
             $tokenRow = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$tokenRow){
-                echo json_encode(['status' => 401, 'message' => 'Invalid or expired verification code']);
+                echo json_encode(['status' => 401, 'message' => 'Code de vérification invalide ou expiré.']);
                 return;
             }
 
@@ -250,7 +250,7 @@ class CreateAccount{
             $applicant = $applicantSql->fetch(PDO::FETCH_ASSOC);
 
             if(!$applicant){
-                echo json_encode(['status' => 401, 'message' => 'Account not found']);
+                echo json_encode(['status' => 401, 'message' => 'Compte introuvable.']);
                 return;
             }
 
@@ -278,9 +278,9 @@ class CreateAccount{
             $del = $this->connect->prepare("DELETE FROM email_verification_tokens WHERE email = :email");
             $del->execute([':email' => $email]);
 
-            echo json_encode(['status' => 200, 'message' => 'Email verified successfully']);
+            echo json_encode(['status' => 200, 'message' => 'Adresse e-mail vérifiée avec succès.']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error verifying email: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la vérification de l\'e-mail : '.$e->getMessage()]);
         }
     }
 
@@ -297,13 +297,13 @@ class CreateAccount{
         $pending = $_SESSION['google_pending'] ?? null;
 
         if(!$pending || empty($pending['email'])){
-            echo json_encode(['status' => 401, 'message' => 'Your Google sign-in expired. Please start again.']);
+            echo json_encode(['status' => 401, 'message' => 'Votre connexion Google a expiré. Veuillez recommencer.']);
             return;
         }
 
         if((time() - ($pending['created_at'] ?? 0)) > 1800){
             unset($_SESSION['google_pending']);
-            echo json_encode(['status' => 401, 'message' => 'Your Google sign-in expired. Please start again.']);
+            echo json_encode(['status' => 401, 'message' => 'Votre connexion Google a expiré. Veuillez recommencer.']);
             return;
         }
 
@@ -314,12 +314,12 @@ class CreateAccount{
         $phone  = trim($_POST['phone'] ?? '');
 
         if($lname === '' || $fname === '' || $gender === '' || $phone === ''){
-            echo json_encode(['status' => 401, 'message' => 'Please fill all required fields']);
+            echo json_encode(['status' => 401, 'message' => 'Veuillez remplir tous les champs obligatoires.']);
             return;
         }
 
         if(!in_array($gender, ['M', 'F'], true)){
-            echo json_encode(['status' => 401, 'message' => 'Please choose a valid gender']);
+            echo json_encode(['status' => 401, 'message' => 'Veuillez choisir un sexe valide.']);
             return;
         }
 
@@ -330,7 +330,7 @@ class CreateAccount{
             $chkLogin->execute([':email' => $email]);
             if($chkLogin->rowCount() > 0){
                 unset($_SESSION['google_pending']);
-                echo json_encode(['status' => 401, 'message' => 'An account with this email already exists. Please sign in instead.']);
+                echo json_encode(['status' => 401, 'message' => 'Un compte existe déjà avec cette adresse e-mail. Veuillez plutôt vous connecter.']);
                 return;
             }
 
@@ -380,7 +380,7 @@ class CreateAccount{
                 }
 
                 if($applicant_id === null){
-                    echo json_encode(['status' => 500, 'message' => 'Could not allocate an application code. Please try again.']);
+                    echo json_encode(['status' => 500, 'message' => 'Impossible d\'attribuer un code de candidature. Veuillez réessayer.']);
                     return;
                 }
             }
@@ -406,11 +406,11 @@ class CreateAccount{
 
             echo json_encode([
                 'status'   => 200,
-                'message'  => 'Your account is ready. Signing you in...',
+                'message'  => 'Votre compte est prêt. Connexion en cours...',
                 'redirect' => defined('GOOGLE_AFTER_LOGIN_URL') ? GOOGLE_AFTER_LOGIN_URL : '/applicant/edu?mis=1'
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error creating account: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la création du compte : '.$e->getMessage()]);
         }
     }
 
@@ -424,7 +424,7 @@ class CreateAccount{
             return false;
         }
 
-        $subject = 'Your account is ready';
+        $subject = 'Votre compte est prêt';
 
         $html = '
 <div style="background:#f2f4f7;padding:32px 16px;font-family:Segoe UI,Helvetica,Arial,sans-serif;">
@@ -433,25 +433,25 @@ class CreateAccount{
       <div style="color:#ffffff;font-size:18px;font-weight:600;">'.APP_NAME.'</div>
     </div>
     <div style="padding:28px 24px;">
-      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Dear '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
+      <p style="margin:0 0 16px;color:#1d2939;font-size:15px;">Bonjour '.htmlspecialchars($fname).' '.htmlspecialchars($lname).',</p>
       <p style="margin:0 0 20px;color:#475467;font-size:14px;line-height:1.6;">
-        Your account has been created using your Google address. You can start your application right away.
+        Votre compte a été créé avec votre adresse Google. Vous pouvez commencer votre candidature dès maintenant.
       </p>
 
       <div style="background:#f2f6ff;border:1px solid #d6e4ff;border-radius:8px;padding:16px 20px;text-align:center;margin:0 0 20px;">
-        <div style="color:#667085;font-size:12px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;">Your application code</div>
+        <div style="color:#667085;font-size:12px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;">Votre code de candidature</div>
         <div style="color:#12294d;font-size:22px;font-weight:700;letter-spacing:.04em;">'.htmlspecialchars($application_code).'</div>
       </div>
 
       <p style="margin:0 0 20px;color:#475467;font-size:13px;line-height:1.6;">
-        To sign in again, use the <strong>Continue with Google</strong> button on the login page &mdash;
-        there is no separate password for this account.
+        Pour vous reconnecter, utilisez le bouton <strong>Continuer avec Google</strong> sur la page de connexion.
+        Ce compte n&#39;a pas de mot de passe séparé.
       </p>
 
-      <p style="margin:0;color:#1d2939;font-size:14px;">Regards,<br><strong>'.APP_NAME.'</strong></p>
+      <p style="margin:0;color:#1d2939;font-size:14px;">Cordialement,<br><strong>'.APP_NAME.'</strong></p>
     </div>
     <div style="background:#f9fafb;padding:14px 24px;text-align:center;border-top:1px solid #eaecf0;">
-      <div style="color:#98a2b3;font-size:11px;">Powered by <strong style="color:#667085;">ITEC</strong></div>
+      <div style="color:#98a2b3;font-size:11px;">Réalisé par <strong style="color:#667085;">ITEC</strong></div>
     </div>
   </div>
 </div>';
@@ -471,12 +471,12 @@ class CreateAccount{
         $password = $_POST['password'];
 
         if($email == '' || $password == ''){
-            echo json_encode(['status' => 401, 'message' => 'Email and password are required']);
+            echo json_encode(['status' => 401, 'message' => 'L\'adresse e-mail et le mot de passe sont obligatoires.']);
             return;
         }
 
         if(strlen($password) < 5){
-            echo json_encode(['status' => 401, 'message' => 'Password must be at least 5 characters']);
+            echo json_encode(['status' => 401, 'message' => 'Le mot de passe doit contenir au moins 5 caractères.']);
             return;
         }
 
@@ -486,7 +486,7 @@ class CreateAccount{
             $login = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$login){
-                echo json_encode(['status' => 401, 'message' => 'Account not found. Please verify your email first.']);
+                echo json_encode(['status' => 401, 'message' => 'Compte introuvable. Veuillez d\'abord vérifier votre adresse e-mail.']);
                 return;
             }
 
@@ -494,9 +494,9 @@ class CreateAccount{
             $upd = $this->connect->prepare("UPDATE tbl_student_login SET password = :password WHERE email = :email");
             $upd->execute([':password' => $hashed_password, ':email' => $email]);
 
-            echo json_encode(['status' => 200, 'message' => 'Password updated successfully']);
+            echo json_encode(['status' => 200, 'message' => 'Mot de passe mis à jour avec succès.']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating password: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du mot de passe : '.$e->getMessage()]);
         }
     }
 }
@@ -521,6 +521,6 @@ switch($action){
         $account->google_complete();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action invalide.']);
         break;
 }

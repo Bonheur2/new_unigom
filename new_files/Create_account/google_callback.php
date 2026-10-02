@@ -8,7 +8,7 @@
 //      to supply gender + phone, which Google does not provide.
 
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-defined('SITE_ROOT') ? null : define('SITE_ROOT', $_SERVER['DOCUMENT_ROOT'].DS.'');
+defined('SITE_ROOT') ? null : define('SITE_ROOT', dirname(__DIR__, 2));
 defined('LIB_PATH') ? null : define('LIB_PATH', SITE_ROOT.DS.'meet');
 
 require_once(LIB_PATH.DS."session.php");
@@ -29,36 +29,36 @@ function google_fail($message, $detail = ''){
 
 // Google reports a refusal (e.g. the user pressed Cancel) as ?error=
 if(isset($_GET['error'])){
-    google_fail('Google sign-in was cancelled.', $_GET['error']);
+    google_fail('La connexion avec Google a été annulée.', $_GET['error']);
 }
 
 $code  = $_GET['code']  ?? '';
 $state = $_GET['state'] ?? '';
 
 if($code === ''){
-    google_fail('Google did not return an authorisation code.');
+    google_fail('Google n\'a pas renvoyé de code d\'autorisation.');
 }
 
 // Single-use CSRF check, consumed whether or not it matches.
 if(!google_verify_state($state)){
-    google_fail('Your sign-in session expired. Please try again.');
+    google_fail('Votre session de connexion a expiré. Veuillez réessayer.');
 }
 
 $mode = google_oauth_mode();
 
 $tok = google_exchange_code($code);
 if(!$tok['ok']){
-    google_fail('Could not complete Google sign-in.', $tok['error']);
+    google_fail('Impossible de terminer la connexion avec Google.', $tok['error']);
 }
 
 $profile = google_fetch_profile($tok['access_token']);
 if(!$profile['ok']){
-    google_fail('Could not read your Google profile.', $profile['error']);
+    google_fail('Impossible de lire votre profil Google.', $profile['error']);
 }
 
 // An unverified Google address would let someone claim an email they do not own.
 if(!$profile['email_verified']){
-    google_fail('Your Google email address is not verified.');
+    google_fail('Votre adresse e-mail Google n\'est pas vérifiée.');
 }
 
 $email = trim($profile['email']);
@@ -71,7 +71,7 @@ try{
 
     if($login){
         if((int) $login['status'] !== 1){
-            google_fail('This account is not active. Please contact admissions support.');
+            google_fail('Ce compte n\'est pas actif. Veuillez contacter le service des admissions.');
         }
 
         $_SESSION['acc_id']         = $login['id'];
@@ -118,7 +118,7 @@ try{
 
     // --- 3. brand new: we still need gender + phone ---
     if($mode === 'login'){
-        google_fail('No account found for '.$email.'. Please create an account first.');
+        google_fail('Aucun compte trouvé pour '.$email.'. Veuillez d\'abord créer un compte.');
     }
 
     $_SESSION['google_pending'] = [
@@ -133,5 +133,5 @@ try{
     exit;
 
 } catch(PDOException $e){
-    google_fail('A database error occurred during Google sign-in.', $e->getMessage());
+    google_fail('Une erreur de base de données est survenue lors de la connexion avec Google.', $e->getMessage());
 }
