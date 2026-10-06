@@ -49,6 +49,7 @@
 .tv-page .tv-node.active .tv-count{color:var(--tv-accent)}
 .tv-page .tv-children{padding-left:24px;display:none}
 .tv-page .tv-children.open{display:block}
+.tv-page .tv-children .tv-children{padding-left:16px}
 .tv-page .tv-node.tv-inactive .tv-name{opacity:.55;text-decoration:line-through}
 .tv-page .tv-tree-empty{color:var(--tv-muted);font-size:14px;padding:8px 12px;display:none}
 

@@ -26,7 +26,7 @@ class OptionEntity{
         $o_s_name = trim($_POST['o_s_name']);
 
         if($dept_id == '' || $dept_id == '0' || $o_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Department and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le département et le nom complet sont obligatoires']);
             return;
         }
 
@@ -34,7 +34,7 @@ class OptionEntity{
             $chk = $this->connect->prepare("SELECT opt_id FROM tbl_option WHERE opt_full_name = :opt_full_name AND dept_id = :dept_id");
             $chk->execute([':opt_full_name' => $o_f_name, ':dept_id' => $dept_id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This option already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette option existe déjà']);
                 return;
             }
 
@@ -48,14 +48,14 @@ class OptionEntity{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Option saved successfully',
+                'message' => 'Option enregistrée avec succès',
                 'opt_id' => $new_id,
                 'dept_id' => $dept_id,
                 'opt_full_name' => $o_f_name,
                 'opt_short_name' => $o_s_name
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving option: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement de l'option : ".$e->getMessage()]);
         }
     }
 
@@ -74,7 +74,7 @@ class OptionEntity{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Option not found']);
+            echo json_encode(['status' => 500, 'message' => 'Option introuvable']);
         }
     }
 
@@ -85,7 +85,7 @@ class OptionEntity{
         $o_s_name = trim($_POST['o_s_name']);
 
         if($dept_id == '' || $o_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Department and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le département et le nom complet sont obligatoires']);
             return;
         }
 
@@ -93,7 +93,7 @@ class OptionEntity{
             $chk = $this->connect->prepare("SELECT opt_id FROM tbl_option WHERE opt_full_name = :opt_full_name AND dept_id = :dept_id AND opt_id != :id");
             $chk->execute([':opt_full_name' => $o_f_name, ':dept_id' => $dept_id, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This option already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette option existe déjà']);
                 return;
             }
 
@@ -111,7 +111,7 @@ class OptionEntity{
             ]);
             echo json_encode([
                 'status' => 200,
-                'message' => 'Option updated successfully',
+                'message' => 'Option mise à jour avec succès',
                 'opt_id' => $id,
                 'dept_id' => $dept_id,
                 'opt_full_name' => $o_f_name,
@@ -119,7 +119,7 @@ class OptionEntity{
                 'dept_changed' => $dept_changed
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating option: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la mise à jour de l'option : ".$e->getMessage()]);
         }
     }
 
@@ -135,9 +135,9 @@ class OptionEntity{
             $upd = $this->connect->prepare("UPDATE tbl_option SET status = :status WHERE opt_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Option status updated']);
+            echo json_encode(['status' => 200, 'message' => "Statut de l'option mis à jour"]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -198,6 +198,6 @@ switch($action){
         $option->get_department();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
