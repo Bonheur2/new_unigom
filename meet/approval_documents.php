@@ -278,7 +278,7 @@ if(!function_exists('approval_issue_document')){
             $st = $conn->prepare("SELECT * FROM tbl_approval_requests WHERE request_id = :id");
             $st->execute([':id' => $request_id]);
             $request = $st->fetch(PDO::FETCH_ASSOC);
-            if(!$request){ return ['ok' => false, 'message' => 'Request not found', 'doc_type' => null]; }
+            if(!$request){ return ['ok' => false, 'message' => 'Demande introuvable', 'doc_type' => null]; }
 
             $setting = approval_form_setting($conn, $request['form_id']);
             if($type === null){ $type = $setting['completion_document']; }
@@ -286,7 +286,7 @@ if(!function_exists('approval_issue_document')){
                 return ['ok' => true, 'message' => '', 'doc_type' => null];   // form sends no document
             }
 
-            $label = $type === 'admission_letter' ? 'Admission letter' : 'Proof of registration';
+            $label = $type === 'admission_letter' ? "Lettre d'admission" : "Attestation d'inscription";
             $log = $conn->prepare("INSERT INTO tbl_approval_documents
                 (request_id, doc_type, file_path, sent_to, sent_status, note, created_by)
                 VALUES (:r, :t, :f, :to, :s, :n, :by)");
@@ -294,7 +294,7 @@ if(!function_exists('approval_issue_document')){
             if(!approval_load_fpdf()){
                 $log->execute([':r' => $request_id, ':t' => $type, ':f' => null, ':to' => null,
                                ':s' => 'failed', ':n' => 'FPDF library not found', ':by' => $_SESSION['acc_id'] ?? null]);
-                return ['ok' => false, 'message' => $label.' not generated: FPDF library not found on the server.', 'doc_type' => $type];
+                return ['ok' => false, 'message' => $label.' non générée : la bibliothèque FPDF est introuvable sur le serveur.', 'doc_type' => $type];
             }
 
             $d = approval_document_data($conn, $request);
@@ -311,9 +311,9 @@ if(!function_exists('approval_issue_document')){
             $sent = false;
             $note = null;
             if($d['email'] === ''){
-                $note = 'Applicant has no email address';
+                $note = "Le candidat n'a pas d'adresse e-mail";
             } elseif(!function_exists('send_mail')){
-                $note = 'Mailer not loaded';
+                $note = "Le module d'envoi d'e-mails n'est pas chargé";
             } else {
                 $subject = html_entity_decode(
                     ($type === 'admission_letter' ? "Lettre d&rsquo;admission" : "Attestation d&rsquo;inscription").' - '.($d['reg_no'] ?: $d['app_code']),
@@ -321,7 +321,7 @@ if(!function_exists('approval_issue_document')){
                 $attach_name = ($type === 'admission_letter' ? 'Lettre_admission_' : 'Attestation_inscription_').$safe.'.pdf';
                 $sent = send_mail($d['email'], $subject, approval_document_email($type, $d),
                                   [['path' => $abs, 'filename' => $attach_name]]);
-                if(!$sent){ $note = 'Email sending failed - see the server error log'; }
+                if(!$sent){ $note = "L'envoi de l'e-mail a échoué (voir le journal d'erreurs du serveur)"; }
             }
 
             $log->execute([':r' => $request_id, ':t' => $type, ':f' => '/'.$rel_dir.$filename,
@@ -330,12 +330,12 @@ if(!function_exists('approval_issue_document')){
 
             return [
                 'ok' => $sent,
-                'message' => $sent ? $label.' emailed to '.$d['email'].'.' : $label.' generated but not emailed ('.$note.').',
+                'message' => $sent ? $label.' envoyée par e-mail à '.$d['email'].'.' : $label.' générée mais non envoyée ('.$note.').',
                 'doc_type' => $type
             ];
         } catch(Throwable $e){
             error_log('[approval_documents] '.$e->getMessage());
-            return ['ok' => false, 'message' => 'Document could not be generated: '.$e->getMessage(), 'doc_type' => $type];
+            return ['ok' => false, 'message' => 'Le document n\'a pas pu être généré : '.$e->getMessage(), 'doc_type' => $type];
         }
     }
 }

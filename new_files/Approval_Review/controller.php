@@ -30,7 +30,7 @@ set_exception_handler(function($e){
     }
     echo json_encode([
         'status'  => 500,
-        'message' => 'Server error: '.$e->getMessage(),
+        'message' => 'Erreur serveur : '.$e->getMessage(),
         'where'   => basename($e->getFile()).':'.$e->getLine()
     ]);
     exit;
@@ -61,7 +61,7 @@ class ApprovalReview{
      *  endpoint can never disagree about who sees what. */
     public function load_queue(){
         if(!can('can_review_applications')){
-            echo json_encode(['status' => 401, 'message' => 'Your role cannot review applications']);
+            echo json_encode(['status' => 401, 'message' => "Votre rôle ne peut pas réviser les candidatures"]);
             return;
         }
 
@@ -69,21 +69,21 @@ class ApprovalReview{
             $rows = approval_queue($this->connect, $_POST['status'] ?? 'pending');
             echo json_encode(['status' => 200, 'data' => $rows]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error loading queue: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors du chargement de la liste : '.$e->getMessage()]);
         }
     }
 
     /** One request in full: applicant, their options, and the action history. */
     public function view_request(){
         if(!can('can_review_applications')){
-            echo json_encode(['status' => 401, 'message' => 'Your role cannot review applications']);
+            echo json_encode(['status' => 401, 'message' => "Votre rôle ne peut pas réviser les candidatures"]);
             return;
         }
 
         $request_id = $_POST['request_id'] ?? '';
 
         if(!approval_can_view($this->connect, $request_id)){
-            echo json_encode(['status' => 401, 'message' => 'This request is outside your scope']);
+            echo json_encode(['status' => 401, 'message' => 'Cette demande est hors de votre périmètre']);
             return;
         }
 
@@ -99,7 +99,7 @@ class ApprovalReview{
             $request = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$request){
-                echo json_encode(['status' => 401, 'message' => 'Request not found']);
+                echo json_encode(['status' => 401, 'message' => 'Demande introuvable']);
                 return;
             }
 
@@ -147,7 +147,7 @@ class ApprovalReview{
                 'may_select' => can('can_select_choice')
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error loading request: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors du chargement de la demande : '.$e->getMessage()]);
         }
     }
 
@@ -167,7 +167,7 @@ class ApprovalReview{
             $request = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!may_act_on($this->connect, $request)){
-                echo json_encode(['status' => 401, 'message' => 'This request is not waiting on your role at its current step']);
+                echo json_encode(['status' => 401, 'message' => "Cette demande n'attend pas votre rôle à son étape actuelle"]);
                 return;
             }
 
@@ -179,7 +179,7 @@ class ApprovalReview{
                                                 WHERE Aprg_id = :aprg AND Stu_code = :code");
                 $chk->execute([':aprg' => $aprg_id, ':code' => $request['application_code']]);
                 if(!$chk->fetch()){
-                    echo json_encode(['status' => 401, 'message' => 'That option does not belong to this applicant']);
+                    echo json_encode(['status' => 401, 'message' => "Cette option n'appartient pas à ce candidat"]);
                     return;
                 }
 
@@ -203,7 +203,7 @@ class ApprovalReview{
             // a request cannot be finalised without a placement
             if(is_final_step($this->connect, $request['form_id'], $request['current_step'])
                && empty($request['selected_aprg_id'])){
-                echo json_encode(['status' => 401, 'message' => 'No option has been selected for this applicant yet, so the request cannot be completed.']);
+                echo json_encode(['status' => 401, 'message' => "Aucune option n'a encore été choisie pour ce candidat : la demande ne peut pas être finalisée."]);
                 return;
             }
 
@@ -217,7 +217,7 @@ class ApprovalReview{
             if($next === null){
                 if(!can('can_final_approve')){
                     $this->connect->rollBack();
-                    echo json_encode(['status' => 401, 'message' => 'Your role cannot give final approval']);
+                    echo json_encode(['status' => 401, 'message' => "Votre rôle ne peut pas donner l'approbation finale"]);
                     return;
                 }
                 // This is where the applicant becomes a student: a reg_no is
@@ -229,11 +229,11 @@ class ApprovalReview{
                                                 SET status = 'approved', reg_no = :reg_no, completed_at = NOW()
                                                 WHERE request_id = :id");
                 $fin->execute([':reg_no' => $reg_no, ':id' => $request_id]);
-                $message = 'Approved. Registration number '.$reg_no.' issued.';
+                $message = 'Approuvée. Matricule '.$reg_no.' attribué.';
             } else {
                 $mv = $this->connect->prepare("UPDATE tbl_approval_requests SET current_step = :next WHERE request_id = :id");
                 $mv->execute([':next' => $next, ':id' => $request_id]);
-                $message = 'Approved and passed to the next step.';
+                $message = "Approuvée et transmise à l'étape suivante.";
             }
 
             $this->connect->commit();
@@ -251,7 +251,7 @@ class ApprovalReview{
             // for a missing applicant or option, and that must roll back too -
             // otherwise the request would be marked approved with no student record.
             if($this->connect->inTransaction()){ $this->connect->rollBack(); }
-            echo json_encode(['status' => 500, 'message' => 'Error approving: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'approbation : ".$e->getMessage()]);
         }
     }
 
@@ -276,7 +276,7 @@ class ApprovalReview{
         $app->execute([':id' => $request['applicant_id']]);
         $a = $app->fetch(PDO::FETCH_ASSOC);
         if(!$a){
-            throw new RuntimeException('Applicant record not found');
+            throw new RuntimeException('Fiche du candidat introuvable');
         }
 
         // the selected placement
@@ -284,7 +284,7 @@ class ApprovalReview{
         $sel->execute([':aprg' => $request['selected_aprg_id']]);
         $prg = $sel->fetch(PDO::FETCH_ASSOC);
         if(!$prg){
-            throw new RuntimeException('The selected programme option no longer exists');
+            throw new RuntimeException("L'option de programme choisie n'existe plus");
         }
 
         // already admitted? reuse rather than issuing a second reg_no
@@ -340,7 +340,7 @@ class ApprovalReview{
         }
 
         if($reg_no === null){
-            throw new RuntimeException('Could not allocate a registration number');
+            throw new RuntimeException("Impossible d'attribuer un matricule");
         }
 
         // register them on the selected programme
@@ -373,7 +373,7 @@ class ApprovalReview{
         $comment    = trim($_POST['comment'] ?? '');
 
         if($comment === ''){
-            echo json_encode(['status' => 401, 'message' => 'Please give a reason for the rejection']);
+            echo json_encode(['status' => 401, 'message' => 'Indiquez le motif du rejet']);
             return;
         }
 
@@ -383,7 +383,7 @@ class ApprovalReview{
             $request = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!may_act_on($this->connect, $request)){
-                echo json_encode(['status' => 401, 'message' => 'This request is not waiting on your role at its current step']);
+                echo json_encode(['status' => 401, 'message' => "Cette demande n'attend pas votre rôle à son étape actuelle"]);
                 return;
             }
 
@@ -398,17 +398,17 @@ class ApprovalReview{
 
             $this->connect->commit();
 
-            echo json_encode(['status' => 200, 'message' => 'Request rejected']);
+            echo json_encode(['status' => 200, 'message' => 'Demande rejetée']);
         } catch(PDOException $e){
             if($this->connect->inTransaction()){ $this->connect->rollBack(); }
-            echo json_encode(['status' => 500, 'message' => 'Error rejecting: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors du rejet : '.$e->getMessage()]);
         }
     }
 
     /** Send a rejected request back into the workflow at a chosen step. */
     public function reopen(){
         if(!can('can_reopen_rejected')){
-            echo json_encode(['status' => 401, 'message' => 'Your role cannot reopen rejected requests']);
+            echo json_encode(['status' => 401, 'message' => 'Votre rôle ne peut pas rouvrir les demandes rejetées']);
             return;
         }
 
@@ -417,7 +417,7 @@ class ApprovalReview{
         $comment    = trim($_POST['comment'] ?? '');
 
         if($comment === ''){
-            echo json_encode(['status' => 401, 'message' => 'Please say why this is being reopened']);
+            echo json_encode(['status' => 401, 'message' => 'Indiquez pourquoi la demande est rouverte']);
             return;
         }
 
@@ -427,12 +427,12 @@ class ApprovalReview{
             $request = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$request || $request['status'] !== 'rejected'){
-                echo json_encode(['status' => 401, 'message' => 'Only a rejected request can be reopened']);
+                echo json_encode(['status' => 401, 'message' => 'Seule une demande rejetée peut être rouverte']);
                 return;
             }
 
             if(!current_step($this->connect, $request['form_id'], $step)){
-                echo json_encode(['status' => 401, 'message' => 'That step does not exist on this form\'s route']);
+                echo json_encode(['status' => 401, 'message' => "Cette étape n'existe pas dans le circuit de ce formulaire"]);
                 return;
             }
 
@@ -447,10 +447,10 @@ class ApprovalReview{
 
             $this->connect->commit();
 
-            echo json_encode(['status' => 200, 'message' => 'Request reopened']);
+            echo json_encode(['status' => 200, 'message' => 'Demande rouverte']);
         } catch(PDOException $e){
             if($this->connect->inTransaction()){ $this->connect->rollBack(); }
-            echo json_encode(['status' => 500, 'message' => 'Error reopening: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la réouverture : '.$e->getMessage()]);
         }
     }
     // ------------------------------------------------------------ courses
@@ -475,14 +475,14 @@ class ApprovalReview{
         $course_id = (int) ($_POST['course_id'] ?? 0);
 
         if(!$request || !$this->may_edit_courses($request)){
-            echo json_encode(['status' => 401, 'message' => 'You cannot change the courses of this request at its current step']);
+            echo json_encode(['status' => 401, 'message' => 'Vous ne pouvez pas modifier les cours de cette demande à son étape actuelle']);
             return;
         }
 
         // only courses offered to this applicant's programme are allowed
         $allowed = array_column(approval_course_choices($this->connect, $request), 'course_id');
         if(!in_array($course_id, array_map('intval', $allowed), true)){
-            echo json_encode(['status' => 401, 'message' => 'That course is not part of this applicant\'s programme']);
+            echo json_encode(['status' => 401, 'message' => "Ce cours ne fait pas partie du programme de ce candidat"]);
             return;
         }
 
@@ -491,7 +491,7 @@ class ApprovalReview{
                                             WHERE request_id = :r AND course_id = :c AND status = 'active'");
             $dup->execute([':r' => $request['request_id'], ':c' => $course_id]);
             if($dup->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'This course is already assigned']);
+                echo json_encode(['status' => 401, 'message' => 'Ce cours est déjà attribué']);
                 return;
             }
 
@@ -504,9 +504,9 @@ class ApprovalReview{
                 ':role' => $this->my_role(), ':by' => $_SESSION['acc_id'] ?? 0
             ]);
 
-            echo json_encode(['status' => 200, 'message' => 'Course assigned']);
+            echo json_encode(['status' => 200, 'message' => 'Cours attribué']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error assigning course: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'attribution du cours : ".$e->getMessage()]);
         }
     }
 
@@ -519,7 +519,7 @@ class ApprovalReview{
         $id = (int) ($_POST['approval_course_id'] ?? 0);
 
         if(!$request || !$this->may_edit_courses($request)){
-            echo json_encode(['status' => 401, 'message' => 'You cannot change the courses of this request at its current step']);
+            echo json_encode(['status' => 401, 'message' => 'Vous ne pouvez pas modifier les cours de cette demande à son étape actuelle']);
             return;
         }
 
@@ -534,12 +534,12 @@ class ApprovalReview{
             ]);
 
             if($upd->rowCount() === 0){
-                echo json_encode(['status' => 401, 'message' => 'Course not found or already removed']);
+                echo json_encode(['status' => 401, 'message' => 'Cours introuvable ou déjà retiré']);
                 return;
             }
-            echo json_encode(['status' => 200, 'message' => 'Course removed']);
+            echo json_encode(['status' => 200, 'message' => 'Cours retiré']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error removing course: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors du retrait du cours : '.$e->getMessage()]);
         }
     }
 
@@ -553,17 +553,17 @@ class ApprovalReview{
         $request = $this->load_request($_POST['request_id'] ?? 0);
 
         if(!$request || !approval_can_view($this->connect, $request['request_id']) || !can('can_final_approve')){
-            echo json_encode(['status' => 401, 'message' => 'You cannot send documents for this request']);
+            echo json_encode(['status' => 401, 'message' => "Vous ne pouvez pas envoyer de documents pour cette demande"]);
             return;
         }
         if($request['status'] !== 'approved'){
-            echo json_encode(['status' => 401, 'message' => 'Documents are only sent for approved requests']);
+            echo json_encode(['status' => 401, 'message' => 'Les documents ne sont envoyés que pour les demandes approuvées']);
             return;
         }
 
         $type = $_POST['doc_type'] ?? '';
         if(!in_array($type, ['admission_letter', 'registration_proof'], true)){
-            echo json_encode(['status' => 401, 'message' => 'Choose a document type']);
+            echo json_encode(['status' => 401, 'message' => 'Choisissez un type de document']);
             return;
         }
 
@@ -601,6 +601,6 @@ switch($action){
         $review->resend_document();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
