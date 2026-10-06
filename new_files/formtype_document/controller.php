@@ -31,7 +31,7 @@ set_exception_handler(function($e){
     }
     echo json_encode([
         'status'  => 500,
-        'message' => 'Server error: '.$e->getMessage(),
+        'message' => 'Erreur serveur : '.$e->getMessage(),
         'where'   => basename($e->getFile()).':'.$e->getLine()
     ]);
     exit;
@@ -96,12 +96,12 @@ class FormTypeDocument{
         $international_required = $_POST['international_required'] ?? 0;
 
         if($form_id === '' || $form_id === '0' || $document_name === ''){
-            echo json_encode(['status' => 401, 'message' => 'Form type and document name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le formulaire et le nom du document sont obligatoires']);
             return;
         }
 
         if($file_type === ''){
-            echo json_encode(['status' => 401, 'message' => 'Please choose at least one valid file format']);
+            echo json_encode(['status' => 401, 'message' => 'Choisissez au moins un format de fichier valide']);
             return;
         }
 
@@ -109,13 +109,13 @@ class FormTypeDocument{
             $chk = $this->connect->prepare("SELECT doc_id FROM tbl_formtype_document WHERE document_name = :document_name AND form_id = :form_id");
             $chk->execute([':document_name' => $document_name, ':form_id' => $form_id]);
             if($chk->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'This document already exists for that form type']);
+                echo json_encode(['status' => 401, 'message' => 'Ce document existe déjà pour ce formulaire']);
                 return;
             }
 
             $file_name = $this->handle_file_upload();
             if($file_name === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid template file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du modèle non valide']);
                 return;
             }
 
@@ -134,7 +134,7 @@ class FormTypeDocument{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Document saved successfully',
+                'message' => 'Document enregistré avec succès',
                 'doc_id' => $this->connect->lastInsertId(),
                 'form_id' => $form_id,
                 'document_name' => $document_name,
@@ -145,7 +145,7 @@ class FormTypeDocument{
                 'international_required' => $international_required
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving document: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du document : ".$e->getMessage()]);
         }
     }
 
@@ -159,7 +159,7 @@ class FormTypeDocument{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Document not found']);
+            echo json_encode(['status' => 500, 'message' => 'Document introuvable']);
         }
     }
 
@@ -173,12 +173,12 @@ class FormTypeDocument{
         $international_required = $_POST['international_required'] ?? 0;
 
         if($form_id === '' || $document_name === ''){
-            echo json_encode(['status' => 401, 'message' => 'Form type and document name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le formulaire et le nom du document sont obligatoires']);
             return;
         }
 
         if($file_type === ''){
-            echo json_encode(['status' => 401, 'message' => 'Please choose at least one valid file format']);
+            echo json_encode(['status' => 401, 'message' => 'Choisissez au moins un format de fichier valide']);
             return;
         }
 
@@ -186,7 +186,7 @@ class FormTypeDocument{
             $chk = $this->connect->prepare("SELECT doc_id FROM tbl_formtype_document WHERE document_name = :document_name AND form_id = :form_id AND doc_id != :id");
             $chk->execute([':document_name' => $document_name, ':form_id' => $form_id, ':id' => $id]);
             if($chk->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'This document already exists for that form type']);
+                echo json_encode(['status' => 401, 'message' => 'Ce document existe déjà pour ce formulaire']);
                 return;
             }
 
@@ -197,7 +197,7 @@ class FormTypeDocument{
 
             $file_name = $this->handle_file_upload();
             if($file_name === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid template file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du modèle non valide']);
                 return;
             }
 
@@ -234,7 +234,7 @@ class FormTypeDocument{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Document updated successfully',
+                'message' => 'Document mis à jour avec succès',
                 'doc_id' => $id,
                 'form_id' => $form_id,
                 'document_name' => $document_name,
@@ -246,7 +246,7 @@ class FormTypeDocument{
                 'form_changed' => $form_changed
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating document: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du document : '.$e->getMessage()]);
         }
     }
 
@@ -259,7 +259,7 @@ class FormTypeDocument{
             $row = $sql->fetch(PDO::FETCH_ASSOC);
 
             if(!$row){
-                echo json_encode(['status' => 401, 'message' => 'Document not found']);
+                echo json_encode(['status' => 401, 'message' => 'Document introuvable']);
                 return;
             }
 
@@ -268,9 +268,9 @@ class FormTypeDocument{
             $upd = $this->connect->prepare("UPDATE tbl_formtype_document SET status = :status WHERE doc_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Document status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du document mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -312,6 +312,6 @@ switch($action){
         $doc->load_documents();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }

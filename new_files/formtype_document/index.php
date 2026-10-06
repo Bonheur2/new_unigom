@@ -1,274 +1,445 @@
-<!-- Start app main Content -->
-        <div class="main-content">
-            <section class="section">
-                <div class="section-header">
-                    <h3>Form Type Documents</h3>
-                    <div class="section-header-breadcrumb">
-                        <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                        <div class="breadcrumb-item">Form Type Document</div>
-                    </div>
-                </div>
-                <div class="section-body">
-                    <div class="row">
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>New Document Requirement</h4>
-                                    <div class="card-header-action">
-                                        <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="collapse hide" id="mycard-collapse">
-                                    <div class="card-body">
-                                        <form id="save_doc" action="save_doc" method="POST" enctype="multipart/form-data">
-                                            <div class="row">
-                                                <div class="form-group col-md-4">
-                                                    <label>Form Type</label>
-                                                    <select class="form-control select2" style="width:100%" name="form_id" id="form_id" required>
-                                                        <option value="">-- Select Form Type --</option>
-                                                        <?php
-                                                            $sql_forms = $conn->prepare("SELECT form_id, form_name FROM tbl_form_types WHERE status = 1 ORDER BY rank ASC, form_name ASC");
-                                                            $sql_forms->execute();
-                                                            while($frm = $sql_forms->fetch(PDO::FETCH_ASSOC)):
-                                                        ?>
-                                                        <option value="<?php echo $frm['form_id']; ?>"><?php echo htmlspecialchars($frm['form_name']); ?></option>
-                                                        <?php endwhile; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label>Document Name</label>
-                                                    <input type="text" class="form-control" id="document_name" placeholder="e.g. Curriculum Vitae" required>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label>Accepted File Formats <small class="text-muted">(pick one or more)</small></label>
-                                                    <select class="form-control select2" style="width:100%" id="file_type" multiple>
-                                                        <option value="pdf">PDF (.pdf)</option>
-                                                        <option value="doc">Word 97-2003 (.doc)</option>
-                                                        <option value="docx">Word (.docx)</option>
-                                                        <option value="jpg">JPEG (.jpg)</option>
-                                                        <option value="jpeg">JPEG (.jpeg)</option>
-                                                        <option value="png">PNG (.png)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-3">
-                                                    <label>Max Size (MB)</label>
-                                                    <input type="number" class="form-control" id="max_size_mb" min="1" max="50" placeholder="e.g. 5">
-                                                </div>
-                                                <div class="form-group col-md-3">
-                                                    <label>Template File</label>
-                                                    <input type="file" class="form-control" id="file_name">
-                                                </div>
-                                                <div class="form-group col-md-2">
-                                                    <label>Required</label>
-                                                    <select class="form-control select2" style="width:100%" id="is_required">
-                                                        <option value="1">Yes</option>
-                                                        <option value="0">No</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-2">
-                                                    <label>International Only</label>
-                                                    <select class="form-control select2" style="width:100%" id="international_required">
-                                                        <option value="0">No</option>
-                                                        <option value="1">Yes</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-2">
-                                                    <label>&nbsp;</label>
-                                                    <button type="submit" class="btn btn-primary d-block"><span id="spinner"></span>&nbsp;<span id="indicator">Save</span></button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card" id="sample-login">
+<?php
+    $canManage = ($role_id == 18 || $role_id == 2);
 
-                                <div class="card-header">
-    <h4>Registered Documents</h4>
-</div>
-<div class="card-body pb-0">
-    <?php
-        $sql_tabs = $conn->prepare("SELECT DISTINCT tbl_form_types.form_id, tbl_form_types.form_name
-                                    FROM tbl_form_types
-                                    INNER JOIN tbl_formtype_document ON tbl_formtype_document.form_id = tbl_form_types.form_id
-                                    WHERE tbl_form_types.status = 1
-                                    ORDER BY tbl_form_types.rank ASC, tbl_form_types.form_name ASC");
-        $sql_tabs->execute();
-        $formTabs = $sql_tabs->fetchAll(PDO::FETCH_ASSOC);
-    ?>
-    <?php if(empty($formTabs)): ?>
-        <div class="alert alert-info">No document requirements have been registered yet. Use the <b>+</b> button above to add one.</div>
-    <?php else: ?>
-    <!-- Form Type Tabs -->
-    <ul class="nav nav-tabs" id="formTabs" role="tablist">
-        <?php foreach($formTabs as $index => $ft): ?>
-        <li class="nav-item">
-            <a class="nav-link <?php echo $index === 0 ? 'active' : ''; ?>"
-               id="tab-<?php echo $ft['form_id']; ?>"
-               data-toggle="tab"
-               href="#form-<?php echo $ft['form_id']; ?>"
-               role="tab">
-                <?php echo htmlspecialchars($ft['form_name']); ?>
-            </a>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-    <!-- Form Type Tab Contents -->
-    <div class="tab-content mt-2" id="formTabsContent">
-        <?php foreach($formTabs as $index => $ft): ?>
-        <div class="tab-pane fade <?php echo $index === 0 ? 'show active' : ''; ?>"
-             id="form-<?php echo $ft['form_id']; ?>"
-             role="tabpanel">
-            <div class="table-responsive">
-                <table class="table table-hover table-sm doc_table" data-form-id="<?php echo $ft['form_id']; ?>">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Document Name</th>
-                        <th scope="col">Formats</th>
-                        <th scope="col">Max Size</th>
-                        <th scope="col">Required</th>
-                        <th scope="col">Template</th>
-                        <th scope="col">International Only</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                        $sql = $conn->prepare("SELECT * FROM tbl_formtype_document WHERE form_id = :form_id ORDER BY status ASC, document_name ASC");
-                        $sql->execute([':form_id' => $ft['form_id']]);
-                        $i = 1;
-                        while($doc = $sql->fetch(PDO::FETCH_ASSOC)):
-                    ?>
-                    <tr data-row-id="<?php echo $doc['doc_id']; ?>">
-                        <th scope="row"><?php echo $i++; ?></th>
-                        <td class="col-doc-name"><?php echo htmlspecialchars($doc['document_name']); ?></td>
-                        <td class="col-file-type"><?php echo htmlspecialchars(strtoupper(str_replace(',', ', ', $doc['file_type']))); ?></td>
-                        <td class="col-max-size"><?php echo $doc['max_size_mb'] ? $doc['max_size_mb'].' MB' : ''; ?></td>
-                        <td class="col-required"><?php echo $doc['is_required']==1 ? 'Yes' : 'No'; ?></td>
-                        <td class="col-template">
-                            <?php if(!empty($doc['file_name'])): ?>
-                            <a href="<?php echo htmlspecialchars($doc['file_name']); ?>" target="_blank">View</a>
-                            <?php endif; ?>
-                        </td>
-                        <td class="col-intl"><?php echo $doc['international_required']==1 ? 'Yes' : 'No'; ?></td>
-                        <th>
-                            <?php if($role_id == 18 || $role_id == 2): ?>
-                            <div class="buttons row">
-                                <button type="button" data-id="<?php echo $doc['doc_id']; ?>" class="btn btn-icon btn-primary btn-sm edit">
-                                    <span id="spinner4_<?php echo $doc['doc_id']; ?>"></span>&nbsp;<i class="far fa-edit"></i>&nbsp;edit
-                                </button>
-                                <label class="custom-switch btn btn-light btn-sm">
-                                    <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input del" data-id="<?php echo $doc['doc_id']; ?>" <?php echo $doc['status']==1 ? 'checked' : ''; ?>>
-                                    <span class="custom-switch-indicator"></span><span id="spinner3_<?php echo $doc['doc_id']; ?>"></span>&nbsp;
-                                </label>
-                            </div>
-                            <?php endif; ?>
-                        </th>
-                    </tr>
-                    <?php endwhile; ?>
-                    </tbody>
-                </table>
+    // project root as a URL path ("" live, "/academic" under XAMPP) so stored template paths resolve in both places
+    $tv_doc_root = str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'));
+    $tv_base_url = str_replace($tv_doc_root, '', str_replace('\\', '/', dirname(__DIR__, 2)));
+    $fileUrl = function($path) use ($tv_base_url){
+        return (strpos((string)$path, '/') === 0 ? $tv_base_url : '').$path;
+    };
+
+    $formatLabels = ['pdf' => 'PDF', 'doc' => 'DOC', 'docx' => 'DOCX', 'jpg' => 'JPG', 'jpeg' => 'JPEG', 'png' => 'PNG'];
+
+    // every form type with its documents
+    $sql_forms = $conn->prepare("SELECT form_id, form_name, description, status FROM tbl_form_types ORDER BY `rank` ASC, form_name ASC");
+    $sql_forms->execute();
+    $forms = $sql_forms->fetchAll(PDO::FETCH_ASSOC);
+
+    $docTotal = 0;
+    foreach($forms as $i => $f){
+        $sql = $conn->prepare("SELECT * FROM tbl_formtype_document WHERE form_id = :form_id ORDER BY status DESC, document_name ASC");
+        $sql->execute([':form_id' => $f['form_id']]);
+        $docs = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $active = 0; $required = 0; $intl = 0;
+        foreach($docs as $d){
+            if($d['status'] == 1){
+                $active++;
+                if($d['is_required'] == 1) $required++;
+                if($d['international_required'] == 1) $intl++;
+            }
+        }
+        $forms[$i]['docs'] = $docs;
+        $forms[$i]['active'] = $active;
+        $forms[$i]['required'] = $required;
+        $forms[$i]['intl'] = $intl;
+        $docTotal += count($docs);
+    }
+
+    $formatTags = function($csv) use ($formatLabels){
+        $out = '';
+        foreach(array_filter(explode(',', (string)$csv)) as $ext){
+            $ext = strtolower(trim($ext));
+            $out .= '<span class="tv-chip-sm">'.htmlspecialchars($formatLabels[$ext] ?? strtoupper($ext)).'</span>';
+        }
+        return $out;
+    };
+?>
+<!-- Start app main Content -->
+<div class="main-content">
+    <section class="section tv-page">
+        <div class="section-header">
+            <h3>Documents de candidature</h3>
+            <div class="section-header-breadcrumb">
+                <div class="breadcrumb-item active"><a href="#">Tableau de bord</a></div>
+                <div class="breadcrumb-item">Documents de candidature</div>
             </div>
         </div>
-        <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
-</div>
-                            </div>
+
+        <!-- Formulaire nouveau document -->
+        <div class="collapse" id="mycard-collapse">
+            <div class="tv-card">
+                <h4 class="tv-card-title">Nouveau document demandé</h4>
+                <form id="save_doc" action="save_doc" method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label>Formulaire de candidature</label>
+                            <select class="form-control select2" style="width:100%" name="form_id" id="form_id" required>
+                                <option value="">Choisir un formulaire</option>
+                                <?php foreach($forms as $f): if($f['status'] != 1) continue; ?>
+                                <option value="<?php echo $f['form_id']; ?>"><?php echo htmlspecialchars($f['form_name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Nom du document</label>
+                            <input type="text" class="form-control" id="document_name" placeholder="Ex : Diplôme d'État" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Formats acceptés <small class="text-muted">(un ou plusieurs)</small></label>
+                            <select class="form-control select2" style="width:100%" id="file_type" multiple>
+                                <option value="pdf">PDF (.pdf)</option>
+                                <option value="doc">Word 97-2003 (.doc)</option>
+                                <option value="docx">Word (.docx)</option>
+                                <option value="jpg">JPEG (.jpg)</option>
+                                <option value="jpeg">JPEG (.jpeg)</option>
+                                <option value="png">PNG (.png)</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Taille max. (Mo)</label>
+                            <input type="number" class="form-control" id="max_size_mb" min="1" max="50" placeholder="Ex : 5">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Modèle à télécharger</label>
+                            <input type="file" class="form-control" id="file_name">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Obligatoire</label>
+                            <select class="form-control select2" style="width:100%" id="is_required">
+                                <option value="1">Oui</option>
+                                <option value="0">Non</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Étrangers uniquement</label>
+                            <select class="form-control select2" style="width:100%" id="international_required">
+                                <option value="0">Non</option>
+                                <option value="1">Oui</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="d-none d-md-block">&nbsp;</label>
+                            <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span id="indicator">Enregistrer</span></button>
                         </div>
                     </div>
-                </div>
-            </section>
-            <!--update modal-->
-            <form action="update_form" method="POST" id="update_form" enctype="multipart/form-data">
-                <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Updating <span id="f_name"></span></h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id="e_id" name="e_id">
-                                <div class="form-group">
-                                    <label>Form Type</label>
-                                    <select class="form-control select2" style="width:100%" id="e_form_id">
-                                        <option value="">-- Select Form Type --</option>
-                                        <?php
-                                            $sql_forms2 = $conn->prepare("SELECT form_id, form_name FROM tbl_form_types WHERE status = 1 ORDER BY rank ASC, form_name ASC");
-                                            $sql_forms2->execute();
-                                            while($frm2 = $sql_forms2->fetch(PDO::FETCH_ASSOC)):
-                                        ?>
-                                        <option value="<?php echo $frm2['form_id']; ?>"><?php echo htmlspecialchars($frm2['form_name']); ?></option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Document Name</label>
-                                    <input type="text" class="form-control" id="e_document_name" placeholder="e.g. Curriculum Vitae" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Accepted File Formats <small class="text-muted">(pick one or more)</small></label>
-                                    <select class="form-control select2" style="width:100%" id="e_file_type" multiple>
-                                        <option value="pdf">PDF (.pdf)</option>
-                                        <option value="doc">Word 97-2003 (.doc)</option>
-                                        <option value="docx">Word (.docx)</option>
-                                        <option value="jpg">JPEG (.jpg)</option>
-                                        <option value="jpeg">JPEG (.jpeg)</option>
-                                        <option value="png">PNG (.png)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Max Size (MB)</label>
-                                    <input type="number" class="form-control" id="e_max_size_mb" min="1" max="50" placeholder="e.g. 5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Template File</label>
-                                    <div id="e_file_preview" class="mb-2"></div>
-                                    <input type="file" class="form-control" id="e_file_name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Required</label>
-                                    <select class="form-control select2" style="width:100%" id="e_is_required">
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>International Only</label>
-                                    <select class="form-control select2" style="width:100%" id="e_international_required">
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer bg-whitesmoke br">
-                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Save changes</span></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <!--end update modal-->
+                </form>
+            </div>
         </div>
+
+        <?php if(count($forms) === 0): ?>
+        <div class="tv-card tv-empty">Aucun formulaire de candidature. Créez d'abord un type de candidature.</div>
+        <?php else: ?>
+        <div class="row">
+            <!-- forms list -->
+            <div class="col-12 col-lg-4">
+                <div class="tv-card">
+                    <h4 class="tv-card-title">Formulaires <span class="tv-pill-count ml-1"><?php echo $docTotal; ?> documents</span></h4>
+                    <div class="tv-tree">
+                        <?php foreach($forms as $f): ?>
+                        <div class="tv-node <?php echo $f['status'] == 1 ? '' : 'tv-inactive'; ?>" data-target="form-<?php echo $f['form_id']; ?>" title="<?php echo htmlspecialchars($f['form_name']); ?>">
+                            <i class="far fa-file-alt"></i>
+                            <span class="tv-name"><?php echo htmlspecialchars($f['form_name']); ?></span>
+                            <span class="tv-count" data-count-form="<?php echo $f['form_id']; ?>"><?php echo $f['active']; ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- documents of the selected form -->
+            <div class="col-12 col-lg-8">
+                <?php foreach($forms as $f): ?>
+                <div class="tv-pane" id="pane-form-<?php echo $f['form_id']; ?>" data-form="<?php echo $f['form_id']; ?>">
+                    <div class="tv-card">
+                        <div class="tv-detail-head">
+                            <h2>
+                                <span><?php echo htmlspecialchars($f['form_name']); ?><?php if($f['description'] != ''): ?><small><?php echo htmlspecialchars($f['description']); ?></small><?php endif; ?></span>
+                                <span class="tv-tag <?php echo $f['status'] == 1 ? 'green' : 'red'; ?>"><?php echo $f['status'] == 1 ? 'Formulaire actif' : 'Formulaire inactif'; ?></span>
+                            </h2>
+                            <?php if($canManage && $f['status'] == 1): ?>
+                            <div class="tv-actions">
+                                <button type="button" class="tv-btn tv-btn-accent tv-add-here" data-form="<?php echo $f['form_id']; ?>"><i class="fas fa-plus"></i> Ajouter un document</button>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="tv-stats">
+                            <div class="tv-stat">
+                                <div class="tv-stat-icon primary"><i class="fas fa-paperclip"></i></div>
+                                <div><b data-active-form="<?php echo $f['form_id']; ?>"><?php echo $f['active']; ?></b><span>Documents actifs</span></div>
+                            </div>
+                            <div class="tv-stat">
+                                <div class="tv-stat-icon red"><i class="fas fa-asterisk"></i></div>
+                                <div><b data-required-form="<?php echo $f['form_id']; ?>"><?php echo $f['required']; ?></b><span>Obligatoires</span></div>
+                            </div>
+                            <div class="tv-stat">
+                                <div class="tv-stat-icon blue"><i class="fas fa-globe-africa"></i></div>
+                                <div><b data-intl-form="<?php echo $f['form_id']; ?>"><?php echo $f['intl']; ?></b><span>Pour les étrangers</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tv-card">
+                        <div class="tv-list-head">
+                            <h4 class="tv-card-title">Documents demandés</h4>
+                            <div class="tv-filter">
+                                <button type="button" class="tv-chip tv-status-filter active" data-filter="all">Tous</button>
+                                <button type="button" class="tv-chip tv-status-filter" data-filter="1">Actifs</button>
+                                <button type="button" class="tv-chip tv-status-filter" data-filter="0">Inactifs</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="tv-table doc_table" data-form-id="<?php echo $f['form_id']; ?>">
+                                <thead>
+                                <tr>
+                                    <th>Document</th>
+                                    <th>Formats</th>
+                                    <th>Taille max.</th>
+                                    <th>Exigence</th>
+                                    <th>Statut</th>
+                                    <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($f['docs'] as $doc): ?>
+                                <tr data-row-id="<?php echo $doc['doc_id']; ?>" data-status="<?php echo $doc['status'] == 1 ? 1 : 0; ?>" data-required="<?php echo (int)$doc['is_required']; ?>" data-intl="<?php echo (int)$doc['international_required']; ?>">
+                                    <td>
+                                        <div class="tv-member">
+                                            <span class="tv-avatar"><i class="far fa-file"></i></span>
+                                            <span>
+                                                <span class="col-doc-name d-block"><?php echo htmlspecialchars($doc['document_name']); ?></span>
+                                                <span class="col-template"><?php if(!empty($doc['file_name'])): ?><a class="tv-link small" href="<?php echo htmlspecialchars($fileUrl($doc['file_name'])); ?>" target="_blank"><i class="fas fa-download"></i> Modèle</a><?php endif; ?></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="col-file-type"><?php echo $formatTags($doc['file_type']); ?></td>
+                                    <td class="col-max-size"><?php echo $doc['max_size_mb'] ? (int)$doc['max_size_mb'].' Mo' : '-'; ?></td>
+                                    <td class="col-flags">
+                                        <span class="tv-tag <?php echo $doc['is_required'] == 1 ? 'amber' : 'blue'; ?>"><?php echo $doc['is_required'] == 1 ? 'Obligatoire' : 'Facultatif'; ?></span>
+                                        <?php if($doc['international_required'] == 1): ?><span class="tv-tag blue mt-1">Étrangers</span><?php endif; ?>
+                                    </td>
+                                    <td><span class="tv-tag <?php echo $doc['status'] == 1 ? 'green' : 'red'; ?> tv-status-tag"><?php echo $doc['status'] == 1 ? 'Actif' : 'Inactif'; ?></span></td>
+                                    <?php if($canManage): ?>
+                                    <td class="tv-right">
+                                        <div class="tv-row-actions">
+                                            <button type="button" data-id="<?php echo $doc['doc_id']; ?>" class="tv-icon-btn edit" title="Modifier">
+                                                <span id="spinner4_<?php echo $doc['doc_id']; ?>"></span><i class="fas fa-pen"></i>
+                                            </button>
+                                            <label class="custom-switch" title="Activer / désactiver">
+                                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input del" data-id="<?php echo $doc['doc_id']; ?>" <?php echo $doc['status']==1 ? 'checked' : ''; ?>>
+                                                <span class="custom-switch-indicator"></span><span id="spinner3_<?php echo $doc['doc_id']; ?>"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <?php endif; ?>
+                                </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+    </section>
+    <!--update modal-->
+    <form action="update_form" method="POST" id="update_form" enctype="multipart/form-data">
+        <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modification de <span id="f_name"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="e_id" name="e_id">
+                        <div class="form-group">
+                            <label>Formulaire de candidature</label>
+                            <select class="form-control select2" style="width:100%" id="e_form_id">
+                                <option value="">Choisir un formulaire</option>
+                                <?php foreach($forms as $f): if($f['status'] != 1) continue; ?>
+                                <option value="<?php echo $f['form_id']; ?>"><?php echo htmlspecialchars($f['form_name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom du document</label>
+                            <input type="text" class="form-control" id="e_document_name" placeholder="Ex : Diplôme d'État" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Formats acceptés <small class="text-muted">(un ou plusieurs)</small></label>
+                            <select class="form-control select2" style="width:100%" id="e_file_type" multiple>
+                                <option value="pdf">PDF (.pdf)</option>
+                                <option value="doc">Word 97-2003 (.doc)</option>
+                                <option value="docx">Word (.docx)</option>
+                                <option value="jpg">JPEG (.jpg)</option>
+                                <option value="jpeg">JPEG (.jpeg)</option>
+                                <option value="png">PNG (.png)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Taille max. (Mo)</label>
+                            <input type="number" class="form-control" id="e_max_size_mb" min="1" max="50" placeholder="Ex : 5">
+                        </div>
+                        <div class="form-group">
+                            <label>Modèle à télécharger</label>
+                            <div id="e_file_preview" class="mb-2"></div>
+                            <input type="file" class="form-control" id="e_file_name">
+                        </div>
+                        <div class="form-group">
+                            <label>Obligatoire</label>
+                            <select class="form-control select2" style="width:100%" id="e_is_required">
+                                <option value="1">Oui</option>
+                                <option value="0">Non</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Étrangers uniquement</label>
+                            <select class="form-control select2" style="width:100%" id="e_international_required">
+                                <option value="0">Non</option>
+                                <option value="1">Oui</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-whitesmoke br">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Enregistrer les modifications</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--end update modal-->
+</div>
+
+<style>
+.tv-page .tv-chip-sm{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--tv-text);background:var(--tv-bg);border:1px solid var(--tv-border);border-radius:3px;padding:1px 6px;margin:0 4px 4px 0}
+.tv-page .doc_table .col-flags .tv-tag{display:inline-flex}
+.tv-page .doc_table .tv-link.small{font-size:12px}
+.tv-page .doc_table th,.tv-page .doc_table td{padding-left:12px;padding-right:12px}
+.tv-page .doc_table td:first-child{min-width:240px}
+.tv-page .doc_table td.col-file-type,.tv-page .doc_table td.col-max-size{white-space:nowrap}
+.tv-page .doc_table .tv-chip-sm{margin-bottom:0}
+/* form names are long and start alike: let them wrap instead of cutting them */
+.tv-page .tv-tree .tv-node{align-items:flex-start;font-size:14px}
+.tv-page .tv-tree .tv-node .tv-name{white-space:normal;line-height:1.35}
+.tv-page .tv-tree .tv-node i{margin-top:3px}
+</style>
 
 <!--javascript-->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 <script>
+var BASE_URL = <?php echo json_encode($tv_base_url); ?>;
+var canManage = <?php echo $canManage ? 'true' : 'false'; ?>;
+var DOC_STORE_KEY = 'formdoc_selected_node';
+var FORMAT_LABELS = { pdf: 'PDF', doc: 'DOC', docx: 'DOCX', jpg: 'JPG', jpeg: 'JPEG', png: 'PNG' };
+
+function escapeHtml(s){
+    return $('<div>').text(s == null ? '' : s).html();
+}
+function fileUrl(path){
+    return (String(path).charAt(0) === '/' ? BASE_URL : '') + path;
+}
+function formatTags(csv){
+    return String(csv || '').split(',').filter(function(v){ return v !== ''; }).map(function(ext){
+        ext = ext.trim().toLowerCase();
+        return '<span class="tv-chip-sm">' + escapeHtml(FORMAT_LABELS[ext] || ext.toUpperCase()) + '</span>';
+    }).join('');
+}
+function flagsHtml(required, intl){
+    return '<span class="tv-tag ' + (required ? 'amber' : 'blue') + '">' + (required ? 'Obligatoire' : 'Facultatif') + '</span>'
+        + (intl ? ' <span class="tv-tag blue mt-1">Étrangers</span>' : '');
+}
+function statusHtml(active){
+    return '<span class="tv-tag ' + (active ? 'green' : 'red') + ' tv-status-tag">' + (active ? 'Actif' : 'Inactif') + '</span>';
+}
+
+// show the documents of a form ("form-ID")
+function selectNode(target){
+    var $pane = $('#pane-' + target);
+    if($pane.length === 0) return false;
+    $('.tv-pane').removeClass('active');
+    $pane.addClass('active');
+    $('.tv-node').removeClass('active');
+    $('.tv-node[data-target="' + target + '"]').addClass('active');
+    try { localStorage.setItem(DOC_STORE_KEY, target); } catch(e) {}
+    $pane.find('table.doc_table').each(function(){
+        if($.fn.DataTable.isDataTable(this)) $(this).DataTable().columns.adjust();
+    });
+    return true;
+}
+
+function allRowNodes(form_id){
+    var $table = $("table.doc_table[data-form-id='" + form_id + "']");
+    if($table.length === 0) return $();
+    return $($table.DataTable().rows().nodes());
+}
+
+function findRow(doc_id){
+    var found = null;
+    $('table.doc_table').each(function(){
+        var dt = $(this).DataTable();
+        dt.rows().every(function(){
+            if(String($(this.node()).attr('data-row-id')) === String(doc_id)) found = { row: this, $tr: $(this.node()), formId: $(dt.table().node()).data('form-id') };
+        });
+    });
+    return found;
+}
+
+// counters only count active documents, like the applicant forms
+function refreshCounts(form_id){
+    var $active = allRowNodes(form_id).filter('[data-status="1"]');
+    $('[data-count-form="' + form_id + '"], [data-active-form="' + form_id + '"]').text($active.length);
+    $('[data-required-form="' + form_id + '"]').text($active.filter('[data-required="1"]').length);
+    $('[data-intl-form="' + form_id + '"]').text($active.filter('[data-intl="1"]').length);
+}
+
 $(document).ready(function(){
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
+        var $table = $(settings.nTable);
+        if(!$table.hasClass('doc_table')) return true;
+        var filter = $table.closest('.tv-pane').find('.tv-status-filter.active').data('filter');
+        if(filter === undefined || filter === 'all') return true;
+        return String($(settings.aoData[dataIndex].nTr).attr('data-status')) === String(filter);
+    });
+
     $('.doc_table').each(function() {
         $(this).DataTable({
-            "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
-            "iDisplayLength": 5
+            "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "Tout"]],
+            "iDisplayLength": 5,
+            "autoWidth": false,
+            "order": [],
+            "language": {
+                "lengthMenu": "Afficher _MENU_ éléments",
+                "search": "Rechercher :",
+                "info": "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+                "infoEmpty": "Affichage de 0 à 0 sur 0 élément",
+                "infoFiltered": "(filtré sur _MAX_ éléments au total)",
+                "zeroRecords": "Aucun élément correspondant trouvé",
+                "emptyTable": "Aucun document demandé pour ce formulaire",
+                "paginate": { "first": "Premier", "last": "Dernier", "next": "Suivant", "previous": "Précédent" }
+            }
         });
+    });
+
+    $(document).on('click', '.tv-node', function(){
+        selectNode($(this).data('target'));
+    });
+
+    var saved = null;
+    try { saved = localStorage.getItem(DOC_STORE_KEY); } catch(e) {}
+    if(!saved || !selectNode(saved)){
+        var first = $('.tv-node').first().data('target');
+        if(first) selectNode(first);
+    }
+
+    $(document).on('click', '.tv-status-filter', function(){
+        var $pane = $(this).closest('.tv-pane');
+        $pane.find('.tv-status-filter').removeClass('active');
+        $(this).addClass('active');
+        $pane.find('table.doc_table').DataTable().draw(false);
+    });
+
+    // "Ajouter un document": open the form with this form type preselected
+    $(document).on('click', '.tv-add-here', function(){
+        $('#mycard-collapse').collapse('show');
+        $('#form_id').val($(this).data('form')).trigger('change');
+        $('html, body').animate({ scrollTop: $('#mycard-collapse').offset().top - 90 }, 250);
+        $('#document_name').focus();
     });
 
     // select2 inside a Bootstrap modal needs the modal as its dropdown parent,
@@ -280,13 +451,44 @@ $(document).ready(function(){
         });
     });
 
+    function addDocRow(row){
+        var $table = $("table.doc_table[data-form-id='" + row.form_id + "']");
+        if($table.length === 0){
+            try { localStorage.setItem(DOC_STORE_KEY, 'form-' + row.form_id); } catch(e) {}
+            location.reload();
+            return;
+        }
+        var required = String(row.is_required) === '1';
+        var intl = String(row.international_required) === '1';
+        var actionsHtml = canManage ? '<td class="tv-right"><div class="tv-row-actions">'
+            + '<button type="button" data-id="'+row.doc_id+'" class="tv-icon-btn edit" title="Modifier">'
+            + '<span id="spinner4_'+row.doc_id+'"></span><i class="fas fa-pen"></i></button>'
+            + '<label class="custom-switch" title="Activer / désactiver">'
+            + '<input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input del" data-id="'+row.doc_id+'" checked>'
+            + '<span class="custom-switch-indicator"></span><span id="spinner3_'+row.doc_id+'"></span></label></div></td>' : '';
+        var $tr = $('<tr data-row-id="'+row.doc_id+'" data-status="1" data-required="'+(required ? 1 : 0)+'" data-intl="'+(intl ? 1 : 0)+'">'
+            + '<td><div class="tv-member"><span class="tv-avatar"><i class="far fa-file"></i></span><span>'
+            + '<span class="col-doc-name d-block">'+escapeHtml(row.document_name)+'</span>'
+            + '<span class="col-template">'+(row.file_name ? '<a class="tv-link small" href="'+escapeHtml(fileUrl(row.file_name))+'" target="_blank"><i class="fas fa-download"></i> Modèle</a>' : '')+'</span>'
+            + '</span></div></td>'
+            + '<td class="col-file-type">'+formatTags(row.file_type)+'</td>'
+            + '<td class="col-max-size">'+(row.max_size_mb ? escapeHtml(row.max_size_mb)+' Mo' : '-')+'</td>'
+            + '<td class="col-flags">'+flagsHtml(required, intl)+'</td>'
+            + '<td>'+statusHtml(true)+'</td>'
+            + actionsHtml
+            + '</tr>');
+        $table.DataTable().row.add($tr[0]).draw(false);
+        refreshCounts(row.form_id);
+        selectNode('form-' + row.form_id);
+    }
+
     //save document
     $("#save_doc").submit(function(e){
         e.preventDefault();
 
         var formats = $("#file_type").val() || [];
         if(formats.length === 0){
-            pop_wrong("Please choose at least one accepted file format");
+            pop_wrong("Choisissez au moins un format de fichier accepté");
             return;
         }
 
@@ -303,7 +505,7 @@ $(document).ready(function(){
         formData.append('action', 'register');
 
         $('#spinner').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator').html("Saving...");
+        $('#indicator').html("Enregistrement...");
         $.ajax({
             url: "../new_files/formtype_document/controller.php",
             type: "POST",
@@ -313,44 +515,43 @@ $(document).ready(function(){
             dataType: "JSON",
             success: function(data){
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
+                $('#indicator').html("Enregistrer");
                 if(data.status==200){
+                    var keepForm = $('#form_id').val();
                     $('#save_doc')[0].reset();
-                    $('#form_id').val('').trigger('change');
+                    $('#form_id').val(keepForm).trigger('change');
                     $('#file_type').val(null).trigger('change');
                     pop_up_success(data.message);
-                    // a new tab may be needed for this form type, so reload
-                    setTimeout(function(){ location.reload(); }, 1200);
+                    addDocRow(data);
                 }
                 if(data.status==401 || data.status==500){
                     pop_wrong(data.message);
                 }
             },error: function(){
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
-                pop_wrong("Something went wrong!");
+                $('#indicator').html("Enregistrer");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
 
-    // toggle document status
+    // activate / deactivate document
     $(document).on('click','.del',function () {
         var $checkbox = $(this);
         var data_id = $checkbox.data('id');
-        var getData = { id: data_id, action:'delete' };
         swal({
-            title: "Are you sure?",
-            text: "You are about to change this document's status!",
+            title: "Êtes-vous sûr ?",
+            text: $checkbox.prop('checked') ? "Ce document sera de nouveau demandé aux candidats." : "Ce document ne sera plus demandé aux candidats.",
             icon: "warning",
-            buttons: true,
+            buttons: ["Annuler", "Confirmer"],
             dangerMode: true,
-        }).then((willDelete) => {
-            if (willDelete) {
+        }).then((willChange) => {
+            if (willChange) {
                 $('#spinner3_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
                 $.ajax({
                     type: "POST",
                     url: "../new_files/formtype_document/controller.php",
-                    data: getData,
+                    data: { id: data_id, action:'delete' },
                     dataType:"json",
                     success:function(data){
                         $('#spinner3_'+data_id).fadeOut('fast');
@@ -359,18 +560,28 @@ $(document).ready(function(){
                             pop_wrong(data.message);
                         }
                         else if(data.status==200){
+                            var active = $checkbox.prop('checked');
+                            var hit = findRow(data_id);
+                            if(hit){
+                                hit.$tr.attr('data-status', active ? 1 : 0);
+                                hit.$tr.find('.tv-status-tag').replaceWith(statusHtml(active));
+                                hit.row.invalidate('dom').draw(false);
+                                refreshCounts(hit.formId);
+                            }
                             pop_up_success(data.message);
                         }
                     },
                     error:function(){
                         $('#spinner3_'+data_id).fadeOut('fast');
                         $checkbox.prop('checked', !$checkbox.prop('checked'));
-                        pop_wrong("Something went wrong");
+                        pop_wrong("Une erreur s'est produite !");
                     }
                 });
             }
             else {
-                swal("operation cancelled!!");
+                // keep the switch in sync with the real status
+                $checkbox.prop('checked', !$checkbox.prop('checked'));
+                swal("Opération annulée");
             }
         });
     });
@@ -378,23 +589,25 @@ $(document).ready(function(){
     //pre-update View
     $(document).on('click','.edit',function () {
         var data_id = $(this).data('id');
-        var getData = { id: data_id, action:'view' };
         $('#spinner4_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
         $.ajax({
             type: "POST",
             url: "../new_files/formtype_document/controller.php",
-            data: getData,
+            data: { id: data_id, action:'view' },
             dataType:"json",
             success:function(data){
                 $('#spinner4_'+data_id).fadeOut('fast');
                 $("#e_id").val(data_id);
                 $("#e_document_name").val(data.document_name);
                 $("#e_max_size_mb").val(data.max_size_mb);
-                $("#e_is_required").val(data.is_required).trigger('change');
-                $("#e_international_required").val(data.international_required).trigger('change');
-                $("#e_form_id").val(data.form_id).trigger('change');
-                $("#f_name").html(data.document_name);
-                $("#e_file_preview").html(data.file_name ? "<a href='"+data.file_name+"' target='_blank'>View current file</a>" : "");
+                $("#e_is_required").val(String(data.is_required)).trigger('change');
+                $("#e_international_required").val(String(data.international_required)).trigger('change');
+                $("#e_form_id").val(String(data.form_id)).trigger('change');
+                $("#f_name").text(data.document_name);
+                var $preview = $("#e_file_preview").empty();
+                if(data.file_name){
+                    $preview.append($('<a target="_blank" class="tv-link"><i class="fas fa-download"></i> Voir le modèle actuel</a>').attr('href', fileUrl(data.file_name)));
+                }
 
                 // file_type is stored comma-separated: turn it back into selections
                 var formats = (data.file_type || '').split(',').filter(function(v){ return v !== ''; });
@@ -404,7 +617,7 @@ $(document).ready(function(){
             },
             error:function(){
                 $('#spinner4_'+data_id).fadeOut('fast');
-                pop_wrong("Something went wrong!");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -415,7 +628,7 @@ $(document).ready(function(){
 
         var formats = $("#e_file_type").val() || [];
         if(formats.length === 0){
-            pop_wrong("Please choose at least one accepted file format");
+            pop_wrong("Choisissez au moins un format de fichier accepté");
             return;
         }
 
@@ -433,7 +646,7 @@ $(document).ready(function(){
         formData.append('action', 'update');
 
         $('#spinner2').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator2').html("Saving...");
+        $('#indicator2').html("Enregistrement...");
         $.ajax({
             url: "../new_files/formtype_document/controller.php",
             type: "POST",
@@ -443,21 +656,29 @@ $(document).ready(function(){
             dataType: "JSON",
             success: function(data){
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save changes");
+                $('#indicator2').html("Enregistrer les modifications");
                 if(data.status==200){
                     $('#updateModal').modal('hide');
                     pop_up_success(data.message);
                     if(data.form_changed){
+                        // the document moves to another form - simplest correct path
+                        try { localStorage.setItem(DOC_STORE_KEY, 'form-' + data.form_id); } catch(e) {}
                         setTimeout(function(){ location.reload(); }, 1000);
                     } else {
-                        var $row = $("tr[data-row-id='"+data.doc_id+"']");
-                        $row.find('.col-doc-name').text(data.document_name);
-                        $row.find('.col-file-type').text((data.file_type || '').split(',').join(', ').toUpperCase());
-                        $row.find('.col-max-size').text(data.max_size_mb ? data.max_size_mb + ' MB' : '');
-                        $row.find('.col-required').text(data.is_required == 1 ? 'Yes' : 'No');
-                        $row.find('.col-intl').text(data.international_required == 1 ? 'Yes' : 'No');
-                        if(data.file_name){
-                            $row.find('.col-template').html("<a href='"+data.file_name+"' target='_blank'>View</a>");
+                        var hit = findRow(data.doc_id);
+                        if(hit){
+                            var required = String(data.is_required) === '1';
+                            var intl = String(data.international_required) === '1';
+                            hit.$tr.attr({ 'data-required': required ? 1 : 0, 'data-intl': intl ? 1 : 0 });
+                            hit.$tr.find('.col-doc-name').text(data.document_name);
+                            hit.$tr.find('.col-file-type').html(formatTags(data.file_type));
+                            hit.$tr.find('.col-max-size').text(data.max_size_mb ? data.max_size_mb + ' Mo' : '-');
+                            hit.$tr.find('.col-flags').html(flagsHtml(required, intl));
+                            if(data.file_name){
+                                hit.$tr.find('.col-template').html('<a class="tv-link small" href="'+escapeHtml(fileUrl(data.file_name))+'" target="_blank"><i class="fas fa-download"></i> Modèle</a>');
+                            }
+                            hit.row.invalidate('dom').draw(false);
+                            refreshCounts(hit.formId);
                         }
                     }
                 }
@@ -466,8 +687,8 @@ $(document).ready(function(){
                 }
             },error: function(){
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save changes");
-                pop_wrong("Something went wrong!");
+                $('#indicator2').html("Enregistrer les modifications");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -476,7 +697,7 @@ $(document).ready(function(){
 
 function pop_wrong(feedback) {
     iziToast.warning({
-        title: 'Error',
+        title: 'Erreur',
         message: feedback,
         position: 'topCenter'
     });
@@ -484,7 +705,7 @@ function pop_wrong(feedback) {
 
 function pop_up_success(feedback) {
     iziToast.success({
-        title: 'info',
+        title: 'Info',
         message: feedback,
         position: 'topCenter'
     });
