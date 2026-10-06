@@ -139,6 +139,18 @@
             </li>
 
             <?php } ?>
+            <?php if ($role_id == 14) { ?>
+            <li class="dropdown active">
+                <a href="edu?mis=on" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-file-invoice-dollar"></i> <span>Facturation</span></a>
+                <ul class="dropdown-menu">
+                    <li><a class="nav-link" href="edu?mis=invTrack">Suivi des factures</a></li>
+                </ul>
+            </li>
+
+            <?php } ?>
             <?php if ($_SESSION['role_id'] == 5) { ?>
             <li class="dropdown active">
                 <a href="edu?mis=1" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>

@@ -68,11 +68,12 @@ $SqlPdo = $conn->prepare("SELECT
         $acc_id = $GetPdo['id'];
         $role_id = $GetPdo['role_id'];
      
-        $faculty = json_decode($GetPdo['fac_id'], true);
+        // fac_id/dept_id hold a JSON list of ids, a single id, or nothing.
+        $faculty = (array) json_decode($GetPdo['fac_id'] ?? '', true);
         $faculty = array_map('intval', $faculty);
         $faculty = implode(',', $faculty);
         
-        $department = json_decode($GetPdo['dept_id'], true);
+        $department = (array) json_decode($GetPdo['dept_id'] ?? '', true);
         $department = array_map('intval', $department);
         $department = implode(',', $department);
      

@@ -12,8 +12,8 @@
                                                         <select class="form-control select2" style="width:100%" id="prg_type">
                                                             <option disabled selected>--choose one--</option>
                                                             <?php
-                                                                $sql_progs=$conn->prepare("SELECT prg_type_id,prg_type_full_name FROM tbl_program_type WHERE campus_id='".$camp_id."'");
-                                                                $sql_progs->execute();
+                                                                $sql_progs=$conn->prepare("SELECT pt.prg_type_id, pt.prg_type_full_name FROM tbl_program_type pt INNER JOIN tbl_faculty f ON f.fac_id = pt.fac_id WHERE f.campus_id = ?");
+                                                                $sql_progs->execute([$camp_id]);
                                                                 while($prg_type=$sql_progs->fetch()){
                                                             ?>
                                                             <option value="<?php echo $prg_type['prg_type_id']; ?>"><?php echo $prg_type['prg_type_full_name']; ?> </option>
