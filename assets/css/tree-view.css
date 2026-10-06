@@ -49,6 +49,7 @@
 .tv-page .tv-node.active .tv-count{color:var(--tv-accent)}
 .tv-page .tv-children{padding-left:24px;display:none}
 .tv-page .tv-children.open{display:block}
+.tv-page .tv-node.tv-inactive .tv-name{opacity:.55;text-decoration:line-through}
 .tv-page .tv-tree-empty{color:var(--tv-muted);font-size:14px;padding:8px 12px;display:none}
 
 /* details */
@@ -94,9 +95,17 @@
 .tv-page .tv-icon-btn:hover{color:var(--tv-text)}
 .tv-page .tv-row-actions .custom-switch{margin:0;padding-left:0;display:inline-flex;align-items:center;cursor:pointer}
 .tv-page .tv-link{color:var(--tv-accent);font-weight:600;cursor:pointer;background:none;border:none;padding:0}
+/* label / value list in a details card */
+.tv-page .tv-info{display:grid;grid-template-columns:160px 1fr;margin:0}
+.tv-page .tv-info dt,.tv-page .tv-info dd{padding:14px 0;border-bottom:1px solid var(--tv-border);margin:0;font-size:15px}
+.tv-page .tv-info dt{color:var(--tv-muted);font-weight:500}
+.tv-page .tv-info dd{display:flex;align-items:center;gap:8px}
+.tv-page .tv-info dt:last-of-type,.tv-page .tv-info dd:last-of-type{border-bottom:none}
 .tv-page .tv-empty{text-align:center;color:var(--tv-muted);padding:30px 10px}
 
 @media (max-width:767px){
     .tv-page .tv-card{padding:18px 16px}
     .tv-page .tv-table th,.tv-page .tv-table td{padding:12px 10px}
+    .tv-page .tv-info{grid-template-columns:1fr}
+    .tv-page .tv-info dt{border-bottom:none;padding-bottom:0}
 }
