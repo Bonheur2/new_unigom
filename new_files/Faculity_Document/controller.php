@@ -53,14 +53,14 @@ class DocumentType{
         $international_required = $_POST['international_required'];
 
         if($prg_type_id == '' || $prg_type_id == '0' || $document_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Programme and document name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le type de programme et le nom du document sont obligatoires']);
             return;
         }
 
         // fac_id is still stored so existing rows and any faculty-based reads keep working
         $fac_id = $this->faculty_for_program_type($prg_type_id);
         if($fac_id === null){
-            echo json_encode(['status' => 401, 'message' => 'Invalid programme selected']);
+            echo json_encode(['status' => 401, 'message' => 'Type de programme non valide']);
             return;
         }
 
@@ -68,13 +68,13 @@ class DocumentType{
             $chk = $this->connect->prepare("SELECT doc_id FROM tbl_document_type WHERE document_name = :document_name AND prg_type_id = :prg_type_id");
             $chk->execute([':document_name' => $document_name, ':prg_type_id' => $prg_type_id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This document already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce document existe déjà']);
                 return;
             }
 
             $file_name = $this->handle_file_upload();
             if($file_name === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid template file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du modèle non valide']);
                 return;
             }
 
@@ -92,7 +92,7 @@ class DocumentType{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Document saved successfully',
+                'message' => 'Document enregistré avec succès',
                 'doc_id' => $new_id,
                 'prg_type_id' => $prg_type_id,
                 'fac_id' => $fac_id,
@@ -102,7 +102,7 @@ class DocumentType{
                 'international_required' => $international_required
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving document: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du document : ".$e->getMessage()]);
         }
     }
 
@@ -122,7 +122,7 @@ class DocumentType{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Document not found']);
+            echo json_encode(['status' => 500, 'message' => 'Document introuvable']);
         }
     }
 
@@ -134,13 +134,13 @@ class DocumentType{
         $international_required = $_POST['international_required'];
 
         if($prg_type_id == '' || $document_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Programme and document name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le type de programme et le nom du document sont obligatoires']);
             return;
         }
 
         $fac_id = $this->faculty_for_program_type($prg_type_id);
         if($fac_id === null){
-            echo json_encode(['status' => 401, 'message' => 'Invalid programme selected']);
+            echo json_encode(['status' => 401, 'message' => 'Type de programme non valide']);
             return;
         }
 
@@ -148,7 +148,7 @@ class DocumentType{
             $chk = $this->connect->prepare("SELECT doc_id FROM tbl_document_type WHERE document_name = :document_name AND prg_type_id = :prg_type_id AND doc_id != :id");
             $chk->execute([':document_name' => $document_name, ':prg_type_id' => $prg_type_id, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This document already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce document existe déjà']);
                 return;
             }
 
@@ -159,7 +159,7 @@ class DocumentType{
 
             $file_name = $this->handle_file_upload();
             if($file_name === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid template file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du modèle non valide']);
                 return;
             }
 
@@ -188,7 +188,7 @@ class DocumentType{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Document updated successfully',
+                'message' => 'Document mis à jour avec succès',
                 'doc_id' => $id,
                 'prg_type_id' => $prg_type_id,
                 'fac_id' => $fac_id,
@@ -199,7 +199,7 @@ class DocumentType{
                 'prg_changed' => $prg_changed
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating document: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du document : '.$e->getMessage()]);
         }
     }
 
@@ -215,9 +215,9 @@ class DocumentType{
             $upd = $this->connect->prepare("UPDATE tbl_document_type SET status = :status WHERE doc_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Document status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du document mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -273,6 +273,6 @@ switch($action){
         $doc->get_program_types();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
