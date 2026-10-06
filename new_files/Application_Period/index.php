@@ -1,207 +1,291 @@
+<?php
+    $canManage = ($role_id == 18 || $role_id == 2);
+
+    $statusLabels = ['active' => 'Ouverte', 'hold' => 'Suspendue', 'closed' => 'Clôturée', 'inactive' => 'Inactive'];
+    $statusTags   = ['active' => 'green', 'hold' => 'amber', 'closed' => 'blue', 'inactive' => 'red'];
+
+    // every academic year (a period may belong to a year that is now closed); current year first
+    $sql_ay = $conn->prepare("SELECT acad_cycle_id, acad_year, status FROM tbl_acad_cycle ORDER BY (status = 1) DESC, acad_year DESC");
+    $sql_ay->execute();
+    $acadYears = $sql_ay->fetchAll(PDO::FETCH_ASSOC);
+    $currentAy = 0;
+    foreach($acadYears as $y){ if($y['status'] == 1){ $currentAy = (int)$y['acad_cycle_id']; break; } }
+
+    $sql = $conn->prepare("SELECT p.*, c.acad_year,
+                                  (SELECT COUNT(*) FROM tbl_applicants a WHERE a.application_period_id = p.id) AS applicants
+                           FROM tbl_application_periods p
+                           LEFT JOIN tbl_acad_cycle c ON c.acad_cycle_id = p.acad_cycle_id
+                           ORDER BY p.start_date DESC, p.id DESC");
+    $sql->execute();
+    $periods = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+    $today = date('Y-m-d');
+    // where a period stands in time, independent of its status
+    $timing = function($start, $end) use ($today){
+        if($today < $start){
+            $d = (int)round((strtotime($start) - strtotime($today)) / 86400);
+            return ['key' => 'upcoming', 'text' => 'Commence dans '.$d.' jour'.($d > 1 ? 's' : '')];
+        }
+        if($today > $end){
+            return ['key' => 'past', 'text' => 'Terminée'];
+        }
+        $d = (int)round((strtotime($end) - strtotime($today)) / 86400);
+        return ['key' => 'running', 'text' => $d == 0 ? 'Dernier jour' : $d.' jour'.($d > 1 ? 's' : '').' restant'.($d > 1 ? 's' : '')];
+    };
+    $fmt = function($date){ return $date ? date('d/m/Y', strtotime($date)) : ''; };
+
+    $openNow = 0;
+    $nextClose = null;
+    $appTotal = 0;
+    foreach($periods as $p){
+        $appTotal += (int)$p['applicants'];
+        if($p['status'] === 'active' && $today >= $p['start_date'] && $today <= $p['end_date']){
+            $openNow++;
+            if($nextClose === null || $p['end_date'] < $nextClose['end_date']) $nextClose = $p;
+        }
+    }
+?>
 <!-- Start app main Content -->
-        <div class="main-content">
-            <section class="section">
-                <div class="section-header">
-                    <h3>Application Periods</h3>
-                    <div class="section-header-breadcrumb">
-                        <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                        <div class="breadcrumb-item"><a href="#">Application Period</a></div>
-                    </div>
-                </div>
-                <div class="section-body">
+<div class="main-content">
+    <section class="section tv-page">
+        <div class="section-header">
+            <h3>Périodes de candidature</h3>
+            <div class="section-header-breadcrumb">
+                <div class="breadcrumb-item active"><a href="#">Tableau de bord</a></div>
+                <div class="breadcrumb-item"><a href="#">Période de candidature</a></div>
+            </div>
+        </div>
+
+        <!-- Formulaire nouvelle période -->
+        <div class="collapse" id="mycard-collapse">
+            <div class="tv-card">
+                <h4 class="tv-card-title">Nouvelle période de candidature</h4>
+                <form id="save_period" action="save_period" method="POST">
                     <div class="row">
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>New Application Period</h4>
-                                    <div class="card-header-action">
-                                        <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="collapse hide" id="mycard-collapse">
-                                    <div class="card-body">
-                                        <form id="save_period" action="save_period" method="POST">
-                                            <div class="row">
-                                                <div class="form-group col-md-4">
-                                                    <label>Academic Year</label>
-                                                    <select class="form-control select2" style="width:100%" id="acad_cycle_id" required>
-                                                        <option value="">-- Select Academic Year --</option>
-                                                        <?php
-                                                            $sql_ay = $conn->prepare("SELECT acad_cycle_id, acad_year FROM tbl_acad_cycle WHERE status=1 ORDER BY acad_year DESC");
-                                                            $sql_ay->execute();
-                                                            while($ay = $sql_ay->fetch()):
-                                                        ?>
-                                                        <option value="<?php echo $ay['acad_cycle_id']; ?>"><?php echo $ay['acad_year']; ?></option>
-                                                        <?php endwhile; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label>Period Name</label>
-                                                    <input type="text" class="form-control" id="period_name" placeholder="e.g. First Round" required>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label>Status</label>
-                                                    <select class="form-control select2" style="width:100%" id="p_status">
-                                                        <option value="active">Active</option>
-                                                        <option value="inactive">Inactive</option>
-                                                        <option value="closed">Closed</option>
-                                                        <option value="hold">Hold</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-3">
-                                                    <label>Start Date</label>
-                                                    <input type="date" class="form-control" id="start_date" required>
-                                                </div>
-                                                <div class="form-group col-md-3">
-                                                    <label>End Date</label>
-                                                    <input type="date" class="form-control" id="end_date" required>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label>Description</label>
-                                                    <input type="text" class="form-control" id="description" placeholder="Optional notes">
-                                                </div>
-                                                <div class="form-group col-md-2">
-                                                    <label>&nbsp;</label>
-                                                    <button type="submit" class="btn btn-primary d-block"><span id="spinner"></span>&nbsp;<span id="indicator">Save</span></button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label>Année académique</label>
+                            <select class="form-control select2" style="width:100%" id="acad_cycle_id" required>
+                                <?php foreach($acadYears as $y): ?>
+                                <option value="<?php echo $y['acad_cycle_id']; ?>" <?php echo (int)$y['acad_cycle_id'] === $currentAy ? 'selected' : ''; ?>><?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card" id="sample-login">
-                                <div class="card-header">
-                                    <h4>Registered Application Periods</h4>
-                                </div>
-                                <div class="card-body pb-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-sm period_table">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Academic Year</th>
-                                                <th scope="col">Period Name</th>
-                                                <th scope="col">Start Date</th>
-                                                <th scope="col">End Date</th>
-                                                <th scope="col">Description</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <?php
-                                                $sql = $conn->prepare("SELECT tbl_application_periods.*, tbl_acad_cycle.acad_year
-                                                                        FROM tbl_application_periods
-                                                                        LEFT JOIN tbl_acad_cycle ON tbl_acad_cycle.acad_cycle_id = tbl_application_periods.acad_cycle_id
-                                                                        ORDER BY tbl_application_periods.id DESC");
-                                                $sql->execute();
-                                                $i = 1;
-                                                while($row = $sql->fetch()):
-                                            ?>
-                                            <tr data-row-id="<?php echo $row['id']; ?>">
-                                                <th scope="row"><?php echo $i++; ?></th>
-                                                <td class="col-acad-year"><?php echo $row['acad_year']; ?></td>
-                                                <td class="col-period-name"><?php echo $row['period_name']; ?></td>
-                                                <td class="col-start-date"><?php echo $row['start_date']; ?></td>
-                                                <td class="col-end-date"><?php echo $row['end_date']; ?></td>
-                                                <td class="col-description"><?php echo $row['description']; ?></td>
-                                                <td class="col-status">
-                                                    <?php if($role_id == 18 || $role_id == 2): ?>
-                                                    <select class="form-control form-control-sm row-status" style="min-width:110px" data-id="<?php echo $row['id']; ?>">
-                                                        <option value="active" <?php echo $row['status']=='active' ? 'selected' : ''; ?>>Active</option>
-                                                        <option value="inactive" <?php echo $row['status']=='inactive' ? 'selected' : ''; ?>>Inactive</option>
-                                                        <option value="closed" <?php echo $row['status']=='closed' ? 'selected' : ''; ?>>Closed</option>
-                                                        <option value="hold" <?php echo $row['status']=='hold' ? 'selected' : ''; ?>>Hold</option>
-                                                    </select>
-                                                    <span id="spinner3_<?php echo $row['id']; ?>"></span>
-                                                    <?php else: ?>
-                                                        <?php echo ucfirst($row['status']); ?>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <th>
-                                                    <?php if($role_id == 18 || $role_id == 2): ?>
-                                                    <div class="buttons row">
-                                                        <button type="button" data-id="<?php echo $row['id']; ?>" class="btn btn-icon btn-primary btn-sm edit">
-                                                            <span id="spinner4_<?php echo $row['id']; ?>"></span>&nbsp;<i class="far fa-edit"></i>&nbsp;edit
-                                                        </button>
-                                                    </div>
-                                                    <?php endif; ?>
-                                                </th>
-                                            </tr>
-                                            <?php endwhile; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label>Nom de la période</label>
+                            <input type="text" class="form-control" id="period_name" placeholder="Ex : Première session" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Statut</label>
+                            <select class="form-control select2" style="width:100%" id="p_status">
+                                <?php foreach($statusLabels as $val => $label): ?>
+                                <option value="<?php echo $val; ?>"><?php echo $label; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Date d'ouverture</label>
+                            <input type="date" class="form-control" id="start_date" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Date de clôture</label>
+                            <input type="date" class="form-control" id="end_date" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Description</label>
+                            <input type="text" class="form-control" id="description" placeholder="Notes (facultatif)">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="d-none d-md-block">&nbsp;</label>
+                            <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span id="indicator">Enregistrer</span></button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- counters -->
+        <div class="tv-kpis">
+            <div class="tv-kpi">
+                <div class="tv-stat-icon green"><i class="far fa-calendar-check"></i></div>
+                <div>
+                    <b><?php echo $openNow; ?></b>
+                    <span class="tv-kpi-label">Ouverte<?php echo $openNow > 1 ? 's' : ''; ?> aujourd'hui</span>
+                    <span class="tv-kpi-sub">Statut « Ouverte » et date du jour comprise dans la période</span>
                 </div>
-            </section>
-            <!--update modal-->
-            <form action="update_form" method="POST" id="update_form">
-                <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Updating <span id="f_name"></span></h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+            </div>
+            <div class="tv-kpi">
+                <div class="tv-stat-icon red"><i class="far fa-hourglass"></i></div>
+                <div>
+                    <?php if($nextClose): $left = (int)round((strtotime($nextClose['end_date']) - strtotime($today)) / 86400); ?>
+                    <b><?php echo $fmt($nextClose['end_date']); ?></b>
+                    <span class="tv-kpi-label">Prochaine clôture</span>
+                    <span class="tv-kpi-sub"><?php echo htmlspecialchars($nextClose['period_name']); ?> · <?php echo $left == 0 ? "aujourd'hui" : 'dans '.$left.' jour'.($left > 1 ? 's' : ''); ?></span>
+                    <?php else: ?>
+                    <b>-</b>
+                    <span class="tv-kpi-label">Prochaine clôture</span>
+                    <span class="tv-kpi-sub">Aucune période ouverte en ce moment</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <a class="tv-kpi" href="edu?mis=sbtdap">
+                <div class="tv-stat-icon primary"><i class="fas fa-file-signature"></i></div>
+                <div>
+                    <b><?php echo $appTotal; ?></b>
+                    <span class="tv-kpi-label">Candidatures reçues</span>
+                    <span class="tv-kpi-sub">Sur <?php echo count($periods); ?> période<?php echo count($periods) > 1 ? 's' : ''; ?></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="tv-card">
+            <div class="tv-list-head">
+                <h4 class="tv-card-title">Périodes enregistrées</h4>
+                <div class="tv-actions">
+                    <div class="tv-filter">
+                        <button type="button" class="tv-chip tv-status-filter active" data-filter="all">Toutes</button>
+                        <?php foreach($statusLabels as $val => $label): ?>
+                        <button type="button" class="tv-chip tv-status-filter" data-filter="<?php echo $val; ?>"><?php echo $label; ?>s</button>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php if($canManage): ?>
+                    <button type="button" class="tv-btn tv-btn-accent" id="tv-new-btn"><i class="fas fa-plus"></i> Nouvelle période</button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="tv-table period_table">
+                    <thead>
+                    <tr>
+                        <th>Période</th>
+                        <th>Année académique</th>
+                        <th>Date d'ouverture</th>
+                        <th>Date de clôture</th>
+                        <th>Description</th>
+                        <th>Statut</th>
+                        <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($periods as $row):
+                        $t = $timing($row['start_date'], $row['end_date']);
+                        $st = isset($statusLabels[$row['status']]) ? $row['status'] : 'inactive';
+                        $stale = $st === 'active' && $t['key'] === 'past';
+                    ?>
+                    <tr data-row-id="<?php echo $row['id']; ?>" data-status="<?php echo $st; ?>" data-end="<?php echo htmlspecialchars($row['end_date']); ?>">
+                        <td>
+                            <div class="tv-member">
+                                <span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>
+                                <span class="col-period-name"><?php echo htmlspecialchars($row['period_name']); ?></span>
+                            </div>
+                        </td>
+                        <td class="col-acad-year"><?php echo htmlspecialchars($row['acad_year']); ?></td>
+                        <td class="col-start"><?php echo $fmt($row['start_date']); ?></td>
+                        <td class="col-end"><?php echo $fmt($row['end_date']); ?></td>
+                        <td class="col-description"><?php echo $row['description'] != '' ? htmlspecialchars($row['description']) : '<span class="text-muted">-</span>'; ?></td>
+                        <td class="col-status">
+                            <?php if($canManage): ?>
+                            <select class="ap-status-select row-status ap-<?php echo $statusTags[$st]; ?>" data-id="<?php echo $row['id']; ?>" aria-label="Statut">
+                                <?php foreach($statusLabels as $val => $label): ?>
+                                <option value="<?php echo $val; ?>" <?php echo $st === $val ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <span id="spinner3_<?php echo $row['id']; ?>"></span>
+                            <?php else: ?>
+                            <span class="tv-tag <?php echo $statusTags[$st]; ?>"><?php echo $statusLabels[$st]; ?></span>
+                            <?php endif; ?>
+                            <span class="ap-stale tv-tag amber mt-1" <?php echo $stale ? '' : 'style="display:none"'; ?> title="La date de clôture est passée mais la période est toujours ouverte">Date dépassée</span>
+                        </td>
+                        <?php if($canManage): ?>
+                        <td class="tv-right">
+                            <div class="tv-row-actions">
+                                <button type="button" data-id="<?php echo $row['id']; ?>" class="tv-icon-btn edit" title="Modifier">
+                                    <span id="spinner4_<?php echo $row['id']; ?>"></span><i class="fas fa-pen"></i>
                                 </button>
                             </div>
-                            <div class="modal-body">
-                                <input type="hidden" id="e_id" name="e_id">
-                                <div class="form-group">
-                                    <label>Academic Year</label>
-                                    <select class="form-control select2" style="width:100%" id="e_acad_cycle_id" required>
-                                        <option value="">-- Select Academic Year --</option>
-                                        <?php
-                                            $sql_ay2 = $conn->prepare("SELECT acad_cycle_id, acad_year FROM tbl_acad_cycle WHERE status=1 ORDER BY acad_year DESC");
-                                            $sql_ay2->execute();
-                                            while($ay2 = $sql_ay2->fetch()):
-                                        ?>
-                                        <option value="<?php echo $ay2['acad_cycle_id']; ?>"><?php echo $ay2['acad_year']; ?></option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Period Name</label>
-                                    <input type="text" class="form-control" id="e_period_name" placeholder="e.g. First Round" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Start Date</label>
-                                    <input type="date" class="form-control" id="e_start_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>End Date</label>
-                                    <input type="date" class="form-control" id="e_end_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <select class="form-control select2" style="width:100%" id="e_p_status">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="closed">Closed</option>
-                                        <option value="hold">Hold</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <input type="text" class="form-control" id="e_description" placeholder="Optional notes">
-                                </div>
+                        </td>
+                        <?php endif; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!--update modal-->
+    <form action="update_form" method="POST" id="update_form">
+        <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modification de <span id="f_name"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="e_id" name="e_id">
+                        <div class="form-group">
+                            <label>Année académique</label>
+                            <select class="form-control select2" style="width:100%" id="e_acad_cycle_id" required>
+                                <?php foreach($acadYears as $y): ?>
+                                <option value="<?php echo $y['acad_cycle_id']; ?>"><?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom de la période</label>
+                            <input type="text" class="form-control" id="e_period_name" placeholder="Ex : Première session" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label>Date d'ouverture</label>
+                                <input type="date" class="form-control" id="e_start_date" required>
                             </div>
-                            <div class="modal-footer bg-whitesmoke br">
-                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Save changes</span></button>
+                            <div class="form-group col-6">
+                                <label>Date de clôture</label>
+                                <input type="date" class="form-control" id="e_end_date" required>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Statut</label>
+                            <select class="form-control select2" style="width:100%" id="e_p_status">
+                                <?php foreach($statusLabels as $val => $label): ?>
+                                <option value="<?php echo $val; ?>"><?php echo $label; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" class="form-control" id="e_description" placeholder="Notes (facultatif)">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-whitesmoke br">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Enregistrer les modifications</span></button>
                     </div>
                 </div>
-            </form>
-            <!--end update modal-->
+            </div>
         </div>
+    </form>
+    <!--end update modal-->
+</div>
+
+<style>
+.tv-page .period_table .col-start,.tv-page .period_table .col-end{white-space:nowrap}
+.tv-page .period_table .col-description{max-width:220px;font-size:14px}
+/* eight columns: tighter cells so the table fits the card */
+.tv-page .period_table th,.tv-page .period_table td{padding-left:10px;padding-right:10px}
+.tv-page .period_table th{letter-spacing:.02em;font-size:12px}
+.tv-page .period_table td:first-child{min-width:170px}
+/* inline status picker styled like the status badges */
+.tv-page .ap-status-select{border:1px solid transparent;border-radius:0;padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;outline:none}
+.tv-page .ap-status-select:focus{border-color:var(--tv-accent)}
+.tv-page .ap-status-select.ap-green{background:var(--tv-green-soft);color:var(--tv-green)}
+.tv-page .ap-status-select.ap-amber{background:#fff4d6;color:#8a5a00}
+.tv-page .ap-status-select.ap-blue{background:var(--tv-blue-soft);color:var(--tv-blue)}
+.tv-page .ap-status-select.ap-red{background:var(--tv-red-soft);color:var(--tv-red)}
+.tv-page .ap-status-select option{background:#fff;color:var(--tv-text);text-transform:none}
+</style>
 
 <!--javascript-->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -209,54 +293,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
 <script>
+var canManage = <?php echo $canManage ? 'true' : 'false'; ?>;
+var STATUS_LABELS = <?php echo json_encode($statusLabels); ?>;
+var STATUS_TAGS = <?php echo json_encode($statusTags); ?>;
+var TODAY = <?php echo json_encode($today); ?>;
+
+function escapeHtml(s){
+    return $('<div>').text(s == null ? '' : s).html();
+}
+function frDate(iso){
+    if(!iso) return '';
+    var p = String(iso).substring(0, 10).split('-');
+    return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : iso;
+}
+function statusSelectHtml(id, current){
+    var html = '<select class="ap-status-select row-status ap-' + STATUS_TAGS[current] + '" data-id="' + id + '" aria-label="Statut">';
+    $.each(STATUS_LABELS, function(val, label){
+        html += '<option value="' + val + '"' + (val === current ? ' selected' : '') + '>' + label + '</option>';
+    });
+    return html + '</select> <span id="spinner3_' + id + '"></span>';
+}
+
 $(document).ready(function(){
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
+        if(!$(settings.nTable).hasClass('period_table')) return true;
+        var filter = $('.tv-status-filter.active').data('filter');
+        if(filter === undefined || filter === 'all') return true;
+        return String($(settings.aoData[dataIndex].nTr).attr('data-status')) === String(filter);
+    });
+
     var periodDt = $('.period_table').DataTable({
-        "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
-        "iDisplayLength": 5
+        "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "Tout"]],
+        "iDisplayLength": 5,
+        "autoWidth": false,
+        "order": [],
+        "language": {
+            "lengthMenu": "Afficher _MENU_ éléments",
+            "search": "Rechercher :",
+            "info": "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+            "infoEmpty": "Affichage de 0 à 0 sur 0 élément",
+            "infoFiltered": "(filtré sur _MAX_ éléments au total)",
+            "zeroRecords": "Aucun élément correspondant trouvé",
+            "emptyTable": "Aucune période de candidature enregistrée",
+            "paginate": { "first": "Premier", "last": "Dernier", "next": "Suivant", "previous": "Précédent" }
+        }
     });
 
-    $('.row-status').each(function(){
-        $(this).data('previous', $(this).val());
-    });
+    $('.row-status').each(function(){ $(this).data('previous', $(this).val()); });
 
-    var statusLabels = {active:'Active', inactive:'Inactive', closed:'Closed', hold:'Hold'};
-
-    function statusOptionsHtml(current){
-        var html = '';
-        $.each(statusLabels, function(val, label){
-            html += '<option value="'+val+'"'+(val===current ? ' selected' : '')+'>'+label+'</option>';
+    function findRow(id){
+        var found = null;
+        periodDt.rows().every(function(){
+            if(String($(this.node()).attr('data-row-id')) === String(id)) found = { row: this, $tr: $(this.node()) };
         });
-        return html;
+        return found;
     }
 
-    // build a table row for an application period and add it to the DataTable
+    // keep the row's status attribute, badge colour and "Date dépassée" flag in sync
+    function applyStatus($tr, st, end){
+        $tr.attr('data-status', st);
+        var $sel = $tr.find('.row-status');
+        $sel.removeClass('ap-green ap-amber ap-blue ap-red').addClass('ap-' + STATUS_TAGS[st]).val(st).data('previous', st);
+        var endDate = end || $tr.data('end');
+        $tr.find('.ap-stale').toggle(st === 'active' && endDate && TODAY > endDate);
+    }
+
+    $(document).on('click', '.tv-status-filter', function(){
+        $('.tv-status-filter').removeClass('active');
+        $(this).addClass('active');
+        periodDt.draw(false);
+    });
+
+    $('#tv-new-btn').on('click', function(){
+        $('#mycard-collapse').collapse('toggle');
+    });
+
     function addPeriodRow(row){
-        var canManage = <?php echo ($role_id == 18 || $role_id == 2) ? 'true' : 'false'; ?>;
-        var statusHtml = '';
-        var actionsHtml = '';
-        var currentStatus = row.status_val || 'active';
-        if(canManage){
-            statusHtml = '<select class="form-control form-control-sm row-status" style="min-width:110px" data-id="'+row.id+'">'
-                + statusOptionsHtml(currentStatus)
-                + '</select> <span id="spinner3_'+row.id+'"></span>';
-            actionsHtml = '<div class="buttons row">'
-                + '<button type="button" data-id="'+row.id+'" class="btn btn-icon btn-primary btn-sm edit">'
-                + '<span id="spinner4_'+row.id+'"></span>&nbsp;<i class="far fa-edit"></i>&nbsp;edit</button></div>';
-        } else {
-            statusHtml = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
-        }
-        var $tr = $(periodDt.row.add([
-            periodDt.rows().count() + 1,
-            row.acad_year || '',
-            row.period_name,
-            row.start_date || '',
-            row.end_date || '',
-            row.description || '',
-            statusHtml,
-            actionsHtml
-        ]).draw(false).node());
-        $tr.attr('data-row-id', row.id);
-        $tr.find('.row-status').data('previous', currentStatus);
+        var st = row.status_val || 'active';
+        var $tr = $('<tr data-row-id="'+row.id+'" data-status="'+st+'">'
+            + '<td><div class="tv-member"><span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>'
+            + '<span class="col-period-name">'+escapeHtml(row.period_name)+'</span></div></td>'
+            + '<td class="col-acad-year">'+escapeHtml(row.acad_year)+'</td>'
+            + '<td class="col-start">'+frDate(row.start_date)+'</td>'
+            + '<td class="col-end">'+frDate(row.end_date)+'</td>'
+            + '<td class="col-description">'+descHtml(row.description)+'</td>'
+            + '<td class="col-status">'+(canManage ? statusSelectHtml(row.id, st) : '<span class="tv-tag '+STATUS_TAGS[st]+'">'+STATUS_LABELS[st]+'</span>')
+            + ' <span class="ap-stale tv-tag amber mt-1" style="display:none" title="La date de clôture est passée mais la période est toujours ouverte">Date dépassée</span></td>'
+            + (canManage ? '<td class="tv-right"><div class="tv-row-actions"><button type="button" data-id="'+row.id+'" class="tv-icon-btn edit" title="Modifier">'
+                + '<span id="spinner4_'+row.id+'"></span><i class="fas fa-pen"></i></button></div></td>' : '')
+            + '</tr>');
+        $tr.data('end', row.end_date);
+        periodDt.row.add($tr[0]).draw(false);
+        applyStatus($tr, st, row.end_date);
     }
 
     //save application period
@@ -273,7 +401,7 @@ $(document).ready(function(){
             action: 'register'
         };
         $('#spinner').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator').html("Saving...");
+        $('#indicator').html("Enregistrement...");
         $.ajax({
             url: "../new_files/Application_Period/controller.php",
             type: "POST",
@@ -281,9 +409,11 @@ $(document).ready(function(){
             dataType: "JSON",
             success: function(data){
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
+                $('#indicator').html("Enregistrer");
                 if(data.status==200){
+                    var keepYear = $('#acad_cycle_id').val();
                     $('#save_period')[0].reset();
+                    $('#acad_cycle_id').val(keepYear).trigger('change');
                     $('#p_status').val('active').trigger('change');
                     pop_up_success(data.message);
                     addPeriodRow(data);
@@ -296,8 +426,8 @@ $(document).ready(function(){
                 }
             },error: function(){
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
-                pop_wrong("Something went wrong!");
+                $('#indicator').html("Enregistrer");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -308,16 +438,11 @@ $(document).ready(function(){
         var data_id = $select.data('id');
         var new_status = $select.val();
         var previous_status = $select.data('previous');
-        var getData = {
-            id: data_id,
-            status: new_status,
-            action: 'change_status'
-        };
         $('#spinner3_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
         $.ajax({
             type: "POST",
             url: "../new_files/Application_Period/controller.php",
-            data: getData,
+            data: { id: data_id, status: new_status, action: 'change_status' },
             dataType:"json",
             success:function(data){
                 $('#spinner3_'+data_id).fadeOut('fast');
@@ -326,14 +451,18 @@ $(document).ready(function(){
                     pop_wrong(data.message);
                 }
                 else if(data.status==200){
-                    $select.data('previous', new_status);
+                    var hit = findRow(data_id);
+                    if(hit){
+                        applyStatus(hit.$tr, new_status);
+                        hit.row.invalidate('dom').draw(false);
+                    }
                     pop_up_success(data.message);
                 }
             },
             error:function(error){
                 $('#spinner3_'+data_id).fadeOut('fast');
                 $select.val(previous_status);
-                pop_wrong("Something went wrong");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -341,31 +470,27 @@ $(document).ready(function(){
     //pre-update View
     $(document).on('click','.edit',function () {
         var data_id = $(this).data('id');
-        var getData = {
-            id: data_id,
-            action: 'view'
-        };
         $('#spinner4_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
         $.ajax({
             type: "POST",
             url: "../new_files/Application_Period/controller.php",
-            data: getData,
+            data: { id: data_id, action: 'view' },
             dataType:"json",
             success:function(data){
                 $('#spinner4_'+data_id).fadeOut('fast');
                 $("#e_id").val(data_id);
-                $("#e_acad_cycle_id").val(data.acad_cycle_id).trigger('change');
+                $("#e_acad_cycle_id").val(String(data.acad_cycle_id)).trigger('change');
                 $("#e_period_name").val(data.period_name);
                 $("#e_start_date").val(data.start_date);
                 $("#e_end_date").val(data.end_date);
                 $("#e_p_status").val(data.status).trigger('change');
                 $("#e_description").val(data.description);
-                $("#f_name").html(data.period_name);
+                $("#f_name").text(data.period_name);
                 $('#updateModal').modal('show');
             },
             error:function(error){
                 $('#spinner4_'+data_id).fadeOut('fast');
-                pop_wrong("Something went wrong!");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -385,7 +510,7 @@ $(document).ready(function(){
             action: 'update'
         };
         $('#spinner2').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator2').html("Saving...");
+        $('#indicator2').html("Enregistrement...");
         $.ajax({
             url: "../new_files/Application_Period/controller.php",
             type: "POST",
@@ -393,18 +518,22 @@ $(document).ready(function(){
             dataType: "JSON",
             success: function(data){
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
+                $('#indicator2').html("Enregistrer les modifications");
                 if(data.status==200){
                     $('#update_form')[0].reset();
                     $('#updateModal').modal('hide');
                     pop_up_success(data.message);
-                    var $row = $("tr[data-row-id='"+data.id+"']");
-                    $row.find('.col-acad-year').text(data.acad_year || '');
-                    $row.find('.col-period-name').text(data.period_name);
-                    $row.find('.col-start-date').text(data.start_date || '');
-                    $row.find('.col-end-date').text(data.end_date || '');
-                    $row.find('.col-description').text(data.description || '');
-                    $row.find('.row-status').val(data.status_val).data('previous', data.status_val);
+                    var hit = findRow(data.id);
+                    if(hit){
+                        hit.$tr.data('end', data.end_date);
+                        hit.$tr.find('.col-acad-year').text(data.acad_year || '');
+                        hit.$tr.find('.col-period-name').text(data.period_name);
+                        hit.$tr.find('.col-description').html(descHtml(data.description));
+                        hit.$tr.find('.col-start').text(frDate(data.start_date));
+                        hit.$tr.find('.col-end').text(frDate(data.end_date));
+                        applyStatus(hit.$tr, data.status_val, data.end_date);
+                        hit.row.invalidate('dom').draw(false);
+                    }
                 }
                 if(data.status==401){
                     pop_wrong(data.message);
@@ -414,8 +543,8 @@ $(document).ready(function(){
                 }
             },error: function(){
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
-                pop_wrong("Something went wrong!");
+                $('#indicator2').html("Enregistrer les modifications");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -424,7 +553,7 @@ $(document).ready(function(){
 
 function pop_wrong(feedback) {
     iziToast.warning({
-        title: 'Error',
+        title: 'Erreur',
         message: feedback,
         position: 'topCenter'
     });
@@ -432,7 +561,7 @@ function pop_wrong(feedback) {
 
 function pop_up_success(feedback) {
     iziToast.success({
-        title: 'info',
+        title: 'Info',
         message: feedback,
         position: 'topCenter'
     });
