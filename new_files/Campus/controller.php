@@ -29,7 +29,7 @@ class Campus{
         $camp_comments = trim($_POST['camp_comments']);
 
         if($university_id == '' || $camp_full_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'University and campus full name are required']);
+            echo json_encode(['status' => 401, 'message' => "L'université et le nom complet du campus sont obligatoires"]);
             return;
         }
 
@@ -37,7 +37,7 @@ class Campus{
             $chk = $this->connect->prepare("SELECT camp_id FROM tbl_campus WHERE camp_full_name = :camp_full_name AND university_id = :university_id");
             $chk->execute([':camp_full_name' => $camp_full_name, ':university_id' => $university_id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This campus already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce campus existe déjà']);
                 return;
             }
 
@@ -58,7 +58,7 @@ class Campus{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Campus saved successfully',
+                'message' => 'Campus enregistré avec succès',
                 'camp_id' => $new_id,
                 'university_id' => $university_id,
                 'university_name' => $univRow ? $univRow['full_name'] : '',
@@ -69,7 +69,7 @@ class Campus{
                 'camp_comments' => $camp_comments
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving campus: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du campus : ".$e->getMessage()]);
         }
     }
 
@@ -83,7 +83,7 @@ class Campus{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Campus not found']);
+            echo json_encode(['status' => 500, 'message' => 'Campus introuvable']);
         }
     }
 
@@ -97,7 +97,7 @@ class Campus{
         $camp_comments = trim($_POST['camp_comments']);
 
         if($university_id == '' || $camp_full_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'University and campus full name are required']);
+            echo json_encode(['status' => 401, 'message' => "L'université et le nom complet du campus sont obligatoires"]);
             return;
         }
 
@@ -105,7 +105,7 @@ class Campus{
             $chk = $this->connect->prepare("SELECT camp_id FROM tbl_campus WHERE camp_full_name = :camp_full_name AND university_id = :university_id AND camp_id != :id");
             $chk->execute([':camp_full_name' => $camp_full_name, ':university_id' => $university_id, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This campus already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce campus existe déjà']);
                 return;
             }
 
@@ -126,7 +126,7 @@ class Campus{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Campus updated successfully',
+                'message' => 'Campus mis à jour avec succès',
                 'camp_id' => $id,
                 'university_id' => $university_id,
                 'university_name' => $univRow ? $univRow['full_name'] : '',
@@ -137,7 +137,7 @@ class Campus{
                 'camp_comments' => $camp_comments
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating campus: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du campus : '.$e->getMessage()]);
         }
     }
 
@@ -153,9 +153,9 @@ class Campus{
             $upd = $this->connect->prepare("UPDATE tbl_campus SET camp_active = :camp_active WHERE camp_id = :id");
             $upd->execute([':camp_active' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Campus status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du campus mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 }
@@ -177,6 +177,6 @@ switch($action){
         $campus->delete_campus();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }

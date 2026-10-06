@@ -86,14 +86,16 @@
 .tv-page .tv-table th.tv-right,.tv-page .tv-table td.tv-right{text-align:right}
 .tv-page .tv-member{display:flex;align-items:center;gap:12px;font-weight:500}
 .tv-page .tv-avatar{width:34px;height:34px;border-radius:50%;background:var(--tv-accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tv-page .tv-logo{width:34px;height:34px;border-radius:50%;object-fit:contain;background:#fff;border:1px solid var(--tv-border);flex-shrink:0}
 .tv-page .tv-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 12px;border-radius:20px;text-transform:uppercase}
 .tv-page .tv-tag:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .tv-page .tv-tag.blue{background:var(--tv-blue-soft);color:var(--tv-blue)}
 .tv-page .tv-tag.green{background:var(--tv-green-soft);color:var(--tv-green)}
 .tv-page .tv-tag.red{background:var(--tv-red-soft);color:var(--tv-red)}
 .tv-page .tv-row-actions{display:inline-flex;align-items:center;gap:14px}
-.tv-page .tv-icon-btn{background:none;border:none;color:var(--tv-muted);font-size:15px;padding:4px;cursor:pointer}
-.tv-page .tv-icon-btn:hover{color:var(--tv-text)}
+.tv-page .tv-icon-btn{background:none;border:none;color:var(--tv-accent);font-size:15px;padding:4px;cursor:pointer;transition:opacity .15s}
+.tv-page .tv-icon-btn:hover{opacity:.7}
+.tv-page .tv-icon-btn.danger{color:var(--tv-red)}
 .tv-page .tv-row-actions .custom-switch{margin:0;padding-left:0;display:inline-flex;align-items:center;cursor:pointer}
 .tv-page .tv-link{color:var(--tv-accent);font-weight:600;cursor:pointer;background:none;border:none;padding:0}
 /* label / value list in a details card */

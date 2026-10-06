@@ -1,276 +1,224 @@
+<?php
+    $canManage = ($role_id == 18 || $role_id == 2);
+
+    // project root as a URL path ("" live, "/academic" under XAMPP) so stored logo paths resolve in both places
+    $tv_doc_root = str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'));
+    $tv_base_url = str_replace($tv_doc_root, '', str_replace('\\', '/', dirname(__DIR__, 2)));
+
+    if(!function_exists('tv_initials')){
+        function tv_initials($name){
+            $words = preg_split('/\s+/', trim($name));
+            $out = '';
+            foreach(array_slice($words, 0, 2) as $w){
+                $out .= mb_strtoupper(mb_substr($w, 0, 1));
+            }
+            return $out;
+        }
+    }
+
+    $sql = $conn->prepare("SELECT tbl_university.id, full_name, short_name, country, email, website, phone, location, po_box, logo, reg_date,
+                                  (SELECT COUNT(*) FROM tbl_campus WHERE tbl_campus.university_id = tbl_university.id) AS campuses
+                           FROM tbl_university ORDER BY id DESC");
+    $sql->execute();
+    $universities = $sql->fetchAll();
+?>
 <!-- Start app main Content -->
-        <div class="main-content">
-            <section class="section">
-                <div class="section-header">
-                    <h3>Universities</h3>
-                    <div class="section-header-breadcrumb">
-                        <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                        <div class="breadcrumb-item"><a href="#">University</a></div>
-                    </div>
-                </div>
-                <div class="section-body">
-                    <div class="row">
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>New University</h4>
-                                    <div class="card-header-action">
-                                        <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="collapse hide" id="mycard-collapse">
-                                    <div class="card-body row">
-                                        <form id="save_university" action="save_university" method="POST" enctype="multipart/form-data">
-                                            <div class="card-body pb-0 row">
-                                                <div class="form-group col-12 col-sm-4 col-lg-4">
-                                                    <label>Full Name</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                &nbsp;<i class="fas fa-info"></i>&nbsp;
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="full_name" placeholder="Full name" required>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Short Name</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-pencil"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="short_name" placeholder="Short name">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Country</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-globe"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="country" placeholder="Country">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-2 col-lg-2">
-                                                    <label>Email</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-envelope"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="email" class="form-control" id="email" placeholder="Email">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Website</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-link"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="website" placeholder="https://...">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Phone</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-phone"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="phone" placeholder="Phone">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Location</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-map-marker-alt"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="location" placeholder="Location">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>P.O. Box</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-mail-bulk"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="text" class="form-control" id="po_box" placeholder="P.O. Box">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Registration Date</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-calendar"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="date" class="form-control" id="reg_date">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-3 col-lg-3">
-                                                    <label>Logo</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">
-                                                                <i class="fas fa-image"></i>
-                                                            </div>
-                                                        </div>
-                                                        <input type="file" class="form-control" id="logo" accept="image/*">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-12 col-sm-2 col-lg-2">
-                                                    <label>&nbsp;</label>
-                                                    <div class="input-group">
-                                                        <button type="submit" class="btn btn-primary"><span id="spinner"></span>&nbsp;<span id="indicator">Save</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-12 col-lg-12">
-                            <div class="card" id="sample-login">
-                                <div class="card-header">
-                                    <h4>Registered Universities</h4>
-                                </div>
-                                <div class="card-body pb-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-sm university_table">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Logo</th>
-                                                <th scope="col">Full Name</th>
-                                                <th scope="col">Short Name</th>
-                                                <th scope="col">Country</th>
-                                                <th scope="col">Email</th>
-                                                <th scope="col">Phone</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <?php
-                                                $sql = $conn->prepare("SELECT id, full_name, short_name, country, email, website, phone, location, po_box, logo, reg_date FROM tbl_university ORDER BY id DESC");
-                                                $sql->execute();
-                                                $i = 1;
-                                                while($row = $sql->fetch()):
-                                            ?>
-                                            <tr>
-                                                <th scope="row"><?php echo $i++; ?></th>
-                                                <td>
-                                                    <?php if(!empty($row['logo'])): ?>
-                                                    <img src="<?php echo $row['logo']; ?>" alt="logo" width="35" height="35" style="object-fit:contain">
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?php echo $row['full_name']; ?></td>
-                                                <td><?php echo $row['short_name']; ?></td>
-                                                <td><?php echo $row['country']; ?></td>
-                                                <td><?php echo $row['email']; ?></td>
-                                                <td><?php echo $row['phone']; ?></td>
-                                                <th>
-                                                    <?php if($role_id == 18 || $role_id == 2): ?>
-                                                    <div class="buttons row">
-                                                        <button type="button" data-id="<?php echo $row['id']; ?>" class="btn btn-icon btn-primary btn-sm edit">
-                                                            <span id="spinner4_<?php echo $row['id']; ?>"></span>&nbsp;<i class="far fa-edit"></i>&nbsp;edit
-                                                        </button>
-                                                        <button type="button" data-id="<?php echo $row['id']; ?>" class="btn btn-icon btn-danger btn-sm del">
-                                                            <span id="spinner3_<?php echo $row['id']; ?>"></span>&nbsp;<i class="far fa-trash-alt"></i>&nbsp;delete
-                                                        </button>
-                                                    </div>
-                                                    <?php endif; ?>
-                                                </th>
-                                            </tr>
-                                            <?php endwhile; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!--update modal-->
-            <form action="update_form" method="POST" id="update_form" enctype="multipart/form-data">
-                <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Updating <span id="f_name"></span></h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" id="e_id" name="e_id">
-                                <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" class="form-control" id="e_full_name" placeholder="Full name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Short Name</label>
-                                    <input type="text" class="form-control" id="e_short_name" placeholder="Short name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Country</label>
-                                    <input type="text" class="form-control" id="e_country" placeholder="Country">
-                                </div>
-                                <div class="form-group">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" id="e_email" placeholder="Email">
-                                </div>
-                                <div class="form-group">
-                                    <label>Website</label>
-                                    <input type="text" class="form-control" id="e_website" placeholder="https://...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Phone</label>
-                                    <input type="text" class="form-control" id="e_phone" placeholder="Phone">
-                                </div>
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <input type="text" class="form-control" id="e_location" placeholder="Location">
-                                </div>
-                                <div class="form-group">
-                                    <label>P.O. Box</label>
-                                    <input type="text" class="form-control" id="e_po_box" placeholder="P.O. Box">
-                                </div>
-                                <div class="form-group">
-                                    <label>Registration Date</label>
-                                    <input type="date" class="form-control" id="e_reg_date">
-                                </div>
-                                <div class="form-group">
-                                    <label>Logo</label>
-                                    <div id="e_logo_preview" class="mb-2"></div>
-                                    <input type="file" class="form-control" id="e_logo" accept="image/*">
-                                </div>
-                            </div>
-                            <div class="modal-footer bg-whitesmoke br">
-                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Save changes</span></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <!--end update modal-->
+<div class="main-content">
+    <section class="section tv-page">
+        <div class="section-header">
+            <h3>Universités</h3>
+            <div class="section-header-breadcrumb">
+                <div class="breadcrumb-item active"><a href="#">Tableau de bord</a></div>
+                <div class="breadcrumb-item"><a href="#">Université</a></div>
+            </div>
         </div>
+
+        <!-- Formulaire nouvelle université -->
+        <div class="collapse" id="mycard-collapse">
+            <div class="tv-card">
+                <h4 class="tv-card-title">Nouvelle université</h4>
+                <form id="save_university" action="save_university" method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label>Nom complet</label>
+                            <input type="text" class="form-control" id="full_name" placeholder="Nom complet" required>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Sigle</label>
+                            <input type="text" class="form-control" id="short_name" placeholder="Sigle">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Pays</label>
+                            <input type="text" class="form-control" id="country" placeholder="Pays">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>E-mail</label>
+                            <input type="email" class="form-control" id="email" placeholder="E-mail">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Site web</label>
+                            <input type="text" class="form-control" id="website" placeholder="https://...">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Téléphone</label>
+                            <input type="text" class="form-control" id="phone" placeholder="Téléphone">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Adresse</label>
+                            <input type="text" class="form-control" id="location" placeholder="Adresse">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Boîte postale</label>
+                            <input type="text" class="form-control" id="po_box" placeholder="B.P.">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Date d'enregistrement</label>
+                            <input type="date" class="form-control" id="reg_date">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Logo</label>
+                            <input type="file" class="form-control" id="logo" accept="image/*">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="d-none d-md-block">&nbsp;</label>
+                            <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span
+                                    id="indicator">Enregistrer</span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="tv-card">
+            <div class="tv-list-head">
+                <h4 class="tv-card-title">Universités enregistrées <span
+                        class="tv-pill-count ml-2"><?php echo count($universities); ?></span></h4>
+                <?php if($canManage): ?>
+                <button type="button" class="tv-btn tv-btn-accent" id="tv-new-btn"><i class="fas fa-plus"></i> Nouvelle
+                    université</button>
+                <?php endif; ?>
+            </div>
+            <div class="table-responsive">
+                <table class="tv-table university_table">
+                    <thead>
+                        <tr>
+                            <th>Université</th>
+                            <th>Pays</th>
+                            <th>E-mail</th>
+                            <th>Téléphone</th>
+                            <!-- <th>Campus</th> -->
+                            <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($universities as $row): ?>
+                        <tr>
+                            <td>
+                                <div class="tv-member">
+                                    <?php if(!empty($row['logo'])): ?>
+                                    <img class="tv-logo"
+                                        src="<?php echo htmlspecialchars((strpos($row['logo'], '/') === 0 ? $tv_base_url : '').$row['logo']); ?>"
+                                        alt="logo">
+                                    <?php else: ?>
+                                    <span
+                                        class="tv-avatar"><?php echo htmlspecialchars(tv_initials($row['full_name'])); ?></span>
+                                    <?php endif; ?>
+                                    <span>
+                                        <?php echo htmlspecialchars($row['full_name']); ?>
+                                        <?php if($row['short_name'] != ''): ?><span
+                                            class="tv-tag blue ml-1"><?php echo htmlspecialchars($row['short_name']); ?></span><?php endif; ?>
+                                    </span>
+                                </div>
+                            </td>
+                            <td><?php echo htmlspecialchars($row['country']); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['phone']); ?></td>
+                            <!-- <td><?php echo $row['campuses']; ?></td> -->
+                            <?php if($canManage): ?>
+                            <td class="tv-right">
+                                <div class="tv-row-actions">
+                                    <button type="button" data-id="<?php echo $row['id']; ?>" class="tv-icon-btn edit" title="Modifier">
+                                        <span id="spinner4_<?php echo $row['id']; ?>"></span><i class="fas fa-pen"></i>
+                                    </button>
+                                    <button type="button" data-id="<?php echo $row['id']; ?>" class="tv-icon-btn danger del" title="Supprimer">
+                                        <span id="spinner3_<?php echo $row['id']; ?>"></span><i class="far fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <?php endif; ?>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!--update modal-->
+    <form action="update_form" method="POST" id="update_form" enctype="multipart/form-data">
+        <div class="modal fade" tabindex="-1" role="dialog" id="updateModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modification de <span id="f_name"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="e_id" name="e_id">
+                        <div class="form-group">
+                            <label>Nom complet</label>
+                            <input type="text" class="form-control" id="e_full_name" placeholder="Nom complet" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sigle</label>
+                            <input type="text" class="form-control" id="e_short_name" placeholder="Sigle">
+                        </div>
+                        <div class="form-group">
+                            <label>Pays</label>
+                            <input type="text" class="form-control" id="e_country" placeholder="Pays">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" class="form-control" id="e_email" placeholder="E-mail">
+                        </div>
+                        <div class="form-group">
+                            <label>Site web</label>
+                            <input type="text" class="form-control" id="e_website" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="text" class="form-control" id="e_phone" placeholder="Téléphone">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <input type="text" class="form-control" id="e_location" placeholder="Adresse">
+                        </div>
+                        <div class="form-group">
+                            <label>Boîte postale</label>
+                            <input type="text" class="form-control" id="e_po_box" placeholder="B.P.">
+                        </div>
+                        <div class="form-group">
+                            <label>Date d'enregistrement</label>
+                            <input type="date" class="form-control" id="e_reg_date">
+                        </div>
+                        <div class="form-group">
+                            <label>Logo</label>
+                            <div id="e_logo_preview" class="mb-2"></div>
+                            <input type="file" class="form-control" id="e_logo" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-whitesmoke br">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span
+                                id="indicator2">Enregistrer les modifications</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--end update modal-->
+</div>
 
 <!--javascript-->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -278,16 +226,43 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
 <script>
-$(document).ready(function(){
+var BASE_URL = <?php echo json_encode($tv_base_url); ?>;
+
+$(document).ready(function() {
     $('.university_table').each(function() {
         $(this).DataTable({
-            "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
-            "iDisplayLength": 5
+            "aLengthMenu": [
+                [5, 10, 25, -1],
+                [5, 10, 25, "Tout"]
+            ],
+            "iDisplayLength": 5,
+            "autoWidth": false,
+            "order": [],
+            "language": {
+                "lengthMenu": "Afficher _MENU_ éléments",
+                "search": "Rechercher :",
+                "info": "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+                "infoEmpty": "Affichage de 0 à 0 sur 0 élément",
+                "infoFiltered": "(filtré sur _MAX_ éléments au total)",
+                "zeroRecords": "Aucun élément correspondant trouvé",
+                "emptyTable": "Aucune université enregistrée",
+                "paginate": {
+                    "first": "Premier",
+                    "last": "Dernier",
+                    "next": "Suivant",
+                    "previous": "Précédent"
+                }
+            }
         });
     });
 
+    // open / close the new university form
+    $('#tv-new-btn').on('click', function() {
+        $('#mycard-collapse').collapse('toggle');
+    });
+
     //save university
-    $("#save_university").submit(function(e){
+    $("#save_university").submit(function(e) {
         e.preventDefault();
 
         var formData = new FormData();
@@ -304,7 +279,7 @@ $(document).ready(function(){
         formData.append('action', 'register');
 
         $('#spinner').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator').html("Saving...");
+        $('#indicator').html("Enregistrement...");
         $.ajax({
             url: "../new_files/University/controller.php",
             type: "POST",
@@ -312,86 +287,87 @@ $(document).ready(function(){
             processData: false,
             contentType: false,
             dataType: "JSON",
-            success: function(data){
+            success: function(data) {
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
-                if(data.status==200){
+                $('#indicator').html("Enregistrer");
+                if (data.status == 200) {
                     $('#save_university')[0].reset();
                     pop_up_success(data.message);
                     location.reload();
                 }
-                if(data.status==401){
+                if (data.status == 401) {
                     pop_wrong(data.message);
                 }
-                if(data.status==500){
+                if (data.status == 500) {
                     pop_wrong(data.message);
                 }
-            },error: function(){
+            },
+            error: function() {
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
-                pop_wrong("Something went wrong!");
+                $('#indicator').html("Enregistrer");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
 
     // delete university
-    $(document).on('click','.del',function () {
+    $(document).on('click', '.del', function() {
         var data_id = $(this).data('id');
         var getData = {
             id: data_id,
             action: 'delete'
         };
         swal({
-            title: "Are you sure?",
-            text: "You are about to delete this university!",
+            title: "Êtes-vous sûr ?",
+            text: "Vous êtes sur le point de supprimer cette université.",
             icon: "warning",
-            buttons: true,
+            buttons: ["Annuler", "Supprimer"],
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
-                $('#spinner3_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
+                $('#spinner3_' + data_id).html(
+                    "<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
                 $.ajax({
                     type: "POST",
                     url: "../new_files/University/controller.php",
                     data: getData,
-                    dataType:"json",
-                    success:function(data){
-                        $('#spinner3_'+data_id).fadeOut('fast');
-                        if(data.status==500){
+                    dataType: "json",
+                    success: function(data) {
+                        $('#spinner3_' + data_id).fadeOut('fast');
+                        if (data.status == 500 || data.status == 401) {
                             pop_wrong(data.message);
-                        }
-                        else if(data.status==200){
+                        } else if (data.status == 200) {
                             pop_up_success(data.message);
                             location.reload();
                         }
                     },
-                    error:function(error){
-                        $('#spinner3_'+data_id).fadeOut('fast');
-                        pop_wrong("Something went wrong");
+                    error: function(error) {
+                        $('#spinner3_' + data_id).fadeOut('fast');
+                        pop_wrong("Une erreur s'est produite !");
                     }
                 });
-            }
-            else {
-                swal("operation cancelled!!");
+            } else {
+                swal("Opération annulée");
             }
         });
     });
 
     //pre-update View
-    $(document).on('click','.edit',function () {
+    $(document).on('click', '.edit', function() {
         var data_id = $(this).data('id');
         var getData = {
             id: data_id,
             action: 'view'
         };
-        $('#spinner4_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
+        $('#spinner4_' + data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn(
+            'fast');
         $.ajax({
             type: "POST",
             url: "../new_files/University/controller.php",
             data: getData,
-            dataType:"json",
-            success:function(data){
-                $('#spinner4_'+data_id).fadeOut('fast');
+            dataType: "json",
+            success: function(data) {
+                $('#spinner4_' + data_id).fadeOut('fast');
                 $("#e_id").val(data_id);
                 $("#e_full_name").val(data.full_name);
                 $("#e_short_name").val(data.short_name);
@@ -401,20 +377,27 @@ $(document).ready(function(){
                 $("#e_phone").val(data.phone);
                 $("#e_location").val(data.location);
                 $("#e_po_box").val(data.po_box);
-                $("#e_reg_date").val(data.reg_date);
-                $("#f_name").html(data.full_name);
-                $("#e_logo_preview").html(data.logo ? "<img src='"+data.logo+"' width='60' height='60' style='object-fit:contain'>" : "");
+                $("#e_reg_date").val(data.reg_date ? String(data.reg_date).substring(0,
+                    10) : '');
+                $("#f_name").text(data.full_name);
+                var $preview = $("#e_logo_preview").empty();
+                if (data.logo) {
+                    var src = (data.logo.charAt(0) === '/' ? BASE_URL : '') + data.logo;
+                    $preview.append($(
+                            '<img width="60" height="60" style="object-fit:contain">')
+                        .attr('src', src));
+                }
                 $('#updateModal').modal('show');
             },
-            error:function(error){
-                $('#spinner4_'+data_id).fadeOut('fast');
-                pop_wrong("Something went wrong!");
+            error: function(error) {
+                $('#spinner4_' + data_id).fadeOut('fast');
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
 
     //update university
-    $("#update_form").submit(function(e){
+    $("#update_form").submit(function(e) {
         e.preventDefault();
 
         var formData = new FormData();
@@ -428,13 +411,13 @@ $(document).ready(function(){
         formData.append('location', $("#e_location").val());
         formData.append('po_box', $("#e_po_box").val());
         formData.append('reg_date', $("#e_reg_date").val());
-        if($("#e_logo")[0].files[0]){
+        if ($("#e_logo")[0].files[0]) {
             formData.append('logo', $("#e_logo")[0].files[0]);
         }
         formData.append('action', 'update');
 
         $('#spinner2').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator2').html("Saving...");
+        $('#indicator2').html("Enregistrement...");
         $.ajax({
             url: "../new_files/University/controller.php",
             type: "POST",
@@ -442,25 +425,26 @@ $(document).ready(function(){
             processData: false,
             contentType: false,
             dataType: "JSON",
-            success: function(data){
+            success: function(data) {
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
-                if(data.status==200){
+                $('#indicator2').html("Enregistrer les modifications");
+                if (data.status == 200) {
                     $('#update_form')[0].reset();
                     $('#updateModal').modal('hide');
                     pop_up_success(data.message);
                     location.reload();
                 }
-                if(data.status==401){
+                if (data.status == 401) {
                     pop_wrong(data.message);
                 }
-                if(data.status==500){
+                if (data.status == 500) {
                     pop_wrong(data.message);
                 }
-            },error: function(){
+            },
+            error: function() {
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
-                pop_wrong("Something went wrong!");
+                $('#indicator2').html("Enregistrer les modifications");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -469,7 +453,7 @@ $(document).ready(function(){
 
 function pop_wrong(feedback) {
     iziToast.warning({
-        title: 'Error',
+        title: 'Erreur',
         message: feedback,
         position: 'topCenter'
     });
@@ -477,7 +461,7 @@ function pop_wrong(feedback) {
 
 function pop_up_success(feedback) {
     iziToast.success({
-        title: 'info',
+        title: 'Info',
         message: feedback,
         position: 'topCenter'
     });

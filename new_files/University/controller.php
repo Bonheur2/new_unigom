@@ -58,7 +58,7 @@ class University{
         $reg_date = $_POST['reg_date'] != '' ? $_POST['reg_date'] : null;
 
         if($full_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Full name is required']);
+            echo json_encode(['status' => 401, 'message' => 'Le nom complet est obligatoire']);
             return;
         }
 
@@ -66,13 +66,13 @@ class University{
             $chk = $this->connect->prepare("SELECT id FROM tbl_university WHERE full_name = :full_name");
             $chk->execute([':full_name' => $full_name]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This university already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette université existe déjà']);
                 return;
             }
 
             $logo = $this->handle_logo_upload();
             if($logo === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid logo file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du logo non valide']);
                 return;
             }
 
@@ -90,9 +90,9 @@ class University{
                 ':logo' => $logo,
                 ':reg_date' => $reg_date
             ]);
-            echo json_encode(['status' => 200, 'message' => 'University saved successfully']);
+            echo json_encode(['status' => 200, 'message' => 'Université enregistrée avec succès']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving university: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement de l'université : ".$e->getMessage()]);
         }
     }
 
@@ -106,7 +106,7 @@ class University{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'University not found']);
+            echo json_encode(['status' => 500, 'message' => 'Université introuvable']);
         }
     }
 
@@ -123,7 +123,7 @@ class University{
         $reg_date = $_POST['reg_date'] != '' ? $_POST['reg_date'] : null;
 
         if($full_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Full name is required']);
+            echo json_encode(['status' => 401, 'message' => 'Le nom complet est obligatoire']);
             return;
         }
 
@@ -131,13 +131,13 @@ class University{
             $chk = $this->connect->prepare("SELECT id FROM tbl_university WHERE full_name = :full_name AND id != :id");
             $chk->execute([':full_name' => $full_name, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This university already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette université existe déjà']);
                 return;
             }
 
             $logo = $this->handle_logo_upload();
             if($logo === false){
-                echo json_encode(['status' => 401, 'message' => 'Invalid logo file type']);
+                echo json_encode(['status' => 401, 'message' => 'Type de fichier du logo non valide']);
                 return;
             }
 
@@ -171,9 +171,9 @@ class University{
                     ':id' => $id
                 ]);
             }
-            echo json_encode(['status' => 200, 'message' => 'University updated successfully']);
+            echo json_encode(['status' => 200, 'message' => 'Université mise à jour avec succès']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating university']);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la mise à jour de l'université"]);
         }
     }
 
@@ -184,16 +184,16 @@ class University{
             $chk = $this->connect->prepare("SELECT camp_id FROM tbl_campus WHERE university_id = :id");
             $chk->execute([':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'Cannot delete: campuses are linked to this university']);
+                echo json_encode(['status' => 401, 'message' => 'Suppression impossible : des campus sont liés à cette université']);
                 return;
             }
 
             $sql = $this->connect->prepare("DELETE FROM tbl_university WHERE id = :id");
             $sql->execute([':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'University deleted successfully']);
+            echo json_encode(['status' => 200, 'message' => 'Université supprimée avec succès']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error deleting university']);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la suppression de l'université"]);
         }
     }
 }
@@ -215,6 +215,6 @@ switch($action){
         $university->delete_university();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
