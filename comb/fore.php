@@ -40,6 +40,7 @@
 <link rel="stylesheet" href="../assets/css/style.min.css">
 <link rel="stylesheet" href="../assets/css/loader.css">
 <link rel="stylesheet" href="../assets/css/components.min.css">
+<link rel="stylesheet" href="../assets/css/tree-view.css">
 <link rel="stylesheet" href="../assets/modules/izitoast/css/iziToast.min.css">
 <!-- Template CSS -->
 <link rel="stylesheet" href="../assets/modules/chocolat/dist/css/chocolat.css">
