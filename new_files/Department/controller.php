@@ -26,7 +26,7 @@ class Department{
         $d_s_name = trim($_POST['d_s_name']);
 
         if($prg_type == '' || $prg_type == '0' || $d_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Program type and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le type de programme et le nom complet sont obligatoires']);
             return;
         }
 
@@ -34,7 +34,7 @@ class Department{
             $chk = $this->connect->prepare("SELECT dept_id FROM tbl_department WHERE dept_full_name = :dept_full_name AND prg_type = :prg_type");
             $chk->execute([':dept_full_name' => $d_f_name, ':prg_type' => $prg_type]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This department already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce département existe déjà']);
                 return;
             }
 
@@ -48,14 +48,14 @@ class Department{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Department saved successfully',
+                'message' => 'Département enregistré avec succès',
                 'dept_id' => $new_id,
                 'prg_type' => $prg_type,
                 'dept_full_name' => $d_f_name,
                 'dept_short_name' => $d_s_name
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving department: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du département : ".$e->getMessage()]);
         }
     }
 
@@ -73,7 +73,7 @@ class Department{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Department not found']);
+            echo json_encode(['status' => 500, 'message' => 'Département introuvable']);
         }
     }
 
@@ -84,7 +84,7 @@ class Department{
         $d_s_name = trim($_POST['d_s_name']);
 
         if($prg_type == '' || $d_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Program type and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'Le type de programme et le nom complet sont obligatoires']);
             return;
         }
 
@@ -92,7 +92,7 @@ class Department{
             $chk = $this->connect->prepare("SELECT dept_id FROM tbl_department WHERE dept_full_name = :dept_full_name AND prg_type = :prg_type AND dept_id != :id");
             $chk->execute([':dept_full_name' => $d_f_name, ':prg_type' => $prg_type, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This department already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce département existe déjà']);
                 return;
             }
 
@@ -110,7 +110,7 @@ class Department{
             ]);
             echo json_encode([
                 'status' => 200,
-                'message' => 'Department updated successfully',
+                'message' => 'Département mis à jour avec succès',
                 'dept_id' => $id,
                 'prg_type' => $prg_type,
                 'dept_full_name' => $d_f_name,
@@ -118,7 +118,7 @@ class Department{
                 'prg_type_changed' => $prg_type_changed
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating department: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du département : '.$e->getMessage()]);
         }
     }
 
@@ -134,9 +134,9 @@ class Department{
             $upd = $this->connect->prepare("UPDATE tbl_department SET status = :status WHERE dept_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Department status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du département mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -184,6 +184,6 @@ switch($action){
         $department->get_prg_type();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
