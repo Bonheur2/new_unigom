@@ -28,7 +28,7 @@ set_exception_handler(function($e){
     }
     echo json_encode([
         'status'  => 500,
-        'message' => 'Server error: '.$e->getMessage(),
+        'message' => 'Erreur serveur : '.$e->getMessage(),
         'where'   => basename($e->getFile()).':'.$e->getLine()
     ]);
     exit;
@@ -45,7 +45,7 @@ class ApprovalSetup{
     /** Every setup action requires the same capability. */
     private function guard(){
         if(!can('can_manage_setup')){
-            echo json_encode(['status' => 401, 'message' => 'You do not have permission to manage approval setup']);
+            echo json_encode(['status' => 401, 'message' => "Vous n'avez pas le droit de modifier la configuration des approbations"]);
             return false;
         }
         return true;
@@ -77,7 +77,7 @@ class ApprovalSetup{
         $step_type  = ($_POST['step_type'] ?? 'approval') === 'invoice' ? 'invoice' : 'approval';
 
         if($form_id === '' || $role_id === '' || $step_name === ''){
-            echo json_encode(['status' => 401, 'message' => 'Form, role and step name are required']);
+            echo json_encode(['status' => 401, 'message' => "Le formulaire, le rôle et le nom de l'étape sont obligatoires"]);
             return;
         }
 
@@ -99,9 +99,9 @@ class ApprovalSetup{
                 ':step_type'  => $step_type
             ]);
 
-            echo json_encode(['status' => 200, 'message' => 'Step added', 'step_order' => $step_order]);
+            echo json_encode(['status' => 200, 'message' => 'Étape ajoutée', 'step_order' => $step_order]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error adding step: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'ajout de l'étape : ".$e->getMessage()]);
         }
     }
 
@@ -116,7 +116,7 @@ class ApprovalSetup{
             $row = $get->fetch(PDO::FETCH_ASSOC);
 
             if(!$row){
-                echo json_encode(['status' => 401, 'message' => 'Step not found']);
+                echo json_encode(['status' => 401, 'message' => 'Étape introuvable']);
                 return;
             }
 
@@ -126,7 +126,7 @@ class ApprovalSetup{
                                                  WHERE form_id = :form_id AND status = 'pending' LIMIT 1");
             $inflight->execute([':form_id' => $row['form_id']]);
             if($inflight->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'This form has requests still in progress. Finish or cancel them before changing its route.']);
+                echo json_encode(['status' => 401, 'message' => 'Ce formulaire a des demandes encore en cours. Terminez-les ou annulez-les avant de modifier son circuit.']);
                 return;
             }
 
@@ -143,10 +143,10 @@ class ApprovalSetup{
 
             $this->connect->commit();
 
-            echo json_encode(['status' => 200, 'message' => 'Step removed']);
+            echo json_encode(['status' => 200, 'message' => 'Étape supprimée']);
         } catch(PDOException $e){
             if($this->connect->inTransaction()){ $this->connect->rollBack(); }
-            echo json_encode(['status' => 500, 'message' => 'Error removing step: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la suppression de l'étape : ".$e->getMessage()]);
         }
     }
 
@@ -162,7 +162,7 @@ class ApprovalSetup{
             $get->execute([':id' => $workflow_id]);
             $row = $get->fetch(PDO::FETCH_ASSOC);
             if(!$row){
-                echo json_encode(['status' => 401, 'message' => 'Step not found']);
+                echo json_encode(['status' => 401, 'message' => 'Étape introuvable']);
                 return;
             }
 
@@ -170,7 +170,7 @@ class ApprovalSetup{
                                                  WHERE form_id = :form_id AND status = 'pending' LIMIT 1");
             $inflight->execute([':form_id' => $row['form_id']]);
             if($inflight->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'This form has requests still in progress. Finish or cancel them before changing its route.']);
+                echo json_encode(['status' => 401, 'message' => 'Ce formulaire a des demandes encore en cours. Terminez-les ou annulez-les avant de modifier son circuit.']);
                 return;
             }
 
@@ -183,7 +183,7 @@ class ApprovalSetup{
             $neighbour = $nb->fetch(PDO::FETCH_ASSOC);
 
             if(!$neighbour){
-                echo json_encode(['status' => 401, 'message' => 'Already at the '.($direction === 'up' ? 'first' : 'last').' position']);
+                echo json_encode(['status' => 401, 'message' => 'Cette étape est déjà en '.($direction === 'up' ? 'première' : 'dernière').' position']);
                 return;
             }
 
@@ -199,10 +199,10 @@ class ApprovalSetup{
 
             $this->connect->commit();
 
-            echo json_encode(['status' => 200, 'message' => 'Step moved']);
+            echo json_encode(['status' => 200, 'message' => 'Étape déplacée']);
         } catch(PDOException $e){
             if($this->connect->inTransaction()){ $this->connect->rollBack(); }
-            echo json_encode(['status' => 500, 'message' => 'Error moving step: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors du déplacement de l'étape : ".$e->getMessage()]);
         }
     }
 
@@ -218,11 +218,11 @@ class ApprovalSetup{
         $form_id = (int) ($_POST['form_id'] ?? 0);
         $doc = $_POST['completion_document'] ?? 'none';
         if($form_id <= 0){
-            echo json_encode(['status' => 401, 'message' => 'Choose a form first']);
+            echo json_encode(['status' => 401, 'message' => "Choisissez d'abord un formulaire"]);
             return;
         }
         if(!in_array($doc, ['none','admission_letter','registration_proof'], true)){
-            echo json_encode(['status' => 401, 'message' => 'Invalid document type']);
+            echo json_encode(['status' => 401, 'message' => 'Type de document non valide']);
             return;
         }
 
@@ -237,9 +237,9 @@ class ApprovalSetup{
                 ':n' => trim($_POST['signatory_name'] ?? '') ?: null,
                 ':t' => trim($_POST['signatory_title'] ?? '') ?: null
             ]);
-            echo json_encode(['status' => 200, 'message' => 'Form settings saved']);
+            echo json_encode(['status' => 200, 'message' => 'Paramètres du formulaire enregistrés']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving settings: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement des paramètres : ".$e->getMessage()]);
         }
     }
 
@@ -258,7 +258,7 @@ class ApprovalSetup{
 
         $role_id = $_POST['role_id'] ?? '';
         if($role_id === ''){
-            echo json_encode(['status' => 401, 'message' => 'Role is required']);
+            echo json_encode(['status' => 401, 'message' => 'Le rôle est obligatoire']);
             return;
         }
 
@@ -292,9 +292,9 @@ class ApprovalSetup{
                 load_capabilities($this->connect, $role_id);
             }
 
-            echo json_encode(['status' => 200, 'message' => 'Role permissions saved']);
+            echo json_encode(['status' => 200, 'message' => 'Permissions du rôle enregistrées']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving permissions: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement des permissions : ".$e->getMessage()]);
         }
     }
 }
@@ -328,6 +328,6 @@ switch($action){
         $setup->save_form_setting();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
