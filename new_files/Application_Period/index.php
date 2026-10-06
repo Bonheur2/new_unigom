@@ -66,13 +66,17 @@
                             <label>Année académique</label>
                             <select class="form-control select2" style="width:100%" id="acad_cycle_id" required>
                                 <?php foreach($acadYears as $y): ?>
-                                <option value="<?php echo $y['acad_cycle_id']; ?>" <?php echo (int)$y['acad_cycle_id'] === $currentAy ? 'selected' : ''; ?>><?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?></option>
+                                <option value="<?php echo $y['acad_cycle_id']; ?>"
+                                    <?php echo (int)$y['acad_cycle_id'] === $currentAy ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?>
+                                </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group col-md-4">
                             <label>Nom de la période</label>
-                            <input type="text" class="form-control" id="period_name" placeholder="Ex : Première session" required>
+                            <input type="text" class="form-control" id="period_name" placeholder="Ex : Première session"
+                                required>
                         </div>
                         <div class="form-group col-md-4">
                             <label>Statut</label>
@@ -96,7 +100,8 @@
                         </div>
                         <div class="form-group col-md-2">
                             <label class="d-none d-md-block">&nbsp;</label>
-                            <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span id="indicator">Enregistrer</span></button>
+                            <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span
+                                    id="indicator">Enregistrer</span></button>
                         </div>
                     </div>
                 </form>
@@ -110,7 +115,7 @@
                 <div>
                     <b><?php echo $openNow; ?></b>
                     <span class="tv-kpi-label">Ouverte<?php echo $openNow > 1 ? 's' : ''; ?> aujourd'hui</span>
-                    <span class="tv-kpi-sub">Statut « Ouverte » et date du jour comprise dans la période</span>
+                    <!-- <span class="tv-kpi-sub">Statut « Ouverte » et date du jour comprise dans la période</span> -->
                 </div>
             </div>
             <div class="tv-kpi">
@@ -119,7 +124,6 @@
                     <?php if($nextClose): $left = (int)round((strtotime($nextClose['end_date']) - strtotime($today)) / 86400); ?>
                     <b><?php echo $fmt($nextClose['end_date']); ?></b>
                     <span class="tv-kpi-label">Prochaine clôture</span>
-                    <span class="tv-kpi-sub"><?php echo htmlspecialchars($nextClose['period_name']); ?> · <?php echo $left == 0 ? "aujourd'hui" : 'dans '.$left.' jour'.($left > 1 ? 's' : ''); ?></span>
                     <?php else: ?>
                     <b>-</b>
                     <span class="tv-kpi-label">Prochaine clôture</span>
@@ -132,7 +136,8 @@
                 <div>
                     <b><?php echo $appTotal; ?></b>
                     <span class="tv-kpi-label">Candidatures reçues</span>
-                    <span class="tv-kpi-sub">Sur <?php echo count($periods); ?> période<?php echo count($periods) > 1 ? 's' : ''; ?></span>
+                    <span class="tv-kpi-sub">Sur <?php echo count($periods); ?>
+                        période<?php echo count($periods) > 1 ? 's' : ''; ?></span>
                 </div>
             </a>
         </div>
@@ -144,68 +149,81 @@
                     <div class="tv-filter">
                         <button type="button" class="tv-chip tv-status-filter active" data-filter="all">Toutes</button>
                         <?php foreach($statusLabels as $val => $label): ?>
-                        <button type="button" class="tv-chip tv-status-filter" data-filter="<?php echo $val; ?>"><?php echo $label; ?>s</button>
+                        <button type="button" class="tv-chip tv-status-filter"
+                            data-filter="<?php echo $val; ?>"><?php echo $label; ?>s</button>
                         <?php endforeach; ?>
                     </div>
                     <?php if($canManage): ?>
-                    <button type="button" class="tv-btn tv-btn-accent" id="tv-new-btn"><i class="fas fa-plus"></i> Nouvelle période</button>
+                    <button type="button" class="tv-btn tv-btn-accent" id="tv-new-btn"><i class="fas fa-plus"></i>
+                        Nouvelle période</button>
                     <?php endif; ?>
                 </div>
             </div>
             <div class="table-responsive">
                 <table class="tv-table period_table">
                     <thead>
-                    <tr>
-                        <th>Période</th>
-                        <th>Année académique</th>
-                        <th>Date d'ouverture</th>
-                        <th>Date de clôture</th>
-                        <th>Description</th>
-                        <th>Statut</th>
-                        <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
-                    </tr>
+                        <tr>
+                            <th>Période</th>
+                            <th>Année académique</th>
+                            <th>Date d'ouverture</th>
+                            <th>Date de clôture</th>
+                            <th>Description</th>
+                            <th>Statut</th>
+                            <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
+                        </tr>
                     </thead>
                     <tbody>
-                    <?php foreach($periods as $row):
+                        <?php foreach($periods as $row):
                         $t = $timing($row['start_date'], $row['end_date']);
                         $st = isset($statusLabels[$row['status']]) ? $row['status'] : 'inactive';
                         $stale = $st === 'active' && $t['key'] === 'past';
                     ?>
-                    <tr data-row-id="<?php echo $row['id']; ?>" data-status="<?php echo $st; ?>" data-end="<?php echo htmlspecialchars($row['end_date']); ?>">
-                        <td>
-                            <div class="tv-member">
-                                <span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>
-                                <span class="col-period-name"><?php echo htmlspecialchars($row['period_name']); ?></span>
-                            </div>
-                        </td>
-                        <td class="col-acad-year"><?php echo htmlspecialchars($row['acad_year']); ?></td>
-                        <td class="col-start"><?php echo $fmt($row['start_date']); ?></td>
-                        <td class="col-end"><?php echo $fmt($row['end_date']); ?></td>
-                        <td class="col-description"><?php echo $row['description'] != '' ? htmlspecialchars($row['description']) : '<span class="text-muted">-</span>'; ?></td>
-                        <td class="col-status">
+                        <tr data-row-id="<?php echo $row['id']; ?>" data-status="<?php echo $st; ?>"
+                            data-end="<?php echo htmlspecialchars($row['end_date']); ?>">
+                            <td>
+                                <div class="tv-member">
+                                    <span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>
+                                    <span
+                                        class="col-period-name"><?php echo htmlspecialchars($row['period_name']); ?></span>
+                                </div>
+                            </td>
+                            <td class="col-acad-year"><?php echo htmlspecialchars($row['acad_year']); ?></td>
+                            <td class="col-start"><?php echo $fmt($row['start_date']); ?></td>
+                            <td class="col-end"><?php echo $fmt($row['end_date']); ?></td>
+                            <td class="col-description">
+                                <?php echo $row['description'] != '' ? htmlspecialchars($row['description']) : '<span class="text-muted">-</span>'; ?>
+                            </td>
+                            <td class="col-status">
+                                <?php if($canManage): ?>
+                                <select class="ap-status-select row-status ap-<?php echo $statusTags[$st]; ?>"
+                                    data-id="<?php echo $row['id']; ?>" aria-label="Statut">
+                                    <?php foreach($statusLabels as $val => $label): ?>
+                                    <option value="<?php echo $val; ?>" <?php echo $st === $val ? 'selected' : ''; ?>>
+                                        <?php echo $label; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <span id="spinner3_<?php echo $row['id']; ?>"></span>
+                                <?php else: ?>
+                                <span
+                                    class="tv-tag <?php echo $statusTags[$st]; ?>"><?php echo $statusLabels[$st]; ?></span>
+                                <?php endif; ?>
+                                <span class="ap-stale tv-tag amber mt-1"
+                                    <?php echo $stale ? '' : 'style="display:none"'; ?>
+                                    title="La date de clôture est passée mais la période est toujours ouverte">Date
+                                    dépassée</span>
+                            </td>
                             <?php if($canManage): ?>
-                            <select class="ap-status-select row-status ap-<?php echo $statusTags[$st]; ?>" data-id="<?php echo $row['id']; ?>" aria-label="Statut">
-                                <?php foreach($statusLabels as $val => $label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo $st === $val ? 'selected' : ''; ?>><?php echo $label; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <span id="spinner3_<?php echo $row['id']; ?>"></span>
-                            <?php else: ?>
-                            <span class="tv-tag <?php echo $statusTags[$st]; ?>"><?php echo $statusLabels[$st]; ?></span>
+                            <td class="tv-right">
+                                <div class="tv-row-actions">
+                                    <button type="button" data-id="<?php echo $row['id']; ?>" class="tv-icon-btn edit"
+                                        title="Modifier">
+                                        <span id="spinner4_<?php echo $row['id']; ?>"></span><i class="fas fa-pen"></i>
+                                    </button>
+                                </div>
+                            </td>
                             <?php endif; ?>
-                            <span class="ap-stale tv-tag amber mt-1" <?php echo $stale ? '' : 'style="display:none"'; ?> title="La date de clôture est passée mais la période est toujours ouverte">Date dépassée</span>
-                        </td>
-                        <?php if($canManage): ?>
-                        <td class="tv-right">
-                            <div class="tv-row-actions">
-                                <button type="button" data-id="<?php echo $row['id']; ?>" class="tv-icon-btn edit" title="Modifier">
-                                    <span id="spinner4_<?php echo $row['id']; ?>"></span><i class="fas fa-pen"></i>
-                                </button>
-                            </div>
-                        </td>
-                        <?php endif; ?>
-                    </tr>
-                    <?php endforeach; ?>
+                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -228,13 +246,16 @@
                             <label>Année académique</label>
                             <select class="form-control select2" style="width:100%" id="e_acad_cycle_id" required>
                                 <?php foreach($acadYears as $y): ?>
-                                <option value="<?php echo $y['acad_cycle_id']; ?>"><?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?></option>
+                                <option value="<?php echo $y['acad_cycle_id']; ?>">
+                                    <?php echo htmlspecialchars($y['acad_year']); ?><?php echo $y['status'] == 1 ? ' (en cours)' : ''; ?>
+                                </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Nom de la période</label>
-                            <input type="text" class="form-control" id="e_period_name" placeholder="Ex : Première session" required>
+                            <input type="text" class="form-control" id="e_period_name"
+                                placeholder="Ex : Première session" required>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-6">
@@ -261,7 +282,8 @@
                     </div>
                     <div class="modal-footer bg-whitesmoke br">
                         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span id="indicator2">Enregistrer les modifications</span></button>
+                        <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span
+                                id="indicator2">Enregistrer les modifications</span></button>
                     </div>
                 </div>
             </div>
@@ -271,20 +293,74 @@
 </div>
 
 <style>
-.tv-page .period_table .col-start,.tv-page .period_table .col-end{white-space:nowrap}
-.tv-page .period_table .col-description{max-width:220px;font-size:14px}
+.tv-page .period_table .col-start,
+.tv-page .period_table .col-end {
+    white-space: nowrap
+}
+
+.tv-page .period_table .col-description {
+    max-width: 220px;
+    font-size: 14px
+}
+
 /* eight columns: tighter cells so the table fits the card */
-.tv-page .period_table th,.tv-page .period_table td{padding-left:10px;padding-right:10px}
-.tv-page .period_table th{letter-spacing:.02em;font-size:12px}
-.tv-page .period_table td:first-child{min-width:170px}
+.tv-page .period_table th,
+.tv-page .period_table td {
+    padding-left: 10px;
+    padding-right: 10px
+}
+
+.tv-page .period_table th {
+    letter-spacing: .02em;
+    font-size: 12px
+}
+
+.tv-page .period_table td:first-child {
+    min-width: 170px
+}
+
 /* inline status picker styled like the status badges */
-.tv-page .ap-status-select{border:1px solid transparent;border-radius:0;padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;outline:none}
-.tv-page .ap-status-select:focus{border-color:var(--tv-accent)}
-.tv-page .ap-status-select.ap-green{background:var(--tv-green-soft);color:var(--tv-green)}
-.tv-page .ap-status-select.ap-amber{background:#fff4d6;color:#8a5a00}
-.tv-page .ap-status-select.ap-blue{background:var(--tv-blue-soft);color:var(--tv-blue)}
-.tv-page .ap-status-select.ap-red{background:var(--tv-red-soft);color:var(--tv-red)}
-.tv-page .ap-status-select option{background:#fff;color:var(--tv-text);text-transform:none}
+.tv-page .ap-status-select {
+    border: 1px solid transparent;
+    border-radius: 0;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    outline: none
+}
+
+.tv-page .ap-status-select:focus {
+    border-color: var(--tv-accent)
+}
+
+.tv-page .ap-status-select.ap-green {
+    background: var(--tv-green-soft);
+    color: var(--tv-green)
+}
+
+.tv-page .ap-status-select.ap-amber {
+    background: #fff4d6;
+    color: #8a5a00
+}
+
+.tv-page .ap-status-select.ap-blue {
+    background: var(--tv-blue-soft);
+    color: var(--tv-blue)
+}
+
+.tv-page .ap-status-select.ap-red {
+    background: var(--tv-red-soft);
+    color: var(--tv-red)
+}
+
+.tv-page .ap-status-select option {
+    background: #fff;
+    color: var(--tv-text);
+    text-transform: none
+}
 </style>
 
 <!--javascript-->
@@ -298,32 +374,39 @@ var STATUS_LABELS = <?php echo json_encode($statusLabels); ?>;
 var STATUS_TAGS = <?php echo json_encode($statusTags); ?>;
 var TODAY = <?php echo json_encode($today); ?>;
 
-function escapeHtml(s){
+function escapeHtml(s) {
     return $('<div>').text(s == null ? '' : s).html();
 }
-function frDate(iso){
-    if(!iso) return '';
+
+function frDate(iso) {
+    if (!iso) return '';
     var p = String(iso).substring(0, 10).split('-');
     return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : iso;
 }
-function statusSelectHtml(id, current){
-    var html = '<select class="ap-status-select row-status ap-' + STATUS_TAGS[current] + '" data-id="' + id + '" aria-label="Statut">';
-    $.each(STATUS_LABELS, function(val, label){
-        html += '<option value="' + val + '"' + (val === current ? ' selected' : '') + '>' + label + '</option>';
+
+function statusSelectHtml(id, current) {
+    var html = '<select class="ap-status-select row-status ap-' + STATUS_TAGS[current] + '" data-id="' + id +
+        '" aria-label="Statut">';
+    $.each(STATUS_LABELS, function(val, label) {
+        html += '<option value="' + val + '"' + (val === current ? ' selected' : '') + '>' + label +
+            '</option>';
     });
     return html + '</select> <span id="spinner3_' + id + '"></span>';
 }
 
-$(document).ready(function(){
-    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex){
-        if(!$(settings.nTable).hasClass('period_table')) return true;
+$(document).ready(function() {
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        if (!$(settings.nTable).hasClass('period_table')) return true;
         var filter = $('.tv-status-filter.active').data('filter');
-        if(filter === undefined || filter === 'all') return true;
+        if (filter === undefined || filter === 'all') return true;
         return String($(settings.aoData[dataIndex].nTr).attr('data-status')) === String(filter);
     });
 
     var periodDt = $('.period_table').DataTable({
-        "aLengthMenu": [[5, 10, 25, -1], [5, 10, 25, "Tout"]],
+        "aLengthMenu": [
+            [5, 10, 25, -1],
+            [5, 10, 25, "Tout"]
+        ],
         "iDisplayLength": 5,
         "autoWidth": false,
         "order": [],
@@ -335,60 +418,75 @@ $(document).ready(function(){
             "infoFiltered": "(filtré sur _MAX_ éléments au total)",
             "zeroRecords": "Aucun élément correspondant trouvé",
             "emptyTable": "Aucune période de candidature enregistrée",
-            "paginate": { "first": "Premier", "last": "Dernier", "next": "Suivant", "previous": "Précédent" }
+            "paginate": {
+                "first": "Premier",
+                "last": "Dernier",
+                "next": "Suivant",
+                "previous": "Précédent"
+            }
         }
     });
 
-    $('.row-status').each(function(){ $(this).data('previous', $(this).val()); });
+    $('.row-status').each(function() {
+        $(this).data('previous', $(this).val());
+    });
 
-    function findRow(id){
+    function findRow(id) {
         var found = null;
-        periodDt.rows().every(function(){
-            if(String($(this.node()).attr('data-row-id')) === String(id)) found = { row: this, $tr: $(this.node()) };
+        periodDt.rows().every(function() {
+            if (String($(this.node()).attr('data-row-id')) === String(id)) found = {
+                row: this,
+                $tr: $(this.node())
+            };
         });
         return found;
     }
 
     // keep the row's status attribute, badge colour and "Date dépassée" flag in sync
-    function applyStatus($tr, st, end){
+    function applyStatus($tr, st, end) {
         $tr.attr('data-status', st);
         var $sel = $tr.find('.row-status');
-        $sel.removeClass('ap-green ap-amber ap-blue ap-red').addClass('ap-' + STATUS_TAGS[st]).val(st).data('previous', st);
+        $sel.removeClass('ap-green ap-amber ap-blue ap-red').addClass('ap-' + STATUS_TAGS[st]).val(st).data(
+            'previous', st);
         var endDate = end || $tr.data('end');
         $tr.find('.ap-stale').toggle(st === 'active' && endDate && TODAY > endDate);
     }
 
-    $(document).on('click', '.tv-status-filter', function(){
+    $(document).on('click', '.tv-status-filter', function() {
         $('.tv-status-filter').removeClass('active');
         $(this).addClass('active');
         periodDt.draw(false);
     });
 
-    $('#tv-new-btn').on('click', function(){
+    $('#tv-new-btn').on('click', function() {
         $('#mycard-collapse').collapse('toggle');
     });
 
-    function addPeriodRow(row){
+    function addPeriodRow(row) {
         var st = row.status_val || 'active';
-        var $tr = $('<tr data-row-id="'+row.id+'" data-status="'+st+'">'
-            + '<td><div class="tv-member"><span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>'
-            + '<span class="col-period-name">'+escapeHtml(row.period_name)+'</span></div></td>'
-            + '<td class="col-acad-year">'+escapeHtml(row.acad_year)+'</td>'
-            + '<td class="col-start">'+frDate(row.start_date)+'</td>'
-            + '<td class="col-end">'+frDate(row.end_date)+'</td>'
-            + '<td class="col-description">'+descHtml(row.description)+'</td>'
-            + '<td class="col-status">'+(canManage ? statusSelectHtml(row.id, st) : '<span class="tv-tag '+STATUS_TAGS[st]+'">'+STATUS_LABELS[st]+'</span>')
-            + ' <span class="ap-stale tv-tag amber mt-1" style="display:none" title="La date de clôture est passée mais la période est toujours ouverte">Date dépassée</span></td>'
-            + (canManage ? '<td class="tv-right"><div class="tv-row-actions"><button type="button" data-id="'+row.id+'" class="tv-icon-btn edit" title="Modifier">'
-                + '<span id="spinner4_'+row.id+'"></span><i class="fas fa-pen"></i></button></div></td>' : '')
-            + '</tr>');
+        var $tr = $('<tr data-row-id="' + row.id + '" data-status="' + st + '">' +
+            '<td><div class="tv-member"><span class="tv-avatar"><i class="far fa-calendar-alt"></i></span>' +
+            '<span class="col-period-name">' + escapeHtml(row.period_name) + '</span></div></td>' +
+            '<td class="col-acad-year">' + escapeHtml(row.acad_year) + '</td>' +
+            '<td class="col-start">' + frDate(row.start_date) + '</td>' +
+            '<td class="col-end">' + frDate(row.end_date) + '</td>' +
+            '<td class="col-description">' + descHtml(row.description) + '</td>' +
+            '<td class="col-status">' + (canManage ? statusSelectHtml(row.id, st) : '<span class="tv-tag ' +
+                STATUS_TAGS[st] + '">' + STATUS_LABELS[st] + '</span>') +
+            ' <span class="ap-stale tv-tag amber mt-1" style="display:none" title="La date de clôture est passée mais la période est toujours ouverte">Date dépassée</span></td>' +
+            (canManage ?
+                '<td class="tv-right"><div class="tv-row-actions"><button type="button" data-id="' + row
+                .id + '" class="tv-icon-btn edit" title="Modifier">' +
+                '<span id="spinner4_' + row.id + '"></span><i class="fas fa-pen"></i></button></div></td>' :
+                '') +
+            '</tr>');
         $tr.data('end', row.end_date);
         periodDt.row.add($tr[0]).draw(false);
         applyStatus($tr, st, row.end_date);
     }
 
     //save application period
-    $("#save_period").submit(function(e){
+    $("#save_period").submit(function(e) {
         e.preventDefault();
 
         var formData = {
@@ -407,10 +505,10 @@ $(document).ready(function(){
             type: "POST",
             data: formData,
             dataType: "JSON",
-            success: function(data){
+            success: function(data) {
                 $('#spinner').fadeOut('fast');
                 $('#indicator').html("Enregistrer");
-                if(data.status==200){
+                if (data.status == 200) {
                     var keepYear = $('#acad_cycle_id').val();
                     $('#save_period')[0].reset();
                     $('#acad_cycle_id').val(keepYear).trigger('change');
@@ -418,13 +516,14 @@ $(document).ready(function(){
                     pop_up_success(data.message);
                     addPeriodRow(data);
                 }
-                if(data.status==401){
+                if (data.status == 401) {
                     pop_wrong(data.message);
                 }
-                if(data.status==500){
+                if (data.status == 500) {
                     pop_wrong(data.message);
                 }
-            },error: function(){
+            },
+            error: function() {
                 $('#spinner').fadeOut('fast');
                 $('#indicator').html("Enregistrer");
                 pop_wrong("Une erreur s'est produite !");
@@ -433,34 +532,38 @@ $(document).ready(function(){
     });
 
     // change status inline
-    $(document).on('change','.row-status',function () {
+    $(document).on('change', '.row-status', function() {
         var $select = $(this);
         var data_id = $select.data('id');
         var new_status = $select.val();
         var previous_status = $select.data('previous');
-        $('#spinner3_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
+        $('#spinner3_' + data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn(
+            'fast');
         $.ajax({
             type: "POST",
             url: "../new_files/Application_Period/controller.php",
-            data: { id: data_id, status: new_status, action: 'change_status' },
-            dataType:"json",
-            success:function(data){
-                $('#spinner3_'+data_id).fadeOut('fast');
-                if(data.status==500 || data.status==401){
+            data: {
+                id: data_id,
+                status: new_status,
+                action: 'change_status'
+            },
+            dataType: "json",
+            success: function(data) {
+                $('#spinner3_' + data_id).fadeOut('fast');
+                if (data.status == 500 || data.status == 401) {
                     $select.val(previous_status);
                     pop_wrong(data.message);
-                }
-                else if(data.status==200){
+                } else if (data.status == 200) {
                     var hit = findRow(data_id);
-                    if(hit){
+                    if (hit) {
                         applyStatus(hit.$tr, new_status);
                         hit.row.invalidate('dom').draw(false);
                     }
                     pop_up_success(data.message);
                 }
             },
-            error:function(error){
-                $('#spinner3_'+data_id).fadeOut('fast');
+            error: function(error) {
+                $('#spinner3_' + data_id).fadeOut('fast');
                 $select.val(previous_status);
                 pop_wrong("Une erreur s'est produite !");
             }
@@ -468,16 +571,20 @@ $(document).ready(function(){
     });
 
     //pre-update View
-    $(document).on('click','.edit',function () {
+    $(document).on('click', '.edit', function() {
         var data_id = $(this).data('id');
-        $('#spinner4_'+data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
+        $('#spinner4_' + data_id).html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn(
+            'fast');
         $.ajax({
             type: "POST",
             url: "../new_files/Application_Period/controller.php",
-            data: { id: data_id, action: 'view' },
-            dataType:"json",
-            success:function(data){
-                $('#spinner4_'+data_id).fadeOut('fast');
+            data: {
+                id: data_id,
+                action: 'view'
+            },
+            dataType: "json",
+            success: function(data) {
+                $('#spinner4_' + data_id).fadeOut('fast');
                 $("#e_id").val(data_id);
                 $("#e_acad_cycle_id").val(String(data.acad_cycle_id)).trigger('change');
                 $("#e_period_name").val(data.period_name);
@@ -488,15 +595,15 @@ $(document).ready(function(){
                 $("#f_name").text(data.period_name);
                 $('#updateModal').modal('show');
             },
-            error:function(error){
-                $('#spinner4_'+data_id).fadeOut('fast');
+            error: function(error) {
+                $('#spinner4_' + data_id).fadeOut('fast');
                 pop_wrong("Une erreur s'est produite !");
             }
         });
     });
 
     //update application period
-    $("#update_form").submit(function(e){
+    $("#update_form").submit(function(e) {
         e.preventDefault();
 
         var formData = {
@@ -516,15 +623,15 @@ $(document).ready(function(){
             type: "POST",
             data: formData,
             dataType: "JSON",
-            success: function(data){
+            success: function(data) {
                 $('#spinner2').fadeOut('fast');
                 $('#indicator2').html("Enregistrer les modifications");
-                if(data.status==200){
+                if (data.status == 200) {
                     $('#update_form')[0].reset();
                     $('#updateModal').modal('hide');
                     pop_up_success(data.message);
                     var hit = findRow(data.id);
-                    if(hit){
+                    if (hit) {
                         hit.$tr.data('end', data.end_date);
                         hit.$tr.find('.col-acad-year').text(data.acad_year || '');
                         hit.$tr.find('.col-period-name').text(data.period_name);
@@ -535,13 +642,14 @@ $(document).ready(function(){
                         hit.row.invalidate('dom').draw(false);
                     }
                 }
-                if(data.status==401){
+                if (data.status == 401) {
                     pop_wrong(data.message);
                 }
-                if(data.status==500){
+                if (data.status == 500) {
                     pop_wrong(data.message);
                 }
-            },error: function(){
+            },
+            error: function() {
                 $('#spinner2').fadeOut('fast');
                 $('#indicator2').html("Enregistrer les modifications");
                 pop_wrong("Une erreur s'est produite !");
