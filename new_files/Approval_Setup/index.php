@@ -426,7 +426,7 @@ function loadRoles(){
                 });
                 html += '</select></td>';
                 if(CAN_MANAGE){
-                    html += '<td class="tv-right"><button type="button" class="tv-btn tv-btn-accent save_caps"><i class="fas fa-save"></i> Enregistrer</button></td>';
+                    html += '<td class="tv-right"><button type="button" class="tv-btn tv-btn-accent save_caps">Enregistrer</button></td>';
                 }
                 html += '</tr>';
             });
