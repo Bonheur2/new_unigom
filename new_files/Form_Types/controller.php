@@ -26,7 +26,7 @@ class FormType{
         $status = $_POST['status'];
 
         if($form_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Form name is required']);
+            echo json_encode(['status' => 401, 'message' => 'Le nom du formulaire est obligatoire']);
             return;
         }
 
@@ -34,7 +34,7 @@ class FormType{
             $chk = $this->connect->prepare("SELECT form_id FROM tbl_form_types WHERE form_name = :form_name");
             $chk->execute([':form_name' => $form_name]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This application form already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce formulaire de candidature existe déjà']);
                 return;
             }
 
@@ -52,14 +52,14 @@ class FormType{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Application form saved successfully',
+                'message' => 'Formulaire de candidature enregistré avec succès',
                 'form_id' => $new_id,
                 'form_name' => $form_name,
                 'description' => $description,
                 'status_val' => $status
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving application form: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du formulaire : ".$e->getMessage()]);
         }
     }
 
@@ -73,7 +73,7 @@ class FormType{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Application form not found']);
+            echo json_encode(['status' => 500, 'message' => 'Formulaire de candidature introuvable']);
         }
     }
 
@@ -84,7 +84,7 @@ class FormType{
         $status = $_POST['status'];
 
         if($form_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Form name is required']);
+            echo json_encode(['status' => 401, 'message' => 'Le nom du formulaire est obligatoire']);
             return;
         }
 
@@ -92,7 +92,7 @@ class FormType{
             $chk = $this->connect->prepare("SELECT form_id FROM tbl_form_types WHERE form_name = :form_name AND form_id != :id");
             $chk->execute([':form_name' => $form_name, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This application form already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce formulaire de candidature existe déjà']);
                 return;
             }
 
@@ -106,14 +106,14 @@ class FormType{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Application form updated successfully',
+                'message' => 'Formulaire de candidature mis à jour avec succès',
                 'form_id' => $id,
                 'form_name' => $form_name,
                 'description' => $description,
                 'status_val' => $status
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating application form: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du formulaire : '.$e->getMessage()]);
         }
     }
 
@@ -129,9 +129,9 @@ class FormType{
             $upd = $this->connect->prepare("UPDATE tbl_form_types SET status = :status WHERE form_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Application form status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du formulaire mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -139,7 +139,7 @@ class FormType{
         $order = $_POST['order'] ?? [];
 
         if(!is_array($order) || empty($order)){
-            echo json_encode(['status' => 401, 'message' => 'Invalid order data']);
+            echo json_encode(['status' => 401, 'message' => 'Données de classement non valides']);
             return;
         }
 
@@ -153,10 +153,10 @@ class FormType{
 
             $this->connect->commit();
 
-            echo json_encode(['status' => 200, 'message' => 'Order saved']);
+            echo json_encode(['status' => 200, 'message' => 'Ordre enregistré']);
         } catch(PDOException $e){
             $this->connect->rollBack();
-            echo json_encode(['status' => 500, 'message' => 'Error saving order: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement de l'ordre : ".$e->getMessage()]);
         }
     }
 }
@@ -181,6 +181,6 @@ switch($action){
         $form_type->reorder_form_types();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
