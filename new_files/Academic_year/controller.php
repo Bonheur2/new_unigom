@@ -25,7 +25,7 @@ class AcadYear{
         $status = $_POST['status'];
 
         if($acad_year == ''){
-            echo json_encode(['status' => 401, 'message' => 'Academic year is required']);
+            echo json_encode(['status' => 401, 'message' => "L'année académique est obligatoire"]);
             return;
         }
 
@@ -33,7 +33,7 @@ class AcadYear{
             $chk = $this->connect->prepare("SELECT acad_cycle_id FROM tbl_acad_cycle WHERE acad_year = :acad_year");
             $chk->execute([':acad_year' => $acad_year]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This academic year already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette année académique existe déjà']);
                 return;
             }
 
@@ -46,13 +46,13 @@ class AcadYear{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Academic year saved successfully',
+                'message' => 'Année académique enregistrée avec succès',
                 'acad_cycle_id' => $new_id,
                 'acad_year' => $acad_year,
                 'status_val' => $status
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving academic year: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement de l'année académique : ".$e->getMessage()]);
         }
     }
 
@@ -66,7 +66,7 @@ class AcadYear{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Academic year not found']);
+            echo json_encode(['status' => 500, 'message' => 'Année académique introuvable']);
         }
     }
 
@@ -76,7 +76,7 @@ class AcadYear{
         $status = $_POST['status'];
 
         if($acad_year == ''){
-            echo json_encode(['status' => 401, 'message' => 'Academic year is required']);
+            echo json_encode(['status' => 401, 'message' => "L'année académique est obligatoire"]);
             return;
         }
 
@@ -84,7 +84,7 @@ class AcadYear{
             $chk = $this->connect->prepare("SELECT acad_cycle_id FROM tbl_acad_cycle WHERE acad_year = :acad_year AND acad_cycle_id != :id");
             $chk->execute([':acad_year' => $acad_year, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This academic year already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Cette année académique existe déjà']);
                 return;
             }
 
@@ -96,13 +96,13 @@ class AcadYear{
             ]);
             echo json_encode([
                 'status' => 200,
-                'message' => 'Academic year updated successfully',
+                'message' => 'Année académique mise à jour avec succès',
                 'acad_cycle_id' => $id,
                 'acad_year' => $acad_year,
                 'status_val' => $status
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating academic year: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la mise à jour de l'année académique : ".$e->getMessage()]);
         }
     }
 
@@ -113,14 +113,15 @@ class AcadYear{
             $sql = $this->connect->prepare("SELECT status FROM tbl_acad_cycle WHERE acad_cycle_id = :id");
             $sql->execute([':id' => $id]);
             $row = $sql->fetch(PDO::FETCH_ASSOC);
-            $new_status = $row['status'] == 1 ? 0 : 1;
+            // 1 = en cours, 2 = clôturée: the switch moves a year between the two
+            $new_status = $row['status'] == 1 ? 2 : 1;
 
             $upd = $this->connect->prepare("UPDATE tbl_acad_cycle SET status = :status WHERE acad_cycle_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Academic year status updated']);
+            echo json_encode(['status' => 200, 'message' => "Statut de l'année académique mis à jour", 'status_val' => $new_status]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 }
@@ -142,6 +143,6 @@ switch($action){
         $acad_year->delete_acad_year();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
