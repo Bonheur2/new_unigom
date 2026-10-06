@@ -53,24 +53,24 @@
 <div class="main-content">
     <section class="section tv-page">
         <div class="section-header">
-            <h3>Program Types</h3>
+            <h3>Types de programme</h3>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                <div class="breadcrumb-item"><a href="#">Program Type</a></div>
+                <div class="breadcrumb-item active"><a href="#">Tableau de bord</a></div>
+                <div class="breadcrumb-item"><a href="#">Type de programme</a></div>
             </div>
         </div>
 
 
-        <!-- New program type form -->
+        <!-- Formulaire nouveau type de programme -->
         <div class="collapse" id="mycard-collapse">
             <div class="tv-card">
-                <h4 class="tv-card-title">New program type</h4>
+                <h4 class="tv-card-title">Nouveau type de programme</h4>
                 <form id="save_prg_type" action="save_prg_type" method="POST">
                     <div class="row">
                         <div class="form-group col-md-3">
                             <label>Campus</label>
                             <select class="form-control select2" style="width:100%" id="campus_id">
-                                <option value="0">select campus</option>
+                                <option value="0">Choisir un campus</option>
                                 <?php
                                             $sql_camp = $conn->prepare("SELECT * FROM tbl_campus WHERE camp_active=1");
                                             $sql_camp->execute();
@@ -82,24 +82,24 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Faculty <span id="spinner_fac"></span></label>
+                            <label>Faculté <span id="spinner_fac"></span></label>
                             <select class="form-control select2" style="width:100%" name="fac_id" id="fac_id">
 
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Program Type Full Name</label>
-                            <input type="text" class="form-control" id="pt_f_name" placeholder="e.g. Bachelor's Degree"
+                            <label>Nom complet du type de programme</label>
+                            <input type="text" class="form-control" id="pt_f_name" placeholder="ex. Licence"
                                 required>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Short Name</label>
-                            <input type="text" class="form-control" id="pt_s_name" placeholder="e.g. BSc">
+                            <label>Nom abrégé</label>
+                            <input type="text" class="form-control" id="pt_s_name" placeholder="ex. L">
                         </div>
                         <div class="form-group col-md-1">
                             <label class="d-none d-md-block">&nbsp;</label>
                             <button type="submit" class="tv-btn tv-btn-accent"><span id="spinner"></span><span
-                                    id="indicator">Save</span></button>
+                                    id="indicator">Enregistrer</span></button>
                         </div>
                     </div>
                 </form>
@@ -107,7 +107,7 @@
         </div>
 
         <?php if(count($campuses) === 0): ?>
-        <div class="tv-card tv-empty">No program types registered yet. Use "New program type" to add the first one.
+        <div class="tv-card tv-empty">Aucun type de programme enregistré pour le moment. Utilisez « Nouveau type de programme » pour ajouter le premier.
         </div>
         <?php else: ?>
         <div class="row">
@@ -156,34 +156,33 @@
                         <div class="tv-stats">
                             <div class="tv-stat">
                                 <div class="tv-stat-icon blue"><i class="fas fa-layer-group"></i></div>
-                                <div><b><?php echo count($campus['faculties']); ?></b><span>Faculties</span></div>
+                                <div><b><?php echo count($campus['faculties']); ?></b><span>Facultés</span></div>
                             </div>
                             <div class="tv-stat">
                                 <div class="tv-stat-icon primary"><i class="fas fa-graduation-cap"></i></div>
                                 <div><b
-                                        data-stat-campus-total="<?php echo $campus['camp_id']; ?>"><?php echo $campus['total']; ?></b><span>Program
-                                        types</span></div>
+                                        data-stat-campus-total="<?php echo $campus['camp_id']; ?>"><?php echo $campus['total']; ?></b><span>Types de programme</span></div>
                             </div>
                             <div class="tv-stat">
                                 <div class="tv-stat-icon green"><i class="fas fa-check"></i></div>
                                 <div><b
-                                        data-stat-campus-active="<?php echo $campus['camp_id']; ?>"><?php echo $campus['active']; ?></b><span>Active</span>
+                                        data-stat-campus-active="<?php echo $campus['camp_id']; ?>"><?php echo $campus['active']; ?></b><span>Actifs</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tv-card">
                         <div class="tv-list-head">
-                            <h4 class="tv-card-title">Faculties</h4>
+                            <h4 class="tv-card-title">Facultés</h4>
                             <span class="tv-pill-count"><?php echo count($campus['faculties']); ?></span>
                         </div>
                         <div class="table-responsive">
                             <table class="tv-table">
                                 <thead>
                                     <tr>
-                                        <th>Faculty</th>
-                                        <th>Program types</th>
-                                        <th>Active</th>
+                                        <th>Faculté</th>
+                                        <th>Types de programme</th>
+                                        <th>Actifs</th>
                                         <th class="tv-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -200,7 +199,7 @@
                                         <td data-active-fac="<?php echo $fac['fac_id']; ?>">
                                             <?php echo $fac['active']; ?></td>
                                         <td class="tv-right"><button type="button" class="tv-link tv-open"
-                                                data-target="fac-<?php echo $fac['fac_id']; ?>">View <i
+                                                data-target="fac-<?php echo $fac['fac_id']; ?>">Voir <i
                                                     class="fas fa-arrow-right"></i></button></td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -218,14 +217,13 @@
                         <div class="tv-detail-head">
                             <h2>
                                 <span><?php echo htmlspecialchars($fac['fac_full_name']); ?><small><?php echo htmlspecialchars($campus['camp_full_name']); ?></small></span>
-                                <span class="tv-badge">Faculty</span>
+                                <span class="tv-badge">Faculté</span>
                             </h2>
                             <?php if($canManage): ?>
                             <div class="tv-actions">
                                 <button type="button" class="tv-btn tv-btn-accent tv-add-here"
                                     data-campus="<?php echo $campus['camp_id']; ?>"
-                                    data-fac="<?php echo $fac['fac_id']; ?>"><i class="fas fa-plus"></i> Add program
-                                    type</button>
+                                    data-fac="<?php echo $fac['fac_id']; ?>"><i class="fas fa-plus"></i> Ajouter un type de programme</button>
                             </div>
                             <?php endif; ?>
                         </div>
@@ -233,40 +231,39 @@
                             <div class="tv-stat">
                                 <div class="tv-stat-icon primary"><i class="fas fa-graduation-cap"></i></div>
                                 <div><b
-                                        data-stat-total="<?php echo $fac['fac_id']; ?>"><?php echo count($fac['types']); ?></b><span>Program
-                                        types</span></div>
+                                        data-stat-total="<?php echo $fac['fac_id']; ?>"><?php echo count($fac['types']); ?></b><span>Types de programme</span></div>
                             </div>
                             <div class="tv-stat">
                                 <div class="tv-stat-icon green"><i class="fas fa-check"></i></div>
                                 <div><b
-                                        data-stat-active="<?php echo $fac['fac_id']; ?>"><?php echo $fac['active']; ?></b><span>Active</span>
+                                        data-stat-active="<?php echo $fac['fac_id']; ?>"><?php echo $fac['active']; ?></b><span>Actifs</span>
                                 </div>
                             </div>
                             <div class="tv-stat">
                                 <div class="tv-stat-icon red"><i class="fas fa-ban"></i></div>
                                 <div><b
-                                        data-stat-inactive="<?php echo $fac['fac_id']; ?>"><?php echo count($fac['types']) - $fac['active']; ?></b><span>Inactive</span>
+                                        data-stat-inactive="<?php echo $fac['fac_id']; ?>"><?php echo count($fac['types']) - $fac['active']; ?></b><span>Inactifs</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tv-card">
                         <div class="tv-list-head">
-                            <h4 class="tv-card-title">Program types</h4>
+                            <h4 class="tv-card-title">Types de programme</h4>
                             <div class="tv-filter">
                                 <button type="button" class="tv-chip tv-status-filter active"
-                                    data-filter="all">All</button>
-                                <button type="button" class="tv-chip tv-status-filter" data-filter="1">Active</button>
-                                <button type="button" class="tv-chip tv-status-filter" data-filter="0">Inactive</button>
+                                    data-filter="all">Tous</button>
+                                <button type="button" class="tv-chip tv-status-filter" data-filter="1">Actifs</button>
+                                <button type="button" class="tv-chip tv-status-filter" data-filter="0">Inactifs</button>
                             </div>
                         </div>
                         <div class="table-responsive">
                             <table class="tv-table prg_type_table" data-fac-id="<?php echo $fac['fac_id']; ?>">
                                 <thead>
                                     <tr>
-                                        <th>Program type</th>
-                                        <th>Short name</th>
-                                        <th>Status</th>
+                                        <th>Type de programme</th>
+                                        <th>Nom abrégé</th>
+                                        <th>Statut</th>
                                         <?php if($canManage): ?><th class="tv-right">Actions</th><?php endif; ?>
                                     </tr>
                                 </thead>
@@ -284,17 +281,17 @@
                                                 class="tv-tag blue col-short-name"><?php echo htmlspecialchars($pt['prg_type_short_name']); ?></span>
                                         </td>
                                         <td><span
-                                                class="tv-tag <?php echo $pt['status'] == 1 ? 'green' : 'red'; ?> tv-status-tag"><?php echo $pt['status'] == 1 ? 'Active' : 'Inactive'; ?></span>
+                                                class="tv-tag <?php echo $pt['status'] == 1 ? 'green' : 'red'; ?> tv-status-tag"><?php echo $pt['status'] == 1 ? 'Actif' : 'Inactif'; ?></span>
                                         </td>
                                         <?php if($canManage): ?>
                                         <td class="tv-right">
                                             <div class="tv-row-actions">
                                                 <button type="button" data-id="<?php echo $pt['prg_type_id']; ?>"
-                                                    class="tv-icon-btn edit" title="Edit">
+                                                    class="tv-icon-btn edit" title="Modifier">
                                                     <span id="spinner4_<?php echo $pt['prg_type_id']; ?>"></span><i
                                                         class="fas fa-pen"></i>
                                                 </button>
-                                                <label class="custom-switch" title="Activate / deactivate">
+                                                <label class="custom-switch" title="Activer / désactiver">
                                                     <input type="checkbox" name="custom-switch-checkbox"
                                                         class="custom-switch-input del"
                                                         data-id="<?php echo $pt['prg_type_id']; ?>"
@@ -324,7 +321,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Updating <span id="f_name"></span></h5>
+                        <h5 class="modal-title">Modification de <span id="f_name"></span></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -334,7 +331,7 @@
                         <div class="form-group">
                             <label>Campus <span id="spinner_e_fac"></span></label>
                             <select class="form-control select2" style="width:100%" id="e_campus_id">
-                                <option value="">-- Select Campus --</option>
+                                <option value="">Choisir un campus</option>
                                 <?php
                                             $sql_camp2 = $conn->prepare("SELECT * FROM tbl_campus WHERE camp_active=1");
                                             $sql_camp2->execute();
@@ -346,25 +343,25 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Faculty</label>
+                            <label>Faculté</label>
                             <select class="form-control select2" style="width:100%" id="e_fac_id">
-                                <option value="">-- Select Campus first --</option>
+                                <option value="">Choisissez d'abord un campus</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Program Type Full Name</label>
+                            <label>Nom complet du type de programme</label>
                             <input type="text" class="form-control" id="e_pt_f_name"
-                                placeholder="e.g. Bachelor's Degree" required>
+                                placeholder="ex. Licence" required>
                         </div>
                         <div class="form-group">
-                            <label>Short Name</label>
-                            <input type="text" class="form-control" id="e_pt_s_name" placeholder="e.g. BSc">
+                            <label>Nom abrégé</label>
+                            <input type="text" class="form-control" id="e_pt_s_name" placeholder="ex. L">
                         </div>
                     </div>
                     <div class="modal-footer bg-whitesmoke br">
-                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fermer</button>
                         <button type="submit" class="btn btn-primary btn-sm"><span id="spinner2"></span>&nbsp;<span
-                                id="indicator2">Save changes</span></button>
+                                id="indicator2">Enregistrer les modifications</span></button>
                     </div>
                 </div>
             </div>
@@ -478,10 +475,20 @@ $(document).ready(function() {
         $(this).DataTable({
             "aLengthMenu": [
                 [5, 10, 25, -1],
-                [5, 10, 25, "All"]
+                [5, 10, 25, "Tout"]
             ],
             "iDisplayLength": 5,
             "autoWidth": false,
+            "language": {
+                "lengthMenu": "Afficher _MENU_ éléments",
+                "search": "Rechercher :",
+                "info": "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+                "infoEmpty": "Affichage de 0 à 0 sur 0 élément",
+                "infoFiltered": "(filtré sur _MAX_ éléments au total)",
+                "zeroRecords": "Aucun élément correspondant trouvé",
+                "emptyTable": "Aucune donnée disponible",
+                "paginate": { "first": "Premier", "last": "Dernier", "next": "Suivant", "previous": "Précédent" }
+            },
             "order": []
         });
     });
@@ -550,9 +557,9 @@ $(document).ready(function() {
         if (canManage) {
             actionsHtml = '<td class="tv-right"><div class="tv-row-actions">' +
                 '<button type="button" data-id="' + row.prg_type_id +
-                '" class="tv-icon-btn edit" title="Edit">' +
+                '" class="tv-icon-btn edit" title="Modifier">' +
                 '<span id="spinner4_' + row.prg_type_id + '"></span><i class="fas fa-pen"></i></button>' +
-                '<label class="custom-switch" title="Activate / deactivate">' +
+                '<label class="custom-switch" title="Activer / désactiver">' +
                 '<input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input del" data-id="' +
                 row.prg_type_id + '" checked>' +
                 '<span class="custom-switch-indicator"></span><span id="spinner3_' + row.prg_type_id +
@@ -564,7 +571,7 @@ $(document).ready(function() {
                 .prg_type_full_name) + '</span></div></td>' +
             '<td><span class="tv-tag blue col-short-name">' + escapeHtml(row.prg_type_short_name || '') +
             '</span></td>' +
-            '<td><span class="tv-tag green tv-status-tag">Active</span></td>' +
+            '<td><span class="tv-tag green tv-status-tag">Actif</span></td>' +
             actionsHtml +
             '</tr>');
         $table.DataTable().row.add($tr[0]).draw(false);
@@ -584,7 +591,7 @@ $(document).ready(function() {
             action: 'register'
         };
         $('#spinner').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator').html("Saving...");
+        $('#indicator').html("Enregistrement...");
         $.ajax({
             url: "../new_files/Programs/controller.php",
             type: "POST",
@@ -592,7 +599,7 @@ $(document).ready(function() {
             dataType: "JSON",
             success: function(data) {
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
+                $('#indicator').html("Enregistrer");
                 if (data.status == 200) {
                     $('#save_prg_type')[0].reset();
                     $('#fac_id').val(null).trigger('change');
@@ -608,8 +615,8 @@ $(document).ready(function() {
             },
             error: function() {
                 $('#spinner').fadeOut('fast');
-                $('#indicator').html("Save");
-                pop_wrong("Something went wrong!");
+                $('#indicator').html("Enregistrer");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -623,10 +630,10 @@ $(document).ready(function() {
             action: 'delete'
         };
         swal({
-            title: "Are you sure?",
-            text: "You are about to change this program type's status!",
+            title: "Êtes-vous sûr ?",
+            text: "Vous êtes sur le point de modifier le statut de ce type de programme.",
             icon: "warning",
-            buttons: true,
+            buttons: ["Annuler", "Confirmer"],
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
@@ -649,7 +656,7 @@ $(document).ready(function() {
                             $tr.attr('data-status', isActive ? 1 : 0);
                             $tr.find('.tv-status-tag').removeClass('green red')
                                 .addClass(isActive ? 'green' : 'red').text(
-                                    isActive ? 'Active' : 'Inactive');
+                                    isActive ? 'Actif' : 'Inactif');
                             $pane.find('table.prg_type_table').DataTable().row($tr[
                                 0]).invalidate('dom');
                             refreshCounts($pane.data('fac-id'));
@@ -660,13 +667,13 @@ $(document).ready(function() {
                     error: function(error) {
                         $('#spinner3_' + data_id).fadeOut('fast');
                         $checkbox.prop('checked', !$checkbox.prop('checked'));
-                        pop_wrong("Something went wrong");
+                        pop_wrong("Une erreur s'est produite !");
                     }
                 });
             } else {
                 // keep the switch in sync with the real status
                 $checkbox.prop('checked', !$checkbox.prop('checked'));
-                swal("operation cancelled!!");
+                swal("Opération annulée");
             }
         });
     });
@@ -702,7 +709,7 @@ $(document).ready(function() {
             },
             error: function(error) {
                 $('#spinner4_' + data_id).fadeOut('fast');
-                pop_wrong("Something went wrong!");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -719,7 +726,7 @@ $(document).ready(function() {
             action: 'update'
         };
         $('#spinner2').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $('#indicator2').html("Saving...");
+        $('#indicator2').html("Enregistrement...");
         $.ajax({
             url: "../new_files/Programs/controller.php",
             type: "POST",
@@ -727,7 +734,7 @@ $(document).ready(function() {
             dataType: "JSON",
             success: function(data) {
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
+                $('#indicator2').html("Enregistrer les modifications");
                 if (data.status == 200) {
                     $('#update_form')[0].reset();
                     $('#updateModal').modal('hide');
@@ -759,8 +766,8 @@ $(document).ready(function() {
             },
             error: function() {
                 $('#spinner2').fadeOut('fast');
-                $('#indicator2').html("Save Changes");
-                pop_wrong("Something went wrong!");
+                $('#indicator2').html("Enregistrer les modifications");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -793,7 +800,7 @@ $(document).ready(function() {
             },
             error: function() {
                 $('#spinner_fac').fadeOut('fast');
-                pop_wrong("Something went wrong!");
+                pop_wrong("Une erreur s'est produite !");
 
             }
         });
@@ -804,7 +811,7 @@ $(document).ready(function() {
         var camp_id = $(this).val();
         if (!camp_id) return;
         $('#spinner_e_fac').html("<img src='../../img/ajax_loader.gif' width='15'>").fadeIn('fast');
-        $("#e_fac_id").empty().append("<option value=''>Loading...</option>");
+        $("#e_fac_id").empty().append("<option value=''>Chargement...</option>");
         $.ajax({
             url: "../new_files/Programs/controller.php",
             type: "POST",
@@ -816,7 +823,7 @@ $(document).ready(function() {
             success: function(data) {
                 $('#spinner_e_fac').fadeOut('fast');
                 $("#e_fac_id").empty().append(
-                    "<option value=''>-- Select Faculty --</option>");
+                    "<option value=''>Choisir une faculté</option>");
                 $.each(data, function(index, value) {
                     $("#e_fac_id").append("<option value='" + value.fac_id + "'>" +
                         escapeHtml(value.fac_full_name) + "</option>");
@@ -828,7 +835,7 @@ $(document).ready(function() {
             },
             error: function() {
                 $('#spinner_e_fac').fadeOut('fast');
-                pop_wrong("Something went wrong!");
+                pop_wrong("Une erreur s'est produite !");
             }
         });
     });
@@ -837,7 +844,7 @@ $(document).ready(function() {
 
 function pop_wrong(feedback) {
     iziToast.warning({
-        title: 'Error',
+        title: 'Erreur',
         message: feedback,
         position: 'topCenter'
     });
@@ -845,7 +852,7 @@ function pop_wrong(feedback) {
 
 function pop_up_success(feedback) {
     iziToast.success({
-        title: 'info',
+        title: 'Info',
         message: feedback,
         position: 'topCenter'
     });

@@ -26,7 +26,7 @@ class ProgramType{
         $pt_s_name = trim($_POST['pt_s_name']);
 
         if($fac_id == '' || $fac_id == '0' || $pt_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Faculty and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'La faculté et le nom complet sont obligatoires']);
             return;
         }
 
@@ -34,7 +34,7 @@ class ProgramType{
             $chk = $this->connect->prepare("SELECT prg_type_id FROM tbl_program_type WHERE prg_type_full_name = :prg_type_full_name AND fac_id = :fac_id");
             $chk->execute([':prg_type_full_name' => $pt_f_name, ':fac_id' => $fac_id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This program type already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce type de programme existe déjà']);
                 return;
             }
 
@@ -48,14 +48,14 @@ class ProgramType{
 
             echo json_encode([
                 'status' => 200,
-                'message' => 'Program type saved successfully',
+                'message' => 'Type de programme enregistré avec succès',
                 'prg_type_id' => $new_id,
                 'fac_id' => $fac_id,
                 'prg_type_full_name' => $pt_f_name,
                 'prg_type_short_name' => $pt_s_name
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving program type: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de l\'enregistrement du type de programme : '.$e->getMessage()]);
         }
     }
 
@@ -72,7 +72,7 @@ class ProgramType{
         if($row){
             echo json_encode($row);
         } else {
-            echo json_encode(['status' => 500, 'message' => 'Program type not found']);
+            echo json_encode(['status' => 500, 'message' => 'Type de programme introuvable']);
         }
     }
 
@@ -83,7 +83,7 @@ class ProgramType{
         $pt_s_name = trim($_POST['pt_s_name']);
 
         if($fac_id == '' || $pt_f_name == ''){
-            echo json_encode(['status' => 401, 'message' => 'Faculty and full name are required']);
+            echo json_encode(['status' => 401, 'message' => 'La faculté et le nom complet sont obligatoires']);
             return;
         }
 
@@ -91,7 +91,7 @@ class ProgramType{
             $chk = $this->connect->prepare("SELECT prg_type_id FROM tbl_program_type WHERE prg_type_full_name = :prg_type_full_name AND fac_id = :fac_id AND prg_type_id != :id");
             $chk->execute([':prg_type_full_name' => $pt_f_name, ':fac_id' => $fac_id, ':id' => $id]);
             if($chk->rowCount() > 0){
-                echo json_encode(['status' => 401, 'message' => 'This program type already exists']);
+                echo json_encode(['status' => 401, 'message' => 'Ce type de programme existe déjà']);
                 return;
             }
 
@@ -109,7 +109,7 @@ class ProgramType{
             ]);
             echo json_encode([
                 'status' => 200,
-                'message' => 'Program type updated successfully',
+                'message' => 'Type de programme mis à jour avec succès',
                 'prg_type_id' => $id,
                 'fac_id' => $fac_id,
                 'prg_type_full_name' => $pt_f_name,
@@ -117,7 +117,7 @@ class ProgramType{
                 'fac_changed' => $fac_changed
             ]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating program type: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du type de programme : '.$e->getMessage()]);
         }
     }
 
@@ -133,9 +133,9 @@ class ProgramType{
             $upd = $this->connect->prepare("UPDATE tbl_program_type SET status = :status WHERE prg_type_id = :id");
             $upd->execute([':status' => $new_status, ':id' => $id]);
 
-            echo json_encode(['status' => 200, 'message' => 'Program type status updated']);
+            echo json_encode(['status' => 200, 'message' => 'Statut du type de programme mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 
@@ -170,6 +170,6 @@ switch($action){
         $prg_type->get_faculty();
         break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
