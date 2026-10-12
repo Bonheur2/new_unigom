@@ -25,7 +25,7 @@ set_exception_handler(function($e){
     }
     echo json_encode([
         'status'  => 500,
-        'message' => 'Server error: '.$e->getMessage(),
+        'message' => 'Erreur serveur : '.$e->getMessage(),
         'where'   => basename($e->getFile()).':'.$e->getLine()
     ]);
     exit;
@@ -95,12 +95,12 @@ class TeachingUnits{
             'pass_mark'   => $this->num($_POST['pass_mark'] ?? '', 10)
         ];
 
-        if($u['ue_code'] === '' || $u['ue_name'] === ''){ return 'Unit code and name are required'; }
-        if($u['prg_type_id'] === null || $u['level_id'] === null){ return 'Programme and level are required'; }
-        if(!in_array($u['semester_no'], [1, 2], true)){ return 'Semester must be 1 or 2'; }
-        if($u['opt_id'] !== null && $u['dept_id'] === null){ return 'Choose the department when an option is selected'; }
-        if($u['pass_mark'] < 0){ return 'Pass mark cannot be negative'; }
-        if($u['credits'] < 0){ return 'Credits cannot be negative'; }
+        if($u['ue_code'] === '' || $u['ue_name'] === ''){ return "Le code et l'intitulé de l'unité sont obligatoires"; }
+        if($u['prg_type_id'] === null || $u['level_id'] === null){ return 'Le type de programme et le niveau sont obligatoires'; }
+        if(!in_array($u['semester_no'], [1, 2], true)){ return 'Le semestre doit être 1 ou 2'; }
+        if($u['opt_id'] !== null && $u['dept_id'] === null){ return 'Choisissez le département quand une option est sélectionnée'; }
+        if($u['pass_mark'] < 0){ return 'Le seuil de réussite ne peut pas être négatif'; }
+        if($u['credits'] < 0){ return 'Les crédits ne peuvent pas être négatifs'; }
 
         return $u;
     }
@@ -114,7 +114,7 @@ class TeachingUnits{
             $chk = $this->connect->prepare("SELECT ue_id FROM tbl_teaching_units WHERE ue_code = :c AND prg_type_id = :p");
             $chk->execute([':c' => $u['ue_code'], ':p' => $u['prg_type_id']]);
             if($chk->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'A unit with this code already exists in this programme']);
+                echo json_encode(['status' => 401, 'message' => 'Une unité avec ce code existe déjà dans ce type de programme']);
                 return;
             }
 
@@ -123,9 +123,9 @@ class TeachingUnits{
                 VALUES (:ue_code, :ue_name, :prg_type_id, :level_id, :semester_no, :dept_id, :opt_id, :credits, :pass_mark, 1)");
             $sql->execute($this->bind($u));
 
-            echo json_encode(['status' => 200, 'message' => 'Unit saved', 'ue_id' => $this->connect->lastInsertId()]);
+            echo json_encode(['status' => 200, 'message' => 'Unité enregistrée', 'ue_id' => $this->connect->lastInsertId()]);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving unit: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement de l'unité : ".$e->getMessage()]);
         }
     }
 
@@ -136,7 +136,7 @@ class TeachingUnits{
                                         WHERE u.ue_id = :id");
         $sql->execute([':id' => $_POST['ue_id'] ?? '']);
         $row = $sql->fetch(PDO::FETCH_ASSOC);
-        echo json_encode($row ? ['status' => 200, 'data' => $row] : ['status' => 401, 'message' => 'Unit not found']);
+        echo json_encode($row ? ['status' => 200, 'data' => $row] : ['status' => 401, 'message' => 'Unité introuvable']);
     }
 
     public function update_unit(){
@@ -150,7 +150,7 @@ class TeachingUnits{
                                             WHERE ue_code = :c AND prg_type_id = :p AND ue_id != :id");
             $chk->execute([':c' => $u['ue_code'], ':p' => $u['prg_type_id'], ':id' => $ue_id]);
             if($chk->fetch()){
-                echo json_encode(['status' => 401, 'message' => 'A unit with this code already exists in this programme']);
+                echo json_encode(['status' => 401, 'message' => 'Une unité avec ce code existe déjà dans ce type de programme']);
                 return;
             }
 
@@ -161,9 +161,9 @@ class TeachingUnits{
                 WHERE ue_id = :ue_id");
             $sql->execute(array_merge($this->bind($u), [':ue_id' => $ue_id]));
 
-            echo json_encode(['status' => 200, 'message' => 'Unit updated']);
+            echo json_encode(['status' => 200, 'message' => 'Unité mise à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating unit: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de la mise à jour de l'unité : ".$e->getMessage()]);
         }
     }
 
@@ -178,7 +178,7 @@ class TeachingUnits{
         $ue->execute([':id' => $_POST['ue_id'] ?? '']);
         $unit = $ue->fetch(PDO::FETCH_ASSOC);
         if(!$unit){
-            echo json_encode(['status' => 401, 'message' => 'Unit not found']);
+            echo json_encode(['status' => 401, 'message' => 'Unité introuvable']);
             return;
         }
 
@@ -202,11 +202,11 @@ class TeachingUnits{
             'exam_min_mark' => $this->nullify(trim($_POST['exam_min_mark'] ?? ''))
         ];
 
-        if($c['ue_id'] === null){ return 'Unit is missing'; }
-        if($c['course_name'] === ''){ return 'Course name is required'; }
-        if(abs(($c['cat_weight'] + $c['exam_weight']) - 100) > 0.001){ return 'CAT % and Exam % must add up to 100'; }
-        if($c['pass_mark'] < 0){ return 'Pass mark cannot be negative'; }
-        if($c['exam_min_mark'] !== null && $c['exam_min_mark'] < 0){ return 'Eliminatory exam mark cannot be negative'; }
+        if($c['ue_id'] === null){ return "L'unité est manquante"; }
+        if($c['course_name'] === ''){ return "L'intitulé du cours est obligatoire"; }
+        if(abs(($c['cat_weight'] + $c['exam_weight']) - 100) > 0.001){ return 'TP/Interro % et Examen % doivent totaliser 100'; }
+        if($c['pass_mark'] < 0){ return 'Le seuil de réussite ne peut pas être négatif'; }
+        if($c['exam_min_mark'] !== null && $c['exam_min_mark'] < 0){ return 'La note éliminatoire ne peut pas être négative'; }
         if($c['course_code'] === ''){ $c['course_code'] = null; }   // NULL is allowed to repeat under the UNIQUE key
 
         return $c;
@@ -222,7 +222,7 @@ class TeachingUnits{
                 $chk = $this->connect->prepare("SELECT course_id FROM tbl_courses WHERE course_code = :c");
                 $chk->execute([':c' => $c['course_code']]);
                 if($chk->fetch()){
-                    echo json_encode(['status' => 401, 'message' => 'A course with this code already exists']);
+                    echo json_encode(['status' => 401, 'message' => 'Un cours avec ce code existe déjà']);
                     return;
                 }
             }
@@ -234,9 +234,9 @@ class TeachingUnits{
                         :pass_mark, :exam_min_mark, 1)");
             $sql->execute($this->bind($c));
 
-            echo json_encode(['status' => 200, 'message' => 'Course saved']);
+            echo json_encode(['status' => 200, 'message' => 'Cours enregistré']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error saving course: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => "Erreur lors de l'enregistrement du cours : ".$e->getMessage()]);
         }
     }
 
@@ -244,7 +244,7 @@ class TeachingUnits{
         $sql = $this->connect->prepare("SELECT * FROM tbl_courses WHERE course_id = :id");
         $sql->execute([':id' => $_POST['course_id'] ?? '']);
         $row = $sql->fetch(PDO::FETCH_ASSOC);
-        echo json_encode($row ? ['status' => 200, 'data' => $row] : ['status' => 401, 'message' => 'Course not found']);
+        echo json_encode($row ? ['status' => 200, 'data' => $row] : ['status' => 401, 'message' => 'Cours introuvable']);
     }
 
     public function update_course(){
@@ -258,7 +258,7 @@ class TeachingUnits{
                 $chk = $this->connect->prepare("SELECT course_id FROM tbl_courses WHERE course_code = :c AND course_id != :id");
                 $chk->execute([':c' => $c['course_code'], ':id' => $course_id]);
                 if($chk->fetch()){
-                    echo json_encode(['status' => 401, 'message' => 'A course with this code already exists']);
+                    echo json_encode(['status' => 401, 'message' => 'Un cours avec ce code existe déjà']);
                     return;
                 }
             }
@@ -270,9 +270,9 @@ class TeachingUnits{
                 WHERE course_id = :course_id");
             $sql->execute(array_merge($this->bind($c), [':course_id' => $course_id]));
 
-            echo json_encode(['status' => 200, 'message' => 'Course updated']);
+            echo json_encode(['status' => 200, 'message' => 'Cours mis à jour']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating course: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du cours : '.$e->getMessage()]);
         }
     }
 
@@ -295,14 +295,14 @@ class TeachingUnits{
             $sql->execute([':id' => $id]);
             $row = $sql->fetch(PDO::FETCH_ASSOC);
             if(!$row){
-                echo json_encode(['status' => 401, 'message' => 'Record not found']);
+                echo json_encode(['status' => 401, 'message' => 'Élément introuvable']);
                 return;
             }
             $upd = $this->connect->prepare("UPDATE $table SET status = :s WHERE $key = :id");
             $upd->execute([':s' => $row['status'] == 1 ? 0 : 1, ':id' => $id]);
-            echo json_encode(['status' => 200, 'message' => $row['status'] == 1 ? 'Deactivated' : 'Activated']);
+            echo json_encode(['status' => 200, 'message' => $row['status'] == 1 ? 'Désactivé' : 'Activé']);
         } catch(PDOException $e){
-            echo json_encode(['status' => 500, 'message' => 'Error updating status: '.$e->getMessage()]);
+            echo json_encode(['status' => 500, 'message' => 'Erreur lors de la mise à jour du statut : '.$e->getMessage()]);
         }
     }
 }
@@ -325,6 +325,6 @@ switch($action){
     case 'update_course':   $units->update_course();   break;
     case 'toggle_course':   $units->toggle_course();   break;
     default:
-        echo json_encode(['status' => 401, 'message' => 'Invalid action']);
+        echo json_encode(['status' => 401, 'message' => 'Action non valide']);
         break;
 }
